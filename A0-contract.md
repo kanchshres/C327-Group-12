@@ -47,11 +47,11 @@ Name:
 Student Number:	
 
 
-Team Member #3:
+Team Member #3: ShuviSchwarze
 
-Name:
+Name: Hai Duong
 
-Student Number:	
+Student Number: 20248852
 
 
 Team Member #4:
