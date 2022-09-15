@@ -40,11 +40,11 @@ Name: Kanchan Shrestha
 Student Number:	20206672
 
 
-Team Member #2:
+Team Member #2: AndrewHunter5420
 
-Name:
+Name: Andrew Hunter
 
-Student Number:	
+Student Number:	20214763
 
 
 Team Member #3: ShuviSchwarze
