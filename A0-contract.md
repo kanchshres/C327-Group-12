@@ -54,8 +54,9 @@ Name: Hai Duong
 Student Number: 20248852
 
 
-Team Member #4:
+Team Member #4: KazSusilo
 
-Name:
+Name: Alex "Kaz" Susilo
 
-Student Number:	
+Student Number:	20247535
+
