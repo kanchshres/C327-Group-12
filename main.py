@@ -6,3 +6,19 @@ class User():
         self.email = email  # should also be unique 
         self.password = password
         self.balance = 0  # user should add balance after account creation
+    
+    def get_id(self):
+        return self.id
+    
+    def get_username(self):
+        return self.username
+
+    def get_email(self):
+        return self.email
+    
+    def get_password(self):
+        return self.password
+
+if __name__ == "__main__":
+    test = User(0, "kanchshres", "abcdef@gmail.com", "password123")
+    print(User)
