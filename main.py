@@ -21,4 +21,7 @@ class User():
 
 if __name__ == "__main__":
     test = User(0, "kanchshres", "abcdef@gmail.com", "password123")
-    print(User)
+    print("ID: ", test.get_id())
+    print("Username: ", test.get_username())
+    print("Email: ", test.get_email())
+    print("Password: ", test.get_password())
