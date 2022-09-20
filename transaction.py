@@ -1,5 +1,6 @@
+#transaction.py
 from enum import Enum, unique
-import User
+from user import User
 
 @unique
 class TransactionStatus(Enum):

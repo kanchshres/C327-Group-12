@@ -1,8 +1,12 @@
-from Wallet import Wallet
+#user.py
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from wallet import Wallet
 
 
 class User():
-    
+
     def __init__(self):
         self.ID = 0  # should be random unique int, change later
         self.username = ""
@@ -43,11 +47,13 @@ class User():
         self._password = password
 
     @property
-    def wallet(self) -> Wallet:
+    def wallet(self):
         return self._wallet
 
     @wallet.setter
-    def wallet(self, wallet: Wallet):
+    def wallet(self, wallet):
+        from wallet import Wallet
+
         if isinstance(wallet, Wallet):
             self._wallet = wallet
         else:
