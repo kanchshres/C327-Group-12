@@ -53,10 +53,20 @@ class Wallet:
 
 
 class BankingAccount:
+    """
+    Object representation of a Banking Account
+
+    params:
+    id: the account number
+    account_holer_name: the name of the account holder
+    balance (int): The balance of the Banking Account
+    currency: the currency of the balance
+
+    """
     def __init__(self):
         self.id = 0
-        self.balance = 0
         self.account_holer_name = ""
+        self.balance = 0
         self.currency = ""
     
     @property
@@ -71,6 +81,18 @@ class BankingAccount:
     def balance(self):
         return self._balance
     
+    """
+    Subtract balance from current account balance to a transaction
+
+    params:
+    amount: the amount to be transfered from the account
+
+    Raises:
+        ValueError: When current balance is less than the required balance or if the ammount transfer is less than 0
+
+    Returns:
+        amount (int): the transfered amount
+    """
     def transfer_balance(self, amount: int) -> int:
         if amount < 0:
             raise ValueError("amount must be greater than zero")
@@ -79,7 +101,7 @@ class BankingAccount:
         elif amount >= 0:
             self.balance -= amount
         return amount
-    
+
     def add_balance(self, amount: int):
         if amount < 0:
             raise ValueError("amount must be greater than zero")
