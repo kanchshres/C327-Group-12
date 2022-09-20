@@ -1,27 +1,44 @@
 class User():
     
-    def __init__(self, id, username, email, password):
-        self.id = id  # should be random unique int, change later
-        self.username = username
-        self.email = email  # should also be unique 
-        self.password = password
-        self.balance = 0  # user should add balance after account creation
-    
-    def get_id(self):
-        return self.id
-    
-    def get_username(self):
-        return self.username
+    def __init__(self):
+        self._myID = 0  # should be random unique int, change later
+        self._myUsername = ""
+        self._myEmail = ""   # should also be unique 
+        self._myPassword = ""
+        self._myBalance = 0  # user should add balance after account creation
 
-    def get_email(self):
-        return self.email
-    
-    def get_password(self):
-        return self.password
+    @property
+    def myID(self):
+        return self._myID
 
-if __name__ == "__main__":
-    test = User(0, "kanchshres", "abcdef@gmail.com", "password123")
-    print("ID: ", test.get_id())
-    print("Username: ", test.get_username())
-    print("Email: ", test.get_email())
-    print("Password: ", test.get_password())
+    @myID.setter
+    def myID(self, id):
+        self._myID = id
+    
+    @property
+    def myUsername(self):
+        return self._myUsername
+    
+    @myUsername.setter
+    def myUsername(self, username):
+        self._myUsername = username
+
+    @property
+    def myEmail(self):
+        return self._myEmail
+
+    @myEmail.setter
+    def myEmail(self, email):
+        self._myEmail = email
+        
+    @property
+    def myPassword(self):
+        return self._myPassword
+
+    @myPassword.setter
+    def myPassword(self, password):
+        self._myPassword = password
+
+    @property
+    def myBalance(self):
+        return self._balance
