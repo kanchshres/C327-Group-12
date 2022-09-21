@@ -87,8 +87,3 @@ class Review():
     @comment.setter
     def comment(self, comment):
         self._comment = comment
-
-
-
-
-    
