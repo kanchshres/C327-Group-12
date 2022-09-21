@@ -20,12 +20,12 @@ class Review():
     """
     
     def __init__(self):
-        self.id = None
-        self.date_posted = None
-        self.posting_user = None
-        self.listing = None
-        self.rating = None
-        self.comment = None
+        self._id = None
+        self._date_posted = None
+        self._posting_user = None
+        self._listing = None
+        self._rating = None
+        self._comment = None
 
     @property
     def __str__(self):
