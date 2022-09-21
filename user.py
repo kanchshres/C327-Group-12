@@ -7,12 +7,12 @@ if TYPE_CHECKING:
 
 class User():
 
-    def __init__(self):
-        self._ID = 0  # should be random unique int, change later
-        self._username = ""
-        self._email = ""   # should also be unique 
-        self._password = ""
-        self._wallet = None # user should add balance after account creation
+    def __init__(self, id = 0, username: str = "", email: str = "", password: str = ""):
+        self._ID = id  # should be random unique int, change later
+        self._username: str = username
+        self._email: str = email   # should also be unique 
+        self._password = password
+        self._wallet: Wallet = None # user should add wallet after account creation
 
     @property
     def ID(self):
@@ -23,41 +23,36 @@ class User():
         self._ID = id
     
     @property
-    def username(self):
+    def username(self) -> str:
         return self._username
     
     @username.setter
-    def username(self, username):
+    def username(self, username: str):
         self._username = username
 
     @property
-    def email(self):
+    def email(self) -> str:
         return self._mail
 
     @email.setter
-    def email(self, email):
+    def email(self, email: str):
         self._mail = email
         
     @property
-    def password(self):
+    def password(self) -> str:
         return self._password
 
     @password.setter
-    def password(self, password):
+    def password(self, password: str):
         self._password = password
 
     @property
-    def wallet(self):
+    def wallet(self) -> 'Wallet':
         return self._wallet
 
     @wallet.setter
-    def wallet(self, wallet):
-        from wallet import Wallet
-
-        if isinstance(wallet, Wallet) or wallet is None:
-            self._wallet = wallet
-        else:
-            raise ValueError("wallet must be an object of type Wallet")
+    def wallet(self, wallet: 'Wallet'):
+        self._wallet = wallet
 
     @property
     def balance(self):

@@ -1,9 +1,10 @@
 #wallet.py
-from transaction import Transaction
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from transaction import Transaction
 
 class Wallet:
-    """
-    Object representation of a digital wallet.
+    """Object representation of a digital wallet.
     
     params:
     - id: An UID of the wallet
@@ -13,52 +14,49 @@ class Wallet:
     """
     def __init__(self):
         self._id = None
-        self._balance = 0
-        self._bankingAccount: BankingAccount = None
-        self._transactions: list[Transaction] = []
+        self._balance: int = 0
+        self._bankingAccount: 'BankingAccount' = None
+        self._transactions: 'list[Transaction]' = []
 
     @property
     def __str__(self):
         return str(self._id, self._balance)
 
     @property
-    def balance(self):
+    def balance(self) -> int:
         return self._balance
 
     @property
-    def bankingAccount(self):
+    def bankingAccount(self) -> 'BankingAccount':
         return self._bankingAccount
 
     @bankingAccount.setter
-    def bankingAccount(self, account):
+    def bankingAccount(self, account: 'BankingAccount'):
         self._bankingAccount = account
 
     @property
-    def transactions(self) -> list[Transaction]:
+    def transactions(self) -> 'list[Transaction]':
         return self._transactions
 
     @transactions.setter
-    def transactions(self, values:list[int]):
-        if all(isinstance(i, list[Transaction]) for i in values):
-            self._transactions = values
-        else:
-            raise ValueError("values must be a list of Transaction objects")
+    def transactions(self, values: 'list[Transaction]'):
+        self._transactions = values
 
-    def add_transaction(self, transaction:Transaction):
-        if not isinstance(transaction, Transaction):
-            raise ValueError("transaction must be a Transaction object")
+    def add_transaction(self, transaction: 'Transaction'):
         self._transactions.append(transaction)
 
     def transfer_balance(self, amount: int):
+        if amount < 0:
+            raise ValueError("Transfered amount cannot be negative")
+
         try: 
             self._balance += self.bankingAccount.transfer_balance(amount)
         except ValueError:
-            print()
+            print("")
 
 
 class BankingAccount:
-    """
-    Object representation of a Banking Account
+    """Object representation of a Banking Account
 
     params:
     id: the account number
@@ -85,8 +83,7 @@ class BankingAccount:
     def balance(self):
         return self._balance
     
-    """
-    Subtract balance from current account balance to a transaction
+    """Subtract balance from current account balance to a transaction
 
     params:
     amount: the amount to be transfered from the account
@@ -113,17 +110,18 @@ class BankingAccount:
         return amount
 
 
+
 def test():
     from user import User
     from wallet import Wallet
+
+    bank_account = BankingAccount()
     user = User()
     user.email = "hello@gbay.com"
     user.username = "hello"
     user.password = "plainstring"
     user.ID = "1234"
     user.wallet = Wallet()
-
-    bank_account = BankingAccount()
     user.wallet.bankingAccount = bank_account
 
     bank_account.add_balance(10000)

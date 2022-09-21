@@ -1,6 +1,7 @@
 #transaction.py
 from enum import Enum, unique
 from user import User
+from listing import Listing
 
 @unique
 class TransactionStatus(Enum):
@@ -18,11 +19,11 @@ class Transaction:
     """
     def __init__(self):
         self.id = None
-        self.payer = None
-        self.payee = None
-        self.amount = 0
-        self.listing = None
-        self.status = None
+        self.payer: 'User' = None
+        self.payee: 'User' = None
+        self.amount: 'int' = 0
+        self.listing: 'Listing' = None
+        self.status: 'TransactionStatus' = None
     
     def __str__(self):
         return str(self._id)
@@ -36,32 +37,25 @@ class Transaction:
         self._id = value
 
     @property
-    def payer(self):
+    def payer(self) -> 'User':
         return self._payer
     
     @payer.setter
-    def payer(self, value):
-        if not isinstance(value, User):
-            raise ValueError('payer must be a User')
+    def payer(self, value: 'User'):
         self._payer = value
     
     @property
-    def payee(self):
+    def payee(self) -> 'User':
         return self._payee
     
     @payee.setter
-    def payee(self, value):
-        if not isinstance(value, User):
-            raise ValueError('payee must be a User')
+    def payee(self, value: 'User'):
         self._payee = value
 
     @property
-    def status(self):
+    def status(self) -> 'TransactionStatus':
         return self.status.name
 
     @status.setter
-    def status(self, value):
-        if value in TransactionStatus:
-            self.status = TransactionStatus[value]
-        else:
-            raise ValueError("Invalid status of TransactionStatus: %s" % value)
+    def status(self, value: 'TransactionStatus'):
+        self.status = TransactionStatus[value]
