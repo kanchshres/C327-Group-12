@@ -53,9 +53,10 @@ class Review():
 
     @posting_user.setter
     def posting_user(self, user):
-        if not isinstance(user, User):
+        if isinstance(user, User):
+            self._posting_user = user
+        else:
             raise ValueError("posting user must be a User")
-        self._posting_user = user
 
     @property
     def listing(self):
