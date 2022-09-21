@@ -1,7 +1,9 @@
 #review.py
 from typing import TYPE_CHECKING
-from user import User
-from listing import Listing
+
+if TYPE_CHECKING:
+    from user import User
+    from listing import Listing
 
 class Review():
     """A review object that represents a review posted by a guest
@@ -51,7 +53,7 @@ class Review():
         return self._posting_user
 
     @posting_user.setter
-    def posting_user(self, user: User):
+    def posting_user(self, user: 'User'):
         self._posting_user = user
 
     @property
@@ -59,7 +61,7 @@ class Review():
         return self._listing
 
     @listing.setter
-    def listing(self, listing: Listing):
+    def listing(self, listing: 'Listing'):
         self._listing = listing
 
     @property
@@ -81,6 +83,8 @@ class Review():
         self._comment = comment
 
 def test():
+    from user import User
+    from listing import Listing
     review = Review()
 
     review.id = 1
