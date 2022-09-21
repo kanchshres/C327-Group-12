@@ -76,7 +76,7 @@ class Review():
 
     @rating.setter
     def rating(self, rating):
-        if rating > 5:
+        if not (0 < rating < 5):
             raise ValueError("rating must be out of 5 (stars)")
         self._rating = rating
 
