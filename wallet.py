@@ -20,7 +20,7 @@ class Wallet:
     @property
     def __str__(self):
         return str(self._id, self._balance)
-        
+
     @property
     def bankingAccount(self):
         return self._bankingAccount.id
@@ -66,7 +66,7 @@ class BankingAccount:
     def __init__(self):
         self.id = 0
         self.account_holer_name = ""
-        self.balance = 0
+        self.balance: int = 0
         self.currency = ""
     
     @property
@@ -101,7 +101,7 @@ class BankingAccount:
         self.balance -= amount
         return amount
 
-    def add_balance(self, amount: int):
+    def add_balance(self, amount: int) -> int:
         if amount < 0:
             raise ValueError("amount must be greater than zero")
         else:
