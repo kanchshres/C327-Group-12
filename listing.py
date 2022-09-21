@@ -3,8 +3,7 @@ from enum import Enum, unique
 from user import User
 
 class Listing:
-	"""
-	Object representation of a digital Listing
+	""" Object representation of a digital Listing
 
 	params:
 	- title: Title of listing (string)
