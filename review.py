@@ -1,6 +1,8 @@
 #review.py
 from user import User
-from listing import Listing
+
+# comment this until Listing class implemented
+#from listing import Listing
 
 class Review():
     """A review object that represents a review posted by a guest
@@ -61,8 +63,11 @@ class Review():
 
     @listing.setter
     def listing(self, listing):
-        if not isinstance(listing, Listing):
-            raise ValueError("listing must be a Listing")
+
+        # comment this until Listing class implemented
+        #if not isinstance(listing, Listing):
+        #    raise ValueError("listing must be a Listing")
+        
         self._listing = listing
 
     @property
