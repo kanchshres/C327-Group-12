@@ -1,7 +1,11 @@
 #transaction.py
 from enum import Enum, unique
-from user import User
-from listing import Listing
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from user import User
+    from listing import Listing
+
 
 @unique
 class TransactionStatus(Enum):
@@ -54,8 +58,9 @@ class Transaction:
 
     @property
     def status(self) -> 'TransactionStatus':
-        return self._status.name
+        return self._status
 
     @status.setter
     def status(self, value: 'TransactionStatus'):
         self._status = value
+        
