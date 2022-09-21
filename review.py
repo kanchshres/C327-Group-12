@@ -1,8 +1,7 @@
 #review.py
+from typing import TYPE_CHECKING
 from user import User
-
-# comment this until Listing class implemented
-#from listing import Listing
+from listing import Listing
 
 class Review():
     """A review object that represents a review posted by a guest
@@ -52,23 +51,15 @@ class Review():
         return self._posting_user
 
     @posting_user.setter
-    def posting_user(self, user):
-        if isinstance(user, User):
-            self._posting_user = user
-        else:
-            raise ValueError("posting user must be a User")
+    def posting_user(self, user: User):
+        self._posting_user = user
 
     @property
     def listing(self):
         return self._listing
 
     @listing.setter
-    def listing(self, listing):
-
-        # comment this until Listing class implemented
-        #if not isinstance(listing, Listing):
-        #    raise ValueError("listing must be a Listing")
-        
+    def listing(self, listing: Listing):
         self._listing = listing
 
     @property
