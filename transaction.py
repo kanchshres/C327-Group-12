@@ -54,7 +54,6 @@ class Transaction:
         if not isinstance(value, User):
             raise ValueError('payee must be a User')
         self._payee = value
-        
 
     @property
     def status(self):

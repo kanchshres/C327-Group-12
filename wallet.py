@@ -98,8 +98,7 @@ class BankingAccount:
             raise ValueError("amount must be greater than zero")
         elif amount > self.balance:
             raise ValueError("Unsufficient account balance")
-        elif amount >= 0:
-            self.balance -= amount
+        self.balance -= amount
         return amount
 
     def add_balance(self, amount: int):
