@@ -54,10 +54,8 @@ class User():
     def wallet(self, wallet):
         from wallet import Wallet
 
-        if isinstance(wallet, Wallet):
+        if isinstance(wallet, Wallet) or wallet is None:
             self._wallet = wallet
-        elif wallet is None:
-            self._wallet = None
         else:
             raise ValueError("wallet must be an object of type Wallet")
 
