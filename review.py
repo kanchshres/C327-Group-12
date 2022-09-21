@@ -44,8 +44,8 @@ class Review():
         return self._date_posted
 
     @date_posted.setter
-    def data_posted(self, date):
-        self._data_posted = date
+    def date_posted(self, date):
+        self._date_posted = date
 
     @property
     def posting_user(self):
