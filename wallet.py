@@ -18,6 +18,10 @@ class Wallet:
         self.transactions: list[Transaction] = []
 
     @property
+    def __str__(self):
+        return str(self._id, self._balance)
+        
+    @property
     def bankingAccount(self):
         return self._bankingAccount.id
 
@@ -40,10 +44,6 @@ class Wallet:
         if not isinstance(transaction, Transaction):
             raise ValueError("transaction must be a Transaction object")
         self._transactions.append(transaction)
-
-    @property
-    def __str__(self):
-        return str(self._id, self._balance)
 
     def transfer_balance(self, amount: int):
         try: 
