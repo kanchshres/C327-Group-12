@@ -58,4 +58,4 @@ class Transaction:
 
     @status.setter
     def status(self, value: 'TransactionStatus'):
-        self.status = TransactionStatus[value]
+        self.status = value
