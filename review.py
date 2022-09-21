@@ -79,3 +79,28 @@ class Review():
     @comment.setter
     def comment(self, comment):
         self._comment = comment
+
+def test():
+    review = Review()
+
+    review.id = 1
+    assert review.id == 1
+
+    review.date_posted = "September 21, 2022"
+    assert review.date_posted == "September 21, 2022"
+
+    test_user = User()
+    review.posting_user = test_user
+    assert review.posting_user == test_user
+
+    test_listing = Listing()
+    review.listing = test_listing
+    assert review.listing == test_listing
+
+    review.rating = 3.4
+    assert review.rating == 3.4
+
+    review.comment = "hello world"
+    assert review.comment == "hello world"
+
+test()
