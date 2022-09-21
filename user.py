@@ -56,6 +56,8 @@ class User():
 
         if isinstance(wallet, Wallet):
             self._wallet = wallet
+        elif wallet is None:
+            self._wallet = None
         else:
             raise ValueError("wallet must be an object of type Wallet")
 

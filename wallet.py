@@ -12,18 +12,22 @@ class Wallet:
     - transactions: A list of transactions associated with the wallet
     """
     def __init__(self):
-        self.id = None
-        self.balance = 0
-        self.bankingAccount: BankingAccount = None
-        self.transactions: list[Transaction] = []
+        self._id = None
+        self._balance = 0
+        self._bankingAccount: BankingAccount = None
+        self._transactions: list[Transaction] = []
 
     @property
     def __str__(self):
         return str(self._id, self._balance)
 
     @property
+    def balance(self):
+        return self._balance
+
+    @property
     def bankingAccount(self):
-        return self._bankingAccount.id
+        return self._bankingAccount
 
     @bankingAccount.setter
     def bankingAccount(self, account):
@@ -47,7 +51,7 @@ class Wallet:
 
     def transfer_balance(self, amount: int):
         try: 
-            self.balance += self.bankingAccount.transfer_balance(amount)
+            self._balance += self.bankingAccount.transfer_balance(amount)
         except ValueError:
             print()
 
@@ -64,10 +68,10 @@ class BankingAccount:
 
     """
     def __init__(self):
-        self.id = 0
-        self.account_holer_name = ""
-        self.balance: int = 0
-        self.currency = ""
+        self._id = 0
+        self._account_holer_name = ""
+        self._balance: int = 0
+        self._currency = ""
     
     @property
     def id(self):
@@ -75,7 +79,7 @@ class BankingAccount:
 
     @id.setter
     def id(self, value):
-        self.id = value
+        self._id = value
 
     @property
     def balance(self):
@@ -96,14 +100,37 @@ class BankingAccount:
     def transfer_balance(self, amount: int) -> int:
         if amount < 0:
             raise ValueError("amount must be greater than zero")
-        elif amount > self.balance:
+        elif amount > self._balance:
             raise ValueError("Unsufficient account balance")
-        self.balance -= amount
+        self._balance -= amount
         return amount
 
     def add_balance(self, amount: int) -> int:
         if amount < 0:
             raise ValueError("amount must be greater than zero")
         else:
-            self.balance += amount
+            self._balance += amount
         return amount
+
+
+def test():
+    from user import User
+    from wallet import Wallet
+    user = User()
+    user.email = "hello@gbay.com"
+    user.username = "hello"
+    user.password = "plainstring"
+    user.ID = "1234"
+    user.wallet = Wallet()
+
+    bank_account = BankingAccount()
+    user.wallet.bankingAccount = bank_account
+
+    bank_account.add_balance(10000)
+    assert user.wallet.bankingAccount.balance == 10000
+
+    user._wallet.transfer_balance(5000)
+    assert user.wallet.bankingAccount.balance == 5000
+    assert user.balance == 5000
+
+test()
