@@ -54,8 +54,8 @@ class Transaction:
 
     @property
     def status(self) -> 'TransactionStatus':
-        return self.status.name
+        return self._status.name
 
     @status.setter
     def status(self, value: 'TransactionStatus'):
-        self.status = value
+        self._status = value
