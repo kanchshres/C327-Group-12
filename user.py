@@ -8,11 +8,11 @@ if TYPE_CHECKING:
 class User():
 
     def __init__(self):
-        self.ID = 0  # should be random unique int, change later
-        self.username = ""
-        self.email = ""   # should also be unique 
-        self.password = ""
-        self.wallet = None # user should add balance after account creation
+        self._ID = 0  # should be random unique int, change later
+        self._username = ""
+        self._email = ""   # should also be unique 
+        self._password = ""
+        self._wallet = None # user should add balance after account creation
 
     @property
     def ID(self):
