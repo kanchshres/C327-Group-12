@@ -21,12 +21,13 @@ class User():
     - review: All the reviews the user has created
     """
 
-    def __init__(self, id = 0, username: str = "", email: str = "", password: str = ""):
+    def __init__(self, id = 0, username: str = "",
+                 email: str = "", password: str = ""):
         self._id = id  # should be random unique int, change later
         self._username: str = username
         self._email: str = email   # should also be unique 
         self._password = password
-        self._wallet: Wallet = None # user should add wallet after account creation
+        self._wallet: Wallet = None # user adds wallet after account creation
         self._reviews: 'list[Review]' = []
 
     @property
