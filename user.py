@@ -79,6 +79,11 @@ class User():
     def wallet(self, wallet: 'Wallet'):
         self._wallet = wallet
 
+    def create_wallet(self) -> 'Wallet':
+        from wallet import Wallet
+        self._wallet = Wallet()
+        return self._wallet
+
     @property
     def balance(self):
         return self.wallet.balance

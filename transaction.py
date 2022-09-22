@@ -63,4 +63,3 @@ class Transaction:
     @status.setter
     def status(self, value: 'TransactionStatus'):
         self._status = value
-        

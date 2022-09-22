@@ -108,27 +108,3 @@ class BankingAccount:
         else:
             self._balance += amount
         return amount
-
-
-
-def test():
-    from user import User
-    from wallet import Wallet
-
-    bank_account = BankingAccount()
-    user = User()
-    user.email = "hello@gbay.com"
-    user.username = "hello"
-    user.password = "plainstring"
-    user.ID = "1234"
-    user.wallet = Wallet()
-    user.wallet.bankingAccount = bank_account
-
-    bank_account.add_balance(10000)
-    assert user.wallet.bankingAccount.balance == 10000
-
-    user._wallet.transfer_balance(5000)
-    assert user.wallet.bankingAccount.balance == 5000
-    assert user.balance == 5000
-
-test()

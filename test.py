@@ -4,7 +4,7 @@ from review import Review
 from user import User
 from listing import Listing
 from transaction import Transaction
-from wallet import Wallet
+from wallet import Wallet, BankingAccount
 
 class UnitTest(unittest.TestCase):
 
@@ -53,6 +53,21 @@ class UnitTest(unittest.TestCase):
 
         review.comment = "hello world"
         assert review.comment == "hello world"
+
+    def test_wallet_balance_transfer(self):
+        bank_account = BankingAccount()
+        user = User()
+        wallet = user.create_wallet()
+        user.wallet.bankingAccount = bank_account
+
+        bank_account.add_balance(10000)
+        assert user.wallet.bankingAccount.balance == 10000
+        assert user.wallet.balance == 0
+
+        user._wallet.transfer_balance(4000)
+        assert user.wallet.bankingAccount.balance == 6000
+        assert user.balance == 4000
+        assert wallet.balance == 4000
 
     def test_transaction(self):
         transact = Transaction()
@@ -105,4 +120,3 @@ class UnitTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-    print("done")
