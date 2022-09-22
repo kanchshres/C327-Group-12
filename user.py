@@ -21,8 +21,8 @@ class User():
     - review: All the reviews the user has created
     """
 
-    def __init__(self, id = 0, username: str = "",
-                 email: str = "", password: str = ""):
+    def __init__(self, id = 0, username: str = ""
+                ,email: str = "", password: str = ""):
         self._id = id  # should be random unique int, change later
         self._username: str = username
         self._email: str = email   # should also be unique 
@@ -88,11 +88,9 @@ class User():
         return self._reviews
 
     @reviews.setter
-    def reviews(self, reviews: list['Review']) -> list['Review']:
+    def reviews(self, reviews: 'list[Review]'):
         self._reviews = reviews
 
     def add_review(self, review: 'Review'):
-        from review import Review
-        if not isinstance(review, Review):
-            raise ValueError("Review must be type Review")
         self._reviews.append(review)
+ 
