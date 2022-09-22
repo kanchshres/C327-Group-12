@@ -1,12 +1,12 @@
 import unittest
 
+from review import Review
+from user import User
+from listing import Listing
+from transaction import Transaction
+from wallet import Wallet
 
 class UnitTest(unittest.TestCase):
-    from review import Review
-    from user import User
-    from listing import Listing
-    from transaction import Transaction
-    from wallet import Wallet
 
     def test_user(self):
         user = User()
