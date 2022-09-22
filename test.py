@@ -77,6 +77,48 @@ def test_transaction():
     assert transact.status == "IN_PROGRESS"
 
 
+def test_listing():
+    # Testing Initialization
+    obj = Listing()
+    print("Listing Info")
+    print("title: " + obj.title)
+    print("address: " + obj.address)
+    print("price: ", end = "")
+    print(obj.price)
+    print("description: " + obj.description)
+    print("Seller: ", end = "")
+    print(obj.seller.username)
+    print("Reviews: ", end = "")
+    print(obj.reviews)
+
+    
+    # Testing param maniupulation #
+    obj.title = "4 Bed 2 Bath"
+    obj.address = "Queen's University"
+    obj.price = 8000.57
+    obj._description = "Shittiest school to ever exist"
+    obj.seller.username = "bob"
+    r = []
+    r1 = Review()
+    r.append(r1)
+    obj.reviews = r
+    r2 = Review()
+    obj.add_review(r2)
+    
+
+    print("")
+    print("Listing Info")
+    print("title: " + obj.title)
+    print("address: " + obj.address)
+    print("price: $", end = "")
+    print(obj.price)
+    print("description: " + obj.description)
+    print("Seller: ", end = "")
+    print(obj.seller.username)
+    print("Reviews: ", end = "")
+    print(obj.reviews)
+
+
 
 
 test_user()
