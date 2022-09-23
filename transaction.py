@@ -16,7 +16,7 @@ class TransactionStatus(Enum):
     NEW_TRANSACTION = 'transactionNewTransaction'
 
 class Transaction:
-    """This is a transaction object that can be used to represent a transaction between two users.
+    """Object representation of a transaction between two users
     
     params:
     - ID: The transaction id.
