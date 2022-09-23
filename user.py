@@ -9,8 +9,7 @@ if TYPE_CHECKING:
 
 
 class User():
-    """ 
-    Object representation of a user's account
+    """ Object representation of a user's account
 
     params:
     - id: An UID of user's account
