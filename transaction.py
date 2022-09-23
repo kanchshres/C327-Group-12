@@ -9,10 +9,11 @@ if TYPE_CHECKING:
 
 @unique
 class TransactionStatus(Enum):
-    'IN_PROGRESS'
-    'DECLINED'
-    'CANCELLED'
-    'COMPLETED'
+    IN_PROGRESS = 'transactionInProgress'
+    DECLINED = 'transactionDeclined'
+    CANCELLED = 'transactionCancelled'
+    COMPLETED = 'transactionCompleted'
+    NEW_TRANSACTION = 'transactionNewTransaction'
 
 class Transaction:
     """
@@ -22,12 +23,12 @@ class Transaction:
     - **myID**: The transaction id.
     """
     def __init__(self):
-        self.id = None
-        self.payer: 'User' = None
-        self.payee: 'User' = None
-        self.amount: 'int' = 0
-        self.listing: 'Listing' = None
-        self.status: 'TransactionStatus' = None
+        self._id = None
+        self._payer: 'User' = None
+        self._payee: 'User' = None
+        self._amount: 'int' = 0
+        self._listing: 'Listing' = None
+        self._status: 'TransactionStatus' = TransactionStatus.NEW_TRANSACTION
     
     def __str__(self):
         return str(self._id)
@@ -62,4 +63,4 @@ class Transaction:
 
     @status.setter
     def status(self, value: 'TransactionStatus'):
-        self._status = value
+        self._status = TransactionStatus(value)

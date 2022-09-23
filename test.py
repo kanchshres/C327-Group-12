@@ -3,7 +3,7 @@ import unittest
 from review import Review
 from user import User
 from listing import Listing
-from transaction import Transaction
+from transaction import Transaction, TransactionStatus
 from wallet import Wallet, BankingAccount
 
 class UnitTest(unittest.TestCase):
@@ -91,8 +91,8 @@ class UnitTest(unittest.TestCase):
         assert transact.listing == test_listing
 
         
-        transact.status = "IN_PROGRESS"
-        assert transact.status == "IN_PROGRESS"
+        transact.status = "transactionInProgress"
+        assert transact.status == TransactionStatus.IN_PROGRESS
 
     def test_listing(self):
         # Testing Initialization
