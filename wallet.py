@@ -1,9 +1,10 @@
 #wallet.py
-from transaction import Transaction
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from transaction import Transaction
 
 class Wallet:
-    """
-    Object representation of a digital wallet.
+    """Object representation of a digital wallet.
     
     params:
     - id: An UID of the wallet
@@ -12,49 +13,47 @@ class Wallet:
     - transactions: A list of transactions associated with the wallet
     """
     def __init__(self):
-        self.id = None
-        self.balance = 0
-        self.bankingAccount: BankingAccount = None
-        self.transactions: list[Transaction] = []
+        self._id = None
+        self._balance: int = 0
+        self._bankingAccount: 'BankingAccount' = None
+        self._transactions: 'list[Transaction]' = []
 
     @property
     def __str__(self):
         return str(self._id, self._balance)
 
     @property
-    def bankingAccount(self):
-        return self._bankingAccount.id
+    def balance(self) -> int:
+        return self._balance
+
+    @property
+    def bankingAccount(self) -> 'BankingAccount':
+        return self._bankingAccount
 
     @bankingAccount.setter
-    def bankingAccount(self, account):
+    def bankingAccount(self, account: 'BankingAccount'):
         self._bankingAccount = account
 
     @property
-    def transactions(self) -> list[Transaction]:
+    def transactions(self) -> 'list[Transaction]':
         return self._transactions
 
     @transactions.setter
-    def transactions(self, values:list[int]):
-        if all(isinstance(i, list[Transaction]) for i in values):
-            self._transactions = values
-        else:
-            raise ValueError("values must be a list of Transaction objects")
+    def transactions(self, values: 'list[Transaction]'):
+        self._transactions = values
 
-    def add_transaction(self, transaction:Transaction):
-        if not isinstance(transaction, Transaction):
-            raise ValueError("transaction must be a Transaction object")
+    def add_transaction(self, transaction: 'Transaction'):
         self._transactions.append(transaction)
 
     def transfer_balance(self, amount: int):
-        try: 
-            self.balance += self.bankingAccount.transfer_balance(amount)
-        except ValueError:
-            print()
+        if amount < 0:
+            raise ValueError("Transfered amount cannot be negative")
+        
+        self._balance += self.bankingAccount.transfer_balance(amount)
 
 
 class BankingAccount:
-    """
-    Object representation of a Banking Account
+    """Object representation of a Banking Account
 
     params:
     id: the account number
@@ -64,10 +63,10 @@ class BankingAccount:
 
     """
     def __init__(self):
-        self.id = 0
-        self.account_holer_name = ""
-        self.balance: int = 0
-        self.currency = ""
+        self._id = 0
+        self._account_holer_name = ""
+        self._balance: int = 0
+        self._currency = ""
     
     @property
     def id(self):
@@ -75,14 +74,13 @@ class BankingAccount:
 
     @id.setter
     def id(self, value):
-        self.id = value
+        self._id = value
 
     @property
     def balance(self):
         return self._balance
     
-    """
-    Subtract balance from current account balance to a transaction
+    """Subtract balance from current account balance to a transaction
 
     params:
     amount: the amount to be transfered from the account
@@ -96,14 +94,14 @@ class BankingAccount:
     def transfer_balance(self, amount: int) -> int:
         if amount < 0:
             raise ValueError("amount must be greater than zero")
-        elif amount > self.balance:
+        elif amount > self._balance:
             raise ValueError("Unsufficient account balance")
-        self.balance -= amount
+        self._balance -= amount
         return amount
 
     def add_balance(self, amount: int) -> int:
         if amount < 0:
             raise ValueError("amount must be greater than zero")
         else:
-            self.balance += amount
+            self._balance += amount
         return amount
