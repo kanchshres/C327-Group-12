@@ -69,6 +69,15 @@ class UnitTest(unittest.TestCase):
         assert user.balance == 4000
         assert wallet.balance == 4000
 
+        with self.assertRaises(ValueError):
+            user.wallet.transfer_balance(-2000)
+        
+        with self.assertRaises(ValueError):
+            bank_account.add_balance(-2000)
+
+        assert user.balance == 4000
+        assert bank_account.balance == 6000
+
     def test_transaction(self):
         transact = Transaction()
         transact.id = 50
@@ -93,6 +102,23 @@ class UnitTest(unittest.TestCase):
         
         transact.status = "transactionInProgress"
         assert transact.status == TransactionStatus.IN_PROGRESS
+
+    def test_transaction_invalid_status(self):
+        transact = Transaction()
+        transact.status = TransactionStatus.COMPLETED
+        assert transact.status == TransactionStatus.COMPLETED
+
+        transact.status = "transactionCancelled"
+        assert transact.status == TransactionStatus.CANCELLED
+
+        with self.assertRaises(ValueError):
+            transact.status = "Value error"
+        
+        with self.assertRaises(TypeError):
+            transact.status = None
+
+        with self.assertRaises(TypeError):
+            transact.status = User()
 
     def test_listing(self):
         # Testing Initialization

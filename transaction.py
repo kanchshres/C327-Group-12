@@ -1,7 +1,7 @@
 #transaction.py
 from enum import Enum, unique
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 if TYPE_CHECKING:
     from user import User
     from listing import Listing
@@ -16,17 +16,21 @@ class TransactionStatus(Enum):
     NEW_TRANSACTION = 'transactionNewTransaction'
 
 class Transaction:
-    """
-    This is a transaction object that can be used to represent a transaction between two users.
+    """This is a transaction object that can be used to represent a transaction between two users.
     
     params:
-    - **myID**: The transaction id.
+    - ID: The transaction id.
+    - payer: Type User who is responsible for making the payment
+    - payee: Type User who is receiving the payemtn
+    - amount: The amount to be transfered
+    - listing: Type Listing as the subject of the transaction
+    - status: Type TransactionStatus()
     """
     def __init__(self):
         self._id = None
         self._payer: 'User' = None
         self._payee: 'User' = None
-        self._amount: 'int' = 0
+        self._amount: 'float' = 0
         self._listing: 'Listing' = None
         self._status: 'TransactionStatus' = TransactionStatus.NEW_TRANSACTION
     
@@ -62,5 +66,10 @@ class Transaction:
         return self._status
 
     @status.setter
-    def status(self, value: 'TransactionStatus'):
-        self._status = TransactionStatus(value)
+    def status(self, value: 'Union[str, TransactionStatus]'):
+        if isinstance(value, str):
+            self._status = TransactionStatus(value)
+        elif isinstance(value, TransactionStatus):
+            self._status = value
+        else:
+            raise TypeError("value must be member of enum TransactionStatus")

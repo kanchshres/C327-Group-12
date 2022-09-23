@@ -48,11 +48,8 @@ class Wallet:
     def transfer_balance(self, amount: int):
         if amount < 0:
             raise ValueError("Transfered amount cannot be negative")
-
-        try: 
-            self._balance += self.bankingAccount.transfer_balance(amount)
-        except ValueError:
-            print("")
+        
+        self._balance += self.bankingAccount.transfer_balance(amount)
 
 
 class BankingAccount:
