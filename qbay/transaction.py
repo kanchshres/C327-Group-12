@@ -22,8 +22,8 @@ class Transaction:
     params:
     - ID: The transaction id.
     - payer: Type User who is responsible for making the payment
-    - payee: Type User who is receiving the payemtn
-    - amount: The amount to be transfered
+    - payee: Type User who is receiving the payment
+    - amount: The amount to be transferred
     - listing: Type Listing as the subject of the transaction
     - status: Type TransactionStatus()
     """

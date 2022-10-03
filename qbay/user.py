@@ -20,13 +20,13 @@ class User():
     - review: All the reviews the user has created
     """
 
-    def __init__(self, id=0, username: str = "", 
+    def __init__(self, id=0, username: str = "",
                  email: str = "", password: str = "",
                  postal_code: str = "", billing_address: str = ""):
 
         self._id = id  # should be random unique int, change later
         self._username: str = username
-        self._email: str = email   # should also be unique 
+        self._email: str = email   # should also be unique
         self._password = password
         self._postal_code = postal_code
         self._billing_address = billing_address
@@ -35,7 +35,7 @@ class User():
 
     def __repr__(self):
         return '<User %r>' % self.username
-        
+
     @property
     def id(self):
         return self._id
@@ -43,11 +43,11 @@ class User():
     @id.setter
     def id(self, id):
         self._id = id
-    
+
     @property
     def username(self) -> str:
         return self._username
-    
+
     @username.setter
     def username(self, username: str):
         self._username = username
@@ -60,20 +60,19 @@ class User():
     def email(self, email: str):
         # Check if email is valid
         regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+'
-                            '@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+'
-                          )
-        
+                           '@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
+
         if (re.fullmatch(regex, email)):
             self._email = email
         else:
             raise ValueError("Not a valid email address.")
-            
+
     @property
     def password(self) -> str:
         return self._password
 
     @password.setter
-    def password(self, password: str): 
+    def password(self, password: str):
         self._password = password
 
     @property

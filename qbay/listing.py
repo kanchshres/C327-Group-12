@@ -7,14 +7,14 @@ from review import Review
 class Listing:
     """Object representation of a digital Listing
 
-	params:
+    params:
     - title: Title of listing (string)
     - address: The location of the listing (string)
     - price: The cost of renting the listing (float)
     - seller: The User associated with the listing (User)
     - description: A short description (string)
     - reviews: A list of reviews associates with the listing (list[Review])
-	"""
+    """
     def __init__(self):
         self._title = ""
         self._address = ""
