@@ -1,7 +1,8 @@
-#wallet.py
+# wallet.py
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from transaction import Transaction
+
 
 class Wallet:
     """Object representation of a digital wallet.
@@ -83,19 +84,20 @@ class BankingAccount:
     """Subtract balance from current account balance to a transaction
 
     params:
-    amount: the amount to be transfered from the account
+    amount: the amount to be transferred from the account
 
     Raises:
-        ValueError: When current balance is less than the required balance or if the ammount transfer is less than 0
+        ValueError: When current balance is less than the required balance or 
+                    if the amount transfer is less than 0
 
     Returns:
-        amount (int): the transfered amount
+        amount (int): the transferred amount
     """
     def transfer_balance(self, amount: int) -> int:
         if amount < 0:
             raise ValueError("amount must be greater than zero")
         elif amount > self._balance:
-            raise ValueError("Unsufficient account balance")
+            raise ValueError("Insufficient account balance")
         self._balance -= amount
         return amount
 

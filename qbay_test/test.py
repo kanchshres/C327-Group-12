@@ -1,10 +1,11 @@
 import unittest
 
-from review import Review
-from user import User
-from listing import Listing
-from transaction import Transaction, TransactionStatus
-from wallet import Wallet, BankingAccount
+from qbay.review import Review
+from qbay.user import User
+from qbay.listing import Listing
+from qbay.transaction import Transaction, TransactionStatus
+from qbay.wallet import Wallet, BankingAccount
+
 
 class UnitTest(unittest.TestCase):
 
@@ -87,7 +88,6 @@ class UnitTest(unittest.TestCase):
         transact.payer = test_user
         assert transact.payer == test_user
 
-
         test_user_2 = User()
         transact.payee = test_user_2
         assert transact.payee == test_user_2
@@ -99,7 +99,6 @@ class UnitTest(unittest.TestCase):
         transact.listing = test_listing
         assert transact.listing == test_listing
 
-        
         transact.status = "transactionInProgress"
         assert transact.status == TransactionStatus.IN_PROGRESS
 

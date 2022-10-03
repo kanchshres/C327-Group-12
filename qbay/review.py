@@ -1,9 +1,10 @@
-#review.py
+# review.py
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from user import User
     from listing import Listing
+
 
 class Review():
     """A review object that represents a review posted by a guest

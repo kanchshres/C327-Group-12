@@ -1,4 +1,4 @@
-#transaction.py
+# transaction.py
 from enum import Enum, unique
 
 from typing import TYPE_CHECKING, Union
@@ -14,6 +14,7 @@ class TransactionStatus(Enum):
     CANCELLED = 'transactionCancelled'
     COMPLETED = 'transactionCompleted'
     NEW_TRANSACTION = 'transactionNewTransaction'
+
 
 class Transaction:
     """Object representation of a transaction between two users
