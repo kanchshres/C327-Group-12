@@ -84,7 +84,7 @@ class User():
         self._wallet = wallet
 
     def create_wallet(self) -> 'Wallet':
-        from wallet import Wallet
+        from qbay.wallet import Wallet
         self._wallet = Wallet()
         return self._wallet
 
