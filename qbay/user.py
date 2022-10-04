@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING
 import re
 
 if TYPE_CHECKING:
-    from wallet import Wallet
-    from review import Review
+    from qbay.wallet import Wallet
+    from qbay.review import Review
 
 
 class User():

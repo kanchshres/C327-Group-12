@@ -3,8 +3,8 @@ from enum import Enum, unique
 
 from typing import TYPE_CHECKING, Union
 if TYPE_CHECKING:
-    from user import User
-    from listing import Listing
+    from qbay.user import User
+    from qbay.listing import Listing
 
 
 @unique

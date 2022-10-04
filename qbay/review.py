@@ -2,8 +2,8 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from user import User
-    from listing import Listing
+    from qbay.user import User
+    from qbay.listing import Listing
 
 
 class Review():
