@@ -37,7 +37,11 @@ class Listing(db.Model):
         return f'<Listing {self.title}>'
 
 class Review(db.Model):
-    id = 0
+    id = db.Column(db.Integer(), primary_key=True)
+    user_id = db.Column(db.Integer(), nullable=False)
+    listing_id = db.Column(db.Integer(), nullable=False)
+    review_text = db.Column(db.String(5000), nullable=True)
+    date = db.Column(db.String(20), nullable=True)
     
 class Booking(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
