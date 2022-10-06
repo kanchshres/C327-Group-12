@@ -158,6 +158,7 @@ def valid_email(email):
         return False
     return True
 
+
 def valid_password(password):
     """ Check if given password follows requirements R1-2 and R1-4
     R1-1: Password is not empty.
@@ -182,6 +183,7 @@ def valid_password(password):
     if not (any(not c.isalnum() for c in password)):
         return False
     return True
+
 
 def register(name, email, password):
     """ Register a new user
