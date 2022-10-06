@@ -45,4 +45,3 @@ class Booking(db.Model):
     listing_id = db.Column(db.Integer(), nullable=False)
     price = db.Column(db.Float(precision=2, asdecimal=True), nullable=False)
     last_modified_date = db.Column(db.String(20), nullable=True)
-
