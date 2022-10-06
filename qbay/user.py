@@ -2,10 +2,12 @@
 from ast import Str
 from typing import TYPE_CHECKING
 import re
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 
 if TYPE_CHECKING:
-    from qbay.wallet import Wallet
-    from qbay.review import Review
+    from .wallet import Wallet
+    from .review import Review
 
 
 class User():
@@ -50,7 +52,11 @@ class User():
 
     @username.setter
     def username(self, username: str):
-        self._username = username
+        regex = re.compile(r"^[A-Za-z]*( [A-Za-z]*)*")
+        if (2 < len(username) < 20) and re.fullmatch(regex, username):
+            self._username = username
+        else:
+            raise ValueError("Invalid username: %r" % username)
 
     @property
     def email(self) -> str:
@@ -102,3 +108,6 @@ class User():
 
     def add_review(self, review: 'Review'):
         self._reviews.append(review)
+
+    def update_username(self, username):
+        self.username = username

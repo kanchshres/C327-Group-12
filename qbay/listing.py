@@ -1,7 +1,7 @@
 # listing.py
 from enum import Enum, unique
-from qbay.user import User
-from qbay.review import Review
+from .user import User
+from .review import Review
 
 
 class Listing:

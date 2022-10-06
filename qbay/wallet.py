@@ -1,7 +1,7 @@
 # wallet.py
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from qbay.transaction import Transaction
+    from .transaction import Transaction
 
 
 class Wallet:

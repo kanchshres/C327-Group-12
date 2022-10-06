@@ -1,2 +1,2 @@
-from qbay import *
+from .user import User
 # from qbay.models import *
