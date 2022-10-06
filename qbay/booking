@@ -67,6 +67,3 @@ class Booking:
     def date(self, value):
         self._date = value
         
-    def add_to_database(self):
-        database.Booking(self)
-        
