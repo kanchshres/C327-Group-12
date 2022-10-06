@@ -8,11 +8,6 @@ if TYPE_CHECKING:
     from qbay.review import Review
 
 
-"""
-This file defines the User profile class
-"""
-
-
 class User():
     """ Object representation of a user's account
 
@@ -119,33 +114,65 @@ class User():
     def billing_address(self, bill_addr: str):
         self._billing_address = bill_addr
 
-    
-def register(name, email, password):
-    """ Register a new user
 
-    params:
-        name (string):     user name
-        email (string):    user email
-        password (string): user password
+def valid_username(name):
+    """ Checks to see if given username follows requirements R1-5 and R1-6
+    R1-5: Username cannot be empty, have spaces as a prefix or suffix, and 
+          can only consist of alphanumeric characters.
+    R1-6: Username must be between 2 and 20 characters in length.
     
-    Raises:
-        ValueError: When any requirements are not met
+    params:
+        name (string): user name
 
     Returns:
-        True if registration succeeded, otherwise False
+        True if user name is valid, False if not
     """
-
-    # R1-1: Email and Password cannot be empty
-    if email == "" or password == "":
+    if name == "":
         return False
-        
-    # R1-3: Valid email addr-spec
+    if name[0] == " " or name[-1] == " ":
+        return False
+    if any(not (c.isalnum() or c == " ") for c in name):
+        return False
+    if not (2 < len(name) < 20):
+        return False
+    return True
+
+
+def valid_email(email):
+    """ Checks to see if email follows requirements R1-1 and R1-3
+    R1-1: Email is not empty.
+    R1-3: Email follows addr-spec from RFC 5322.
+    
+    params:
+        email (string): user email
+    
+    Returns:
+        True if email is valid, False if not
+    """
+    if email == "":
+        return False
+
     regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+'
                        '@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
     if not (re.fullmatch(regex, email)):
         return False
+    return True
 
-    # R1-4: Password complexity requirements
+def valid_password(password):
+    """ Check if given password follows requirements R1-2 and R1-4
+    R1-1: Password is not empty.
+    R1-4: Password cannot be shorter than 6 characters, and requires at least 
+          one upper case, lower case, and special character.
+    
+    params:
+        password (string): user password
+        
+    Returns:
+        True if password is valid, False if not
+    """
+
+    if password == "":
+        return False
     if len(password) < 6:
         return False
     if not (any(c.isupper() for c in password)):
@@ -154,22 +181,37 @@ def register(name, email, password):
         return False
     if not (any(not c.isalnum() for c in password)):
         return False
+    return True
+
+def register(name, email, password):
+    """ Register a new user
+
+    params:
+        name (string):     user name
+        email (string):    user email
+        password (string): user password
+    
+    Returns:
+        True if registration succeeded, otherwise False
+    """
+
+    # R1-1: Email cannot be empty
+    # R1-3: Valid email addr-spec
+    if not valid_email(email):
+        return False
+
+    # R1-1: Password cannot be empty
+    # R1-4: Password complexity requirements
+    if not valid_password(password):
+        return False
 
     # R1-5: Username specific requirements
-    if name == "":
-        return False
-    if name[0] == " " or name[-1] == " ":
-        return False
-    if any(not (c.isalnum() or c == " ") for c in name):
-        return False
-    
     # R1-6: Username length requirements
-    if not (2 < len(name) < 20):
+    if not valid_username(name):
         return False
     
     # R1-7: Email cannot be previously used
     # need database for rest
-
     # existed = User.query.filter_by(email=email).all()
     # if len(existed) > 0:
     #     return False

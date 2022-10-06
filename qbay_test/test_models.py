@@ -189,11 +189,11 @@ def test_r1_4_user_register():
     Password meets required complexity.
     """
 
-    assert register("u02", "test2@test.com", "Onetwo!") is True
+    assert register("u02", "test2@test.com", "One23!") is True
     assert register("u03", "test3@test.com", "One2!") is False
     assert register("u03", "test3@test.com", "onetwo!") is False
     assert register("u03", "test3@test.com", "ONETWO!") is False
-    assert register("u03", "test3@test.com", "ONETWO") is False
+    assert register("u03", "test3@test.com", "Onetwo") is False
 
 
 def test_r1_5_user_register():
@@ -216,9 +216,11 @@ def test_r1_6_user_register():
     """
 
     assert register("u05", "test5@test.com", "Onetwo!") is True
-    assert register("u6", "test6@test.com", "Onetwo!") is False
-    assert register("u06ThisUsernameWillNotWork",
-                    "test6@test.com", "Onetwo!") is False
+    assert register("u06ThisUsernameWork",
+                    "test6@test.com", "Onetwo!") is True
+    assert register("u07ThisUsernameWillNotWork",
+                    "test7@test.com", "Onetwo!") is False
+    assert register("u7", "test7@test.com", "Onetwo!") is False
 
 # need database to check existing emails
 # def test_r1_7_user_register():
@@ -226,8 +228,8 @@ def test_r1_6_user_register():
 #     If email has been used, operation failed.
 #     """
 
-#     assert register("u06", "test6@test.com", "Onetwo!") is True
-#     assert register("u07", "test6@test.com", "Onetwo!") is False
+#     assert register("u07", "test7@test.com", "Onetwo!") is True
+#     assert register("u08", "test7@test.com", "Onetwo!") is False
 
 # need database for rest
 # def test_r1_8_user_register():
