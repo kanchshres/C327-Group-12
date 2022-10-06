@@ -148,6 +148,7 @@ class UnitTest(unittest.TestCase):
         assert obj.seller.username == "bob"
         assert obj.reviews == [r1, r2]
 
+
 def test_r1_1_user_register():
     """ Testing R1-1:
     Email and password cannot be empty.
@@ -169,6 +170,7 @@ def test_r1_1_user_register():
 #     uuid_obj = UUID(user.id, version=4)
 #     assert str(uuid_obj) == user.id     
 
+
 def test_r1_3_user_register():
     """ Testing R1-3:
     Email has to follow addr-spec defined in RFC 5322.
@@ -181,6 +183,7 @@ def test_r1_3_user_register():
     assert register("u02", "testing", "Onetwo!") is False
     assert register("u02", "(Jon Test) test2@test.com", "Onetwo!") is False
 
+
 def test_r1_4_user_register():
     """ Testing R1-4:
     Password meets required complexity.
@@ -191,6 +194,7 @@ def test_r1_4_user_register():
     assert register("u03", "test3@test.com", "onetwo!") is False
     assert register("u03", "test3@test.com", "ONETWO!") is False
     assert register("u03", "test3@test.com", "ONETWO") is False
+
 
 def test_r1_5_user_register():
     """ Testing R1-5:
@@ -204,6 +208,7 @@ def test_r1_5_user_register():
     assert register("u05!", "test5@test.com", "Onetwo!") is False
     assert register("u05 ", "test5@test.com", "Onetwo!") is False
     assert register(" u05", "test5@test.com", "Onetwo!") is False
+
 
 def test_r1_6_user_register():
     """ Testing R1-6:
