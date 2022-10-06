@@ -37,6 +37,8 @@ class UnitTest(unittest.TestCase):
         test_rev = Review()
         user.add_review(test_rev)
         assert user.reviews[0] == test_rev
+        
+        user.add_to_database()
 
     def test_review(self):
         review = Review()

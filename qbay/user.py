@@ -5,6 +5,8 @@ import re
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
+from qbay import database, wallet
+
 if TYPE_CHECKING:
     from .wallet import Wallet
     from .review import Review
@@ -38,7 +40,25 @@ class User():
         self._reviews: 'list[Review]' = []
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return f'<User {self.username}>'
+
+    def add_to_database(self):
+        user = database.User(username=self.username
+                    , email=self.email
+                    , password=self.password
+                    , wallet=self.wallet.id
+                    , postal_code=self.postal_code
+                    , billing_address=self.billing_address)
+        self.id = user.id
+        print(self._id)
+    
+    def update_username(self, username) -> bool:
+        try:
+            self.username = username
+        except ValueError as e:
+            print(e)
+            return False
+            
 
     @property
     def id(self):
