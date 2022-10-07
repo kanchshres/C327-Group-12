@@ -156,7 +156,8 @@ def test_r1_1_user_register():
 
     assert register("u00", "test0@test.com", "Onetwo!") is True
     assert register("u01", "", "Onetwo!") is False
-    assert register("u02", "test2@test.com", "") is False
+    assert register("u01", "test1@test.com", "") is False
+    assert register("u01", "", "") is False
 
 # need login function + database
 # def test_r1_2_user_register():

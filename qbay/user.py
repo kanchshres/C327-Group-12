@@ -28,7 +28,7 @@ class User():
 
         self._id = id  # should be random unique int, change later
         self._username: str = username
-        self._email: str = email   # should also be unique
+        self._email: str = email
         self._password = password
         self._postal_code = postal_code
         self._billing_address = billing_address
@@ -149,9 +149,6 @@ def valid_email(email):
     Returns:
         True if email is valid, False if not
     """
-    if email == "":
-        return False
-
     regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+'
                        '@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
     if not (re.fullmatch(regex, email)):
@@ -171,7 +168,6 @@ def valid_password(password):
     Returns:
         True if password is valid, False if not
     """
-
     if password == "":
         return False
     if len(password) < 6:
@@ -186,7 +182,8 @@ def valid_password(password):
 
 
 def register(name, email, password):
-    """ Register a new user
+    """ Register a user and initialize a profile for them if all requirements
+    are met.
 
     params:
         name (string):     user name
@@ -196,36 +193,22 @@ def register(name, email, password):
     Returns:
         True if registration succeeded, otherwise False
     """
-
-    # R1-1: Email cannot be empty
-    # R1-3: Valid email addr-spec
-    if not valid_email(email):
+    # Validate parameters
+    if (not valid_email(email)):
+        return False
+    if (not valid_password(password)):
+        return False
+    if (not valid_username(name)):
         return False
 
-    # R1-1: Password cannot be empty
-    # R1-4: Password complexity requirements
-    if not valid_password(password):
-        return False
-
-    # R1-5: Username specific requirements
-    # R1-6: Username length requirements
-    if not valid_username(name):
-        return False
-    
-    # R1-7: Email cannot be previously used
     # need database for rest
     # existed = User.query.filter_by(email=email).all()
     # if len(existed) > 0:
     #     return False
     # user = User(username=name, email=email, password=password)
     
-    # R1-2: User is identified by unique ID
     # user.id = 
 
-    # R1-8: Billing address is empty
-    # R1-9: Postal code is empty
-
-    # R1-10: Balance is 100 at initialization
     # user.wallet.balance = 100
 
     # # add it to current database session
