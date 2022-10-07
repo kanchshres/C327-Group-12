@@ -145,20 +145,20 @@ class UnitTest(unittest.TestCase):
         assert obj._description == "Shittiest school to ever exist"
         assert obj.seller.username == "bob"
         assert obj.reviews == [r1, r2]
-    
+
     def test_user_database(self):
         user = User("testUser", "user@example.ca", "password123")
         user.add_to_database()
         assert user.id == 1
-        
+
         user2 = User("testUser2", "user@example.ca2", "password123")
         user2.add_to_database()
         assert user2.id == 2
-        
+
         with self.assertRaises(exc.IntegrityError):
             user.add_to_database()
-        
-        user3= User("testUser2", "user@example.ca2", "password123")
+
+        user3 = User("testUser2", "user@example.ca2", "password123")
         with self.assertRaises(exc.DatabaseError):
             user3.add_to_database()
 
@@ -183,7 +183,6 @@ class UnitTest(unittest.TestCase):
     #     uuid_obj = UUID(user.id, version=4)
     #     assert str(uuid_obj) == user.id
 
-
     def test_r1_3_user_register(self):
         """ Testing R1-3:
         Email has to follow addr-spec defined in RFC 5322.
@@ -196,7 +195,6 @@ class UnitTest(unittest.TestCase):
         assert register("u02", "testing", "Onetwo!") is False
         assert register("u02", "(Jon Test) test2@test.com", "Onetwo!") is False
 
-
     def test_r1_4_user_register(self):
         """ Testing R1-4:
         Password meets required complexity.
@@ -207,7 +205,6 @@ class UnitTest(unittest.TestCase):
         assert register("u03", "test3@test.com", "onetwo!") is False
         assert register("u03", "test3@test.com", "ONETWO!") is False
         assert register("u03", "test3@test.com", "Onetwo") is False
-
 
     def test_r1_5_user_register(self):
         """ Testing R1-5:
@@ -221,7 +218,6 @@ class UnitTest(unittest.TestCase):
         assert register("u05!", "test5@test.com", "Onetwo!") is False
         assert register("u05 ", "test5@test.com", "Onetwo!") is False
         assert register(" u05", "test5@test.com", "Onetwo!") is False
-
 
     def test_r1_6_user_register(self):
         """ Testing R1-6:
