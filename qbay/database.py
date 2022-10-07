@@ -87,8 +87,3 @@ class Transaction(db.Model):
 
     def __repr__(self) -> str:
         return f'<Transaction {self.id}>'
-
-
-def add_to_database(object):
-    with app.app_context():
-        db.session.add(object)
