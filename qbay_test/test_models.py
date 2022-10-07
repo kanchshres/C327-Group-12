@@ -183,19 +183,22 @@ def test_r5_1_update_listing():
     assert obj.reviews == old_reviews.append(r1)
 
     # test that changing the seller should not work
-    old_seller_id = obj.seller_id
-    obj.udpate_seller(123)
-    obj.seller = User()
+    old_seller = obj.seller
+    obj.udpate_seller(User())  # attempt 1: shouldn't work
+    obj.seller = User()  # attempt 2: shouldn't work
     assert obj.seller_id == old_seller_id
 
     # test that changing last_modified_date should not work
     old_last_date_modified = obj.last_date_modified
+    # trying to call the update function shouldn't work since it 
+    # doesn't exist
     obj.update_last_date_modified(datetime.now())
+    # trying to update the attribute directly also shouldn't work, 
+    # since it's private
     obj.last_date_modified = datetime.now()
     assert obj.last_date_modified == old_last_date_modified
 
     
-
 def test_r5_2_update_listing():
     """ Testing R5-2:
     Price can be only increased but cannot be decreased.
@@ -219,6 +222,7 @@ def test_r5_2_update_listing():
     # test that price does not change, as there is no change
     obj.update_price(8200)
     assert obj.price == 8200
+
 
 def test_r5_3_update_listing():
     """ Testing R5-3:
@@ -295,6 +299,7 @@ def test_r5_3_update_listing():
     margin = datetime.timedelta(milliseconds=100)
     assert now - margin <= obj.last_modified_date <= now + margin
 
+
 def test_r5_4_update_listing():
     """ Testing R5-4:
     When updating an attribute, one has to make sure that it follows 
@@ -303,6 +308,7 @@ def test_r5_4_update_listing():
     # Copy and modify test cases for R4-1 through R4-8.
     # Modify so updating instead of creating.
     # Waiting on completion create listing test cases.
+
 
 if __name__ == "__main__":
     unittest.main()

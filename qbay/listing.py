@@ -1,8 +1,9 @@
 # listing.py
 from enum import Enum, unique
-#from qbay.user import User
-#from qbay.review import Review
+# from qbay.user import User
+# from qbay.review import Review
 from datetime import date
+from datetime import datetime
 
 
 class Listing:
@@ -35,7 +36,6 @@ class Listing:
         self._address: str = address
         self._reviews: list[Review] = []
 
-
     # Required
     """Fetches title of digital Listing"""
     @property
@@ -47,6 +47,7 @@ class Listing:
     def title(self, title):
         if (valid_title(title)):
             self._title = title
+            self.last_modified_date = datetime.now()
             return True
         return False
 
@@ -60,6 +61,7 @@ class Listing:
     def description(self, description, title):
         if (valid_description(description, title)):
             self._description = description
+            self.last_modified_date = datetime.now()
             return True
         return False
 
@@ -73,6 +75,7 @@ class Listing:
     def price(self, price):
         if (valid_price(price)):
             self._price = price
+            self.last_modified_date = datetime.now()
             return True
         return False
 
@@ -83,9 +86,10 @@ class Listing:
 
     """Updates last modification date of digital listing"""
     @date.setter
-    def date(self, mod_date):
+    def __date(self, mod_date):
         if (valid_date(mod_date)):
             self._date = mod_date
+            self.last_modified_date = datetime.now()
             return True
         return False
 
@@ -96,12 +100,12 @@ class Listing:
 
     """Sets owner of digital Listing"""
     @seller.setter
-    def seller(self, owner):
+    def __seller(self, owner):
         if (valid_seller(owner)):
             self._seller = owner
+            self.last_modified_date = datetime.now()
             return True
         return False
-
 
     # Extra
     """Fetches address of Listing"""
@@ -113,6 +117,7 @@ class Listing:
     @address.setter
     def address(self, location):
         self._address = location
+        self.last_modified_date = datetime.now()
     
     """Fetches reviews of Listing"""
     @property
@@ -123,25 +128,44 @@ class Listing:
     @reviews.setter
     def reviews(self, comments: 'list[Review]'):
         self._reviews = comments
+        self.last_modified_date = datetime.now()
     
     """Add reviews to listing"""
     def add_review(self, review: 'Review'):
         self._reviews.append(review)
+        # note: adding a review will currently not update the 
+        # last_modified_date, since it's not modifying the actual post
+
+    def update_title(self, new_title):
+        self.title = new_title
+
+    def update_address(self, new_address):
+        self.address = new_address
+
+    def update_price(self, new_price):
+        if new_price < self.price:
+            raise ValueError("new price cannot be decreased from" + 
+                             "previous price")
+
+        self.price = new_price
+
+    def update_description(self, new_description):
+        self.description = new_description
 
 
-"""Create a new listing - return true of succssfull and false otherwise"""
 def create_listing(title, description, price, mod_date, owner):
+    """Create a new listing - return true of succssfull and false otherwise"""
     if (valid_title(title) and valid_description(description, title) and
         valid_price(price) and valid_date(mod_date) and
-        valid_seller (owner)):
+            valid_seller(owner)):
         listing = Listing(title, description, price, mod_date, owner)
         # Commit to database as well
         return True
     return False
 
 
-"""Determine if a given title is valid """
 def valid_title(title):
+    """Determine if a given title is valid """
     validation_status = False
 
     # Validate title has maximum 80 characters and prefix/suffix of not 'space'
@@ -161,7 +185,7 @@ def valid_title(title):
                 valid_char = True
 
             # Check if c is a valid character
-            if (valid_char == False):
+            if not valid_char:
                 passed = False
                 break
         
@@ -171,23 +195,23 @@ def valid_title(title):
     return validation_status
 
 
-"""Determine if a given description is valid"""
 def valid_description(description, title):
+    """Determine if a given description is valid"""
     if ((19 < len(description)) and (len(description) < 2001)):
         if (len(title) < len(description)):
             return True
     return False
 
 
-"""Determine if a given price is valid"""
 def valid_price(price):
+    """Determine if a given price is valid"""
     if (10.00 <= price) and (price <= 10000.00):
         return True
     return False
 
 
-"""Determine if a given last modification date is valid"""
 def valid_date(mod_date):
+    """Determine if a given last modification date is valid"""
     min_date = date(2021, 1, 2)
     max_date = date(2025, 1, 2)
     if (min_date < mod_date) and (mod_date < max_date):
@@ -195,8 +219,8 @@ def valid_date(mod_date):
     return False
 
 
-"""Determine if a given owner is valid"""
 def valid_seller(owner):
+    """Determine if a given owner is valid"""
     if (owner.email != ""):
         # Also need to check of owner is in database
         return True
