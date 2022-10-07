@@ -1,4 +1,4 @@
-# transaction.py
+# booking.py
 from enum import Enum, unique
 
 from typing import TYPE_CHECKING, Union

@@ -13,7 +13,7 @@ class TransactionStatus(Enum):
     DECLINED = 'transactionDeclined'
     CANCELLED = 'transactionCancelled'
     COMPLETED = 'transactionCompleted'
-    NEW_TRANSACTION = 'transactionNewTransaction'
+    NEW_TRANSACTION: Literal['TransactionStatus.NEW_TRANSACTION'] = 'transactionNewTransaction'
 
 
 class Transaction:

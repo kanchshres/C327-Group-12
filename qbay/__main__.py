@@ -1,2 +1,4 @@
-from qbay.user import User
-# from qbay.models import *
+from qbay import *
+
+if __name__ == '__main__':
+    print("This is main")

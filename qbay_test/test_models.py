@@ -18,9 +18,6 @@ class UnitTest(unittest.TestCase):
     def test_user(self):
         user = User()
 
-        user.id = 10
-        assert user.id == 10
-
         user.username = "KanchShres"
         assert user.username == "KanchShres"
 
@@ -39,15 +36,16 @@ class UnitTest(unittest.TestCase):
         assert user.reviews[0] == test_rev
         
         user.add_to_database()
-
+        
+        
     def test_review(self):
         review = Review()
 
         review.id = 1
         assert review.id == 1
 
-        review.date_posted = "September 21, 2022"
-        assert review.date_posted == "September 21, 2022"
+        review.date_posted = "2022-09-21"
+        assert review.date_posted == "2022-09-21"
 
         test_user = User()
         review.posting_user = test_user

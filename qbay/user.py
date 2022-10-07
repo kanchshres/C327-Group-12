@@ -5,7 +5,8 @@ import re
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
-from qbay import database, wallet
+from qbay import database
+from qbay.database import User
 
 if TYPE_CHECKING:
     from .wallet import Wallet
@@ -26,11 +27,11 @@ class User():
     - review: All the reviews the user has created
     """
 
-    def __init__(self, id=0, username: str = "",
+    def __init__(self, username: str = "",
                  email: str = "", password: str = "",
                  postal_code: str = "", billing_address: str = ""):
 
-        self._id = id  # should be random unique int, change later
+        self._id = -1  # should be random unique int, change later
         self._username: str = username
         self._email: str = email   # should also be unique
         self._password = password
@@ -44,13 +45,12 @@ class User():
 
     def add_to_database(self):
         user = database.User(username=self.username
-                    , email=self.email
-                    , password=self.password
-                    , wallet=self.wallet.id
-                    , postal_code=self.postal_code
-                    , billing_address=self.billing_address)
-        self.id = user.id
-        print(self._id)
+                                , email=self.email
+                                , password=self.password
+                                , wallet=self.wallet.id
+                                , postal_code=self.postal_code
+                                , billing_address=self.billing_address)
+        self._id = user.id
     
     def update_username(self, username) -> bool:
         try:
@@ -63,10 +63,6 @@ class User():
     @property
     def id(self):
         return self._id
-
-    @id.setter
-    def id(self, id):
-        self._id = id
 
     @property
     def username(self) -> str:
