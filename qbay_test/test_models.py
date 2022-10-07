@@ -180,22 +180,36 @@ def test_r5_1_update_listing():
     old_reviews = obj.reviews
     r1 = Review()
     obj.add_review(r1)
-    assert obj.reviews == old_reviews.append(r1)
+    old_reviews.append(r1)
+    assert obj.reviews == old_reviews
 
     # test that changing the seller should not work
     old_seller = obj.seller
-    obj.udpate_seller(User())  # attempt 1: shouldn't work
-    obj.seller = User()  # attempt 2: shouldn't work
-    assert obj.seller_id == old_seller_id
+    try:
+        obj.udpate_seller(User())  # attempt 1: shouldn't work
+    except AttributeError:
+        pass
+    try:
+        obj.seller = User()  # attempt 2: shouldn't work
+    except AttributeError:
+        pass
+
+    assert obj.seller == old_seller
 
     # test that changing last_modified_date should not work
     old_last_date_modified = obj.last_date_modified
     # trying to call the update function shouldn't work since it 
     # doesn't exist
-    obj.update_last_date_modified(datetime.now())
+    try:
+        obj.update_last_date_modified(datetime.now())
+    except AttributeError:
+        pass
     # trying to update the attribute directly also shouldn't work, 
     # since it's private
-    obj.last_date_modified = datetime.now()
+    try:
+        obj.last_date_modified = datetime.now()
+    except AttributeError:
+        pass
     assert obj.last_date_modified == old_last_date_modified
 
     

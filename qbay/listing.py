@@ -32,6 +32,7 @@ class Listing:
         self._price = price
         self._date = mod_date
         self._seller = owner
+        self._last_mod_datetime = datetime.now()
 
         # Extra
         self._address: str = address
@@ -91,6 +92,17 @@ class Listing:
         if (valid_date(mod_date)):
             self._date = mod_date
             self.last_modified_date = datetime.now()
+            return True
+        return False
+
+    @property
+    def last_mod_datetime(self):
+        return self._last_mod_datetime
+
+    @last_mod_datetime.setter
+    def __last_mod_datetime(self, datetime):
+        if (valid_date(datetime)):
+            self._last_mod_datetime = datetime
             return True
         return False
 
