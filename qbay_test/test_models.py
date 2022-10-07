@@ -143,5 +143,89 @@ class UnitTest(unittest.TestCase):
         assert obj.reviews == [r1, r2]
 
 
+def test_r5_1_update_listing():
+    """ Testing R5-1:
+    One can update all attributes of the listing, except 
+    owner_id and last_modified_date.
+    """
+    # Initialize Listing
+    obj = Listing()
+    obj.title = "4 Bed 2 Bath"
+    obj.address = "Queen's University"
+    obj.price = 8000.57
+    obj._description = "Shittiest school to ever exist"
+    obj.seller.username = "bob"
+
+    reviews = []
+    r1 = Review()
+    reviews.append(r1)
+    obj.reviews = reviews
+    r2 = Review()
+    obj.add_review(r2)
+
+    # test if changing the title works
+    obj.update_title("different title")
+    assert obj.title == "different title"
+
+    # test if chaning the address works
+    obj.update_address("different address")
+    assert obj.address == "different address"
+
+    # test if changing the price works (not testing R5-3 yet)
+    obj.update_price(8100)
+    assert obj.price == 8100
+
+    obj.update_description("different description")
+    assert obj.description == "different description"
+
+    old_seller_id = obj.seller_id
+    obj.udpate_seller_id(123)
+    assert obj.seller_id == old_seller_id
+
+    old_reviews = obj.reviews
+    r1 = Review()
+    obj.add_review(r1)
+    assert obj.reviews == old_reviews.append(r1)
+
+    
+
+
+def test_r5_2_update_listing():
+    """ Testing R5-2:
+    Price can be only increased but cannot be decreased.
+    """
+    # Initialize listing
+    obj = Listing()
+
+    # make sure price does not change, as change is invalid
+    obj.update_price(8100)
+    obj.update_price(1500)
+    assert obj.price == 8100
+
+    # make sure price does change, as change is valid
+    obj.update_price(8200)
+    assert obj.price == 8200
+
+def test_r5_3_update_listing():
+    """ Testing R5-3:
+    last_modified_date should be updated when the update operation 
+    is successful.
+    """
+    # Initialize listing
+    obj = Listing()
+
+    old_last_modified_date = obj.last_modified_date
+    obj.update_description("new description")
+    assert obj.last_modified_date > old_last_modified_date
+
+def test_r5_4_update_listing():
+    """ Testing R5-4:
+    When updating an attribute, one has to make sure that it follows 
+    the same requirements as above. Mainly the subsections of R4.
+    """
+    # Copy and modify test cases for R4-1 through R4-8.
+    # Modify so updating instead of creating.
+    # Waiting on completion create listing test cases.
+
 if __name__ == "__main__":
     unittest.main()
