@@ -24,22 +24,17 @@ class Listing:
     """ Initialize digital Listing"""
     def __init__(self, title, description, price, mod_date, owner, 
                  address: str = ""):
+        # Required
+        self._title = title
+        self._description = description
+        self._price = price
+        self._date = mod_date
+        self._seller = owner
+
         # Extra
         self._address: str = address
         self._reviews: list[Review] = []
 
-        # Validate that all parameters are acceptable
-        if (valid_title(title) and valid_description(description, title) and
-            valid_price(price) and valid_date(mod_date) and
-            valid_seller (owner)):
-            self._title = title
-            self._description = description
-            self._price = price
-            self._date = mod_date
-            self._seller = owner
-            return True
-
-        return False
 
     # Required
     """Fetches title of digital Listing"""
@@ -78,6 +73,19 @@ class Listing:
     def price(self, price):
         if (valid_price(price)):
             self._price = price
+            return True
+        return False
+
+    """Fetches last modification date of digital listing"""
+    @property
+    def date(self):
+        return self._date
+
+    """Updates last modification date of digital listing"""
+    @date.setter
+    def date(self, mod_date):
+        if (valid_date(mod_date)):
+            self._date = mod_date
             return True
         return False
 
@@ -121,7 +129,18 @@ class Listing:
         self._reviews.append(review)
 
 
-""" Determine if a given title is valid """
+"""Create a new listing - return true of succssfull and false otherwise"""
+def create_listing(title, description, price, mod_date, owner):
+    if (valid_title(title) and valid_description(description, title) and
+        valid_price(price) and valid_date(mod_date) and
+        valid_seller (owner)):
+        listing = Listing(title, description, price, mod_date, owner)
+        # Commit to database as well
+        return True
+    return False
+
+
+"""Determine if a given title is valid """
 def valid_title(title):
     validation_status = False
 
