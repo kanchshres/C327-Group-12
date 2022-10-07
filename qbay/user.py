@@ -1,11 +1,18 @@
 # user.py
 from ast import Str
+import sys
 from typing import TYPE_CHECKING
 import re
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import exc
+
+from qbay import database, wallet
+from qbay.database import db
 
 if TYPE_CHECKING:
-    from qbay.wallet import Wallet
-    from qbay.review import Review
+    from .wallet import Wallet
+    from .review import Review
 
 
 class User():
@@ -22,11 +29,11 @@ class User():
     - review: All the reviews the user has created
     """
 
-    def __init__(self, id=0, username: str = "",
+    def __init__(self, username: str = "",
                  email: str = "", password: str = "",
                  postal_code: str = "", billing_address: str = ""):
 
-        self._id = id  # should be random unique int, change later
+        self._id = -1  # should be random unique int, change later
         self._username: str = username
         self._email: str = email
         self._password = password
@@ -36,15 +43,37 @@ class User():
         self._reviews: 'list[Review]' = []
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return f'<User {self.username}>'
+
+    def add_to_database(self):
+        user = database.User(username=self.username,
+                             email=self.email,
+                             password=self.password,
+                             wallet=self.wallet or None,
+                             postal_code=self.postal_code,
+                             billing_address=self.billing_address)
+        with database.app.app_context():
+            db.session.add(user)
+            db.session.commit()
+            self._id = user.id
+        # try:
+        #     db.session.add(user)
+        #     db.session.commit()
+        #     self._id = user.id
+        #     return self.id
+        # except exc.IntegrityError as e:
+        #     print(f'Object exists in database, error: {e}', file=sys.stderr)
+
+    def update_username(self, username) -> bool:
+        try:
+            self.username = username
+        except ValueError as e:
+            print(e)
+            return False
 
     @property
     def id(self):
         return self._id
-
-    @id.setter
-    def id(self, id):
-        self._id = id
 
     @property
     def username(self) -> str:
@@ -52,7 +81,11 @@ class User():
 
     @username.setter
     def username(self, username: str):
-        self._username = username
+        regex = re.compile(r"^[A-Za-z]*( [A-Za-z]*)*")
+        if (2 < len(username) < 20) and re.fullmatch(regex, username):
+            self._username = username
+        else:
+            raise ValueError("Invalid username: %r" % username)
 
     @property
     def email(self) -> str:
@@ -97,11 +130,11 @@ class User():
 
     def add_review(self, review: 'Review'):
         self._reviews.append(review)
-    
+
     @property
     def postal_code(self):
         return self._postal_code
-    
+
     @postal_code.setter
     def postal_code(self, pos_code: str):
         self._postal_code = pos_code
@@ -109,7 +142,7 @@ class User():
     @property
     def billing_address(self):
         return self._billing_address
-    
+
     @billing_address.setter
     def billing_address(self, bill_addr: str):
         self._billing_address = bill_addr
@@ -120,7 +153,7 @@ def valid_username(name):
     R1-5: Username cannot be empty, have spaces as a prefix or suffix, and 
           can only consist of alphanumeric characters.
     R1-6: Username must be between 2 and 20 characters in length.
-    
+
     params:
         name (string): user name
 
@@ -142,10 +175,10 @@ def valid_email(email):
     """ Checks to see if email follows requirements R1-1 and R1-3
     R1-1: Email is not empty.
     R1-3: Email follows addr-spec from RFC 5322.
-    
+
     params:
         email (string): user email
-    
+
     Returns:
         True if email is valid, False if not
     """
@@ -161,10 +194,10 @@ def valid_password(password):
     R1-1: Password is not empty.
     R1-4: Password cannot be shorter than 6 characters, and requires at least 
           one upper case, lower case, and special character.
-    
+
     params:
         password (string): user password
-        
+
     Returns:
         True if password is valid, False if not
     """
@@ -189,7 +222,7 @@ def register(name, email, password):
         name (string):     user name
         email (string):    user email
         password (string): user password
-    
+
     Returns:
         True if registration succeeded, otherwise False
     """
