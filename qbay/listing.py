@@ -59,8 +59,8 @@ class Listing:
 
     """Sets title for digital Listing"""
     @description.setter
-    def description(self, description, title):
-        if (valid_description(description, title)):
+    def description(self, description):
+        if (valid_description(description, self.title)):
             self._description = description
             self.last_modified_date = datetime.now()
             return True
