@@ -1,6 +1,6 @@
 # listing.py
 from enum import Enum, unique
-# from qbay.user import User
+from qbay.user import User
 # from qbay.review import Review
 from datetime import date
 from datetime import datetime
@@ -23,8 +23,9 @@ class Listing:
     """
 
     """ Initialize digital Listing"""
-    def __init__(self, title, description, price, mod_date, owner, 
-                 address: str = ""):
+    def __init__(self, title: str = "", description: str = "", 
+                 price: float = 0.0, mod_date = datetime.now(), 
+                 owner = User(), address: str = ""):
         # Required
         self._title = title
         self._description = description
