@@ -157,7 +157,7 @@ class Listing:
 
     def update_price(self, new_price):
         if new_price < self.price:
-            raise ValueError("new price cannot be decreased from" + 
+            raise ValueError("new price cannot be decreased from " + 
                              "previous price")
 
         self.price = new_price
