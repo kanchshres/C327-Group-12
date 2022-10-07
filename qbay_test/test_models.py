@@ -34,10 +34,9 @@ class UnitTest(unittest.TestCase):
         test_rev = Review()
         user.add_review(test_rev)
         assert user.reviews[0] == test_rev
-        
+
         user.add_to_database()
-        
-        
+
     def test_review(self):
         review = Review()
 
@@ -78,7 +77,7 @@ class UnitTest(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             user.wallet.transfer_balance(-2000)
-        
+
         with self.assertRaises(ValueError):
             bank_account.add_balance(-2000)
 
@@ -100,7 +99,7 @@ class UnitTest(unittest.TestCase):
 
         transact.amount = 50
         assert transact.amount == 50
-        
+
         test_listing = Listing()
         transact.listing = test_listing
         assert transact.listing == test_listing
@@ -118,7 +117,7 @@ class UnitTest(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             transact.status = "Value error"
-        
+
         with self.assertRaises(TypeError):
             transact.status = None
 
@@ -140,7 +139,7 @@ class UnitTest(unittest.TestCase):
         obj.reviews = r
         r2 = Review()
         obj.add_review(r2)
-        
+
         assert obj.title == "4 Bed 2 Bath"
         assert obj.price == 8000.57
         assert obj.address == "Queen's University"
@@ -168,7 +167,7 @@ def test_r1_1_user_register():
 #     assert user is not None
 #     # might have to change later
 #     uuid_obj = UUID(user.id, version=4)
-#     assert str(uuid_obj) == user.id     
+#     assert str(uuid_obj) == user.id
 
 
 def test_r1_3_user_register():

@@ -44,21 +44,20 @@ class User():
         return f'<User {self.username}>'
 
     def add_to_database(self):
-        user = database.User(username=self.username
-                                , email=self.email
-                                , password=self.password
-                                , wallet=self.wallet.id
-                                , postal_code=self.postal_code
-                                , billing_address=self.billing_address)
+        user = database.User(username=self.username,
+                             email=self.email,
+                             password=self.password,
+                             wallet=self.wallet.id,
+                             postal_code=self.postal_code,
+                             billing_address=self.billing_address)
         self._id = user.id
-    
+
     def update_username(self, username) -> bool:
         try:
             self.username = username
         except ValueError as e:
             print(e)
             return False
-            
 
     @property
     def id(self):
@@ -119,11 +118,11 @@ class User():
 
     def add_review(self, review: 'Review'):
         self._reviews.append(review)
-    
+
     @property
     def postal_code(self):
         return self._postal_code
-    
+
     @postal_code.setter
     def postal_code(self, pos_code: str):
         self._postal_code = pos_code
@@ -131,7 +130,7 @@ class User():
     @property
     def billing_address(self):
         return self._billing_address
-    
+
     @billing_address.setter
     def billing_address(self, bill_addr: str):
         self._billing_address = bill_addr
@@ -142,7 +141,7 @@ def valid_username(name):
     R1-5: Username cannot be empty, have spaces as a prefix or suffix, and 
           can only consist of alphanumeric characters.
     R1-6: Username must be between 2 and 20 characters in length.
-    
+
     params:
         name (string): user name
 
@@ -164,10 +163,10 @@ def valid_email(email):
     """ Checks to see if email follows requirements R1-1 and R1-3
     R1-1: Email is not empty.
     R1-3: Email follows addr-spec from RFC 5322.
-    
+
     params:
         email (string): user email
-    
+
     Returns:
         True if email is valid, False if not
     """
@@ -186,10 +185,10 @@ def valid_password(password):
     R1-1: Password is not empty.
     R1-4: Password cannot be shorter than 6 characters, and requires at least 
           one upper case, lower case, and special character.
-    
+
     params:
         password (string): user password
-        
+
     Returns:
         True if password is valid, False if not
     """
@@ -214,7 +213,7 @@ def register(name, email, password):
         name (string):     user name
         email (string):    user email
         password (string): user password
-    
+
     Returns:
         True if registration succeeded, otherwise False
     """
@@ -233,16 +232,16 @@ def register(name, email, password):
     # R1-6: Username length requirements
     if not valid_username(name):
         return False
-    
+
     # R1-7: Email cannot be previously used
     # need database for rest
     # existed = User.query.filter_by(email=email).all()
     # if len(existed) > 0:
     #     return False
     # user = User(username=name, email=email, password=password)
-    
+
     # R1-2: User is identified by unique ID
-    # user.id = 
+    # user.id =
 
     # R1-8: Billing address is empty
     # R1-9: Postal code is empty
