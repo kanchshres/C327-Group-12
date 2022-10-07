@@ -120,6 +120,7 @@ class UnitTest(unittest.TestCase):
             transact.status = User()
 
     def test_listing(self):
+        """Sprint 1 Testing"""
         # Testing Initialization
         obj = Listing()
         # Testing param manipulation #
@@ -141,6 +142,83 @@ class UnitTest(unittest.TestCase):
         assert obj._description == "Shittiest school to ever exist"
         assert obj.seller.username == "bob"
         assert obj.reviews == [r1, r2]
+        """Sprint 1 Testing"""
+
+        """Sprint 2 Testing"""
+        # Testing Titles
+        print("TESTING TITLES")
+        t1 = ""
+        i = 0
+        while (i < 80):
+            t1 = t1 + "a"
+            i = i + 1
+        t2 = " 4 bed 2 bath"
+        t3 = "4 bed 2 bath "
+        t4 = ""
+        i = 0
+        while (i < 81):
+            t4 = t4 + "a"
+            i = i + 1
+        t5 = "4 bed 2 bath?"
+        print(t1, valid_title(t1))
+        print(t2, valid_title(t2))
+        print(t3, valid_title(t3))
+        print(t4, valid_title(t4))
+        print(t5, valid_title(t5))
+        print()
+        # True, False, False, False, False
+
+        # Testing Descriptions
+        print("TESTING DESCRIPTIONS")
+        t0 = "qwertyuiopqwertyui"
+        des1 = ""
+        i = 0
+        while (i < 2000):
+            des1 = des1 + "a"
+            i = i + 1
+        des2 = "qwertyuiopqwertyuiop"
+        des3 = "qwertyuiopqwertyu"
+        des4 = ""
+        i = 0
+        while (i < 2001):
+            des4 = des4 + "a"
+            i = i + 1
+        print(des1, valid_description(des1, t0))
+        print(des2, valid_description(des2, t0))
+        print(des3, valid_description(des3, t0))
+        print(des4, valid_description(des4, t0))
+        print()
+        # True, True, False, False
+
+        # Testing Prices
+        print("TESTING PRICES")
+        p1 = 9.999999
+        p2 = 10
+        p3 = 10000
+        p4 = 10000.001
+        print(p1, valid_price(p1))
+        print(p2, valid_price(p2))
+        print(p3, valid_price(p3))
+        print(p4, valid_price(p4))
+        print()
+        # False, True, True, False
+
+        # Testing Dates
+        print("TESING DATES")
+        d1 = date(2021, 1, 2)
+        d2 = date(2021, 1, 3)
+        d3 = date(2025, 1, 1)
+        d4 = date(2025, 1, 2)
+        print(d1, valid_date(d1))
+        print(d2, valid_date(d2))
+        print(d3, valid_date(d3))
+        print(d4, valid_date(d4))
+        print()
+        # False, True, True, False
+
+        # Testing Ownership
+        # Insert tests here
+        """Sprint 2 Testing"""
 
 
 if __name__ == "__main__":

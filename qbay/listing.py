@@ -1,7 +1,7 @@
 # listing.py
 from enum import Enum, unique
-#from qbay.user import User
-#from qbay.review import Review
+from qbay.user import User
+from qbay.review import Review
 from datetime import date
 
 
@@ -33,7 +33,7 @@ class Listing:
 
         # Extra
         self._address: str = address
-        self._reviews: list[Review] = []
+        #self._reviews: list[Review] = []
 
 
     # Required
@@ -115,18 +115,24 @@ class Listing:
         self._address = location
     
     """Fetches reviews of Listing"""
+    """
     @property
     def reviews(self) -> 'list[Review]':
         return self._reviews
+    """
     
     """Sets reviews of Listing"""
+    """
     @reviews.setter
     def reviews(self, comments: 'list[Review]'):
         self._reviews = comments
+    """
     
     """Add reviews to listing"""
+    """
     def add_review(self, review: 'Review'):
         self._reviews.append(review)
+    """
 
 
 """Create a new listing - return true of succssfull and false otherwise"""
@@ -181,7 +187,7 @@ def valid_description(description, title):
 
 """Determine if a given price is valid"""
 def valid_price(price):
-    if (10.00 <= price) and (price <= 10000.00):
+    if (10.00 <= price <= 10000.00):
         return True
     return False
 
