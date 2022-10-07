@@ -5,7 +5,7 @@ from qbay.user import User
 from qbay.listing import Listing
 from qbay.transaction import Transaction, TransactionStatus
 from qbay.wallet import Wallet, BankingAccount
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class UnitTest(unittest.TestCase):
@@ -217,8 +217,13 @@ def test_r5_2_update_listing():
     """ Testing R5-2:
     Price can be only increased but cannot be decreased.
     """
-    # Initialize listing
-    obj = Listing()
+    # Initialize Listing
+    title = "4 Bed 2 Bath"
+    address = "Queen's University"
+    price = 8000.57
+    description = "Shittiest school to ever exist"
+    seller = User()
+    obj = Listing(title, description, price, seller, address)
 
     # test that price does not change, as change is invalid
     obj.update_price(8100)
@@ -249,19 +254,24 @@ def test_r5_3_update_listing():
     last_modified_date should be updated when the update operation 
     is successful.
     """
-    # Initialize listing
-    obj = Listing()
+    # Initialize Listing
+    title = "4 Bed 2 Bath"
+    address = "Queen's University"
+    price = 8000.57
+    description = "Shittiest school to ever exist"
+    seller = User()
+    obj = Listing(title, description, price, seller, address)
 
     # test that update_title also updates last_modified_date
     old_last_modified_date = obj.last_mod_datetime
     obj.update_title("new title")
     # test that updated last_modified_date is later than 
     # last_modified_date before title was updated
-    assert obj.last_mod_datetime > old_last_modified_date
+    assert obj.last_mod_datetime >= old_last_modified_date
     # test that new last_modified_date is close enough to the current
     # time (margin accounts for execution time)
     now = datetime.now()
-    margin = datetime.timedelta(milliseconds=100)
+    margin = timedelta(milliseconds=100)
     assert now - margin <= obj.last_mod_datetime <= now + margin
 
     # test that update_address also updates last_modified_date
@@ -269,11 +279,11 @@ def test_r5_3_update_listing():
     obj.update_address("new address")
     # test that updated last_modified_date is later than 
     # last_modified_date before address was updated
-    assert obj.last_mod_datetime > old_last_modified_date
+    assert obj.last_mod_datetime >= old_last_modified_date
     # test that new last_modified_date is close enough to the current
     # time (margin accounts for execution time)
     now = datetime.now()
-    margin = datetime.timedelta(milliseconds=100)
+    margin = timedelta(milliseconds=100)
     assert now - margin <= obj.last_mod_datetime <= now + margin
 
     # test that update_price also updates last_modified_date
@@ -281,11 +291,11 @@ def test_r5_3_update_listing():
     obj.update_price(8500)
     # test that updated last_modified_date is later than 
     # last_modified_date before price was updated
-    assert obj.last_mod_datetime > old_last_modified_date
+    assert obj.last_mod_datetime >= old_last_modified_date
     # test that new last_modified_date is close enough to the current
     # time (margin accounts for execution time)
     now = datetime.now()
-    margin = datetime.timedelta(milliseconds=100)
+    margin = timedelta(milliseconds=100)
     assert now - margin <= obj.last_mod_datetime <= now + margin
 
     # test that if update_price failes, last_modified_date is not 
@@ -300,11 +310,11 @@ def test_r5_3_update_listing():
     obj.update_description("new description")
     # test that updated last_modified_date is later than 
     # last_modified_date before description was updated
-    assert obj.last_mod_datetime > old_last_modified_date
+    assert obj.last_mod_datetime >= old_last_modified_date
     # test that new last_modified_date is close enough to the current
     # time (margin accounts for execution time)
     now = datetime.now()
-    margin = datetime.timedelta(milliseconds=100)
+    margin = timedelta(milliseconds=100)
     assert now - margin <= obj.last_mod_datetime <= now + margin
 
     # test that add_review also updates last_modified_date
@@ -312,11 +322,11 @@ def test_r5_3_update_listing():
     obj.update_price(8500)
     # test that updated last_modified_date is later than 
     # last_modified_date before price was updated
-    assert obj.last_mod_datetime > old_last_modified_date
+    assert obj.last_mod_datetime >= old_last_modified_date
     # test that new last_modified_date is close enough to the current
     # time (margin accounts for execution time)
     now = datetime.now()
-    margin = datetime.timedelta(milliseconds=100)
+    margin = timedelta(milliseconds=100)
     assert now - margin <= obj.last_mod_datetime <= now + margin
 
 

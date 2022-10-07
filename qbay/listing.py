@@ -16,7 +16,7 @@ class Listing:
     - price: The cost of renting the listing (float)
     - date: The last modification date (date)
     - seller: The User associated with the listing (User)
-
+    
     EXTRA
     - address: The location of the listing (string)
     - reviews: A list of reviews associates with the listing (list[Review])
@@ -24,8 +24,8 @@ class Listing:
 
     """ Initialize digital Listing"""
     def __init__(self, title: str = "", description: str = "", 
-                 price: float = 0.0, mod_date = datetime.now(), 
-                 owner = User(), address: str = ""):
+                 price: float = 0.0, mod_date=datetime.now(), 
+                 owner=User(), address: str = ""):
         # Required
         self._title = title
         self._description = description
@@ -150,12 +150,18 @@ class Listing:
         # last_modified_date, since it's not modifying the actual post
 
     def update_title(self, new_title):
+        """Updates the title attribute."""
         self.title = new_title
 
     def update_address(self, new_address):
+        """Updates the address attribute"""
         self.address = new_address
 
     def update_price(self, new_price):
+        """Updates the price attribute.
+
+        raise ValueError if price has decreased from the previous price
+        """
         if new_price < self.price:
             raise ValueError("new price cannot be decreased from " + 
                              "previous price")
@@ -163,6 +169,7 @@ class Listing:
         self.price = new_price
 
     def update_description(self, new_description):
+        """Update description attribute."""
         self.description = new_description
 
 
