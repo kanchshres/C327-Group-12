@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from sqlalchemy.sql import func
 
+import datetime
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -86,3 +87,8 @@ class Transaction(db.Model):
 
     def __repr__(self) -> str:
         return f'<Transaction {self.id}>'
+
+
+def add_to_database(object):
+    with app.app_context():
+        db.session.add(object)

@@ -1,12 +1,14 @@
 # user.py
 from ast import Str
+from sqlalchemy import exc
+import sys
 from typing import TYPE_CHECKING
 import re
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
-from qbay import database
-from qbay.database import User
+from qbay import database, wallet
+from qbay.database import db
 
 if TYPE_CHECKING:
     from .wallet import Wallet
@@ -45,12 +47,22 @@ class User():
 
     def add_to_database(self):
         user = database.User(username=self.username,
-                             email=self.email,
-                             password=self.password,
-                             wallet=self.wallet.id,
-                             postal_code=self.postal_code,
-                             billing_address=self.billing_address)
-        self._id = user.id
+                                   email=self.email,
+                                   password=self.password,
+                                   wallet=self.wallet or None,
+                                   postal_code=self.postal_code,
+                                   billing_address=self.billing_address)
+        with database.app.app_context():
+            db.session.add(user)
+            db.session.commit()
+            self._id = user.id
+            # try:
+            #     db.session.add(user)
+            #     db.session.commit()
+            #     self._id = user.id
+            #     return self.id
+            # except exc.IntegrityError as e:
+            #     print(f'Object exists in database, error: {e}', file=sys.stderr)
 
     def update_username(self, username) -> bool:
         try:

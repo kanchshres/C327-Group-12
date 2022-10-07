@@ -1,6 +1,7 @@
 import unittest
+from sqlalchemy import exc
 from qbay.user import register  # login
-from uuid import UUID
+from qbay.database import add_to_database
 from qbay.review import Review
 from qbay.user import User
 from qbay.listing import Listing
@@ -34,8 +35,6 @@ class UnitTest(unittest.TestCase):
         test_rev = Review()
         user.add_review(test_rev)
         assert user.reviews[0] == test_rev
-
-        user.add_to_database()
 
     def test_review(self):
         review = Review()
@@ -146,80 +145,95 @@ class UnitTest(unittest.TestCase):
         assert obj._description == "Shittiest school to ever exist"
         assert obj.seller.username == "bob"
         assert obj.reviews == [r1, r2]
+    
+    def test_user_database(self):
+        user = User("testUser", "user@example.ca", "password123")
+        user.add_to_database()
+        assert user.id == 1
+        
+        user2 = User("testUser2", "user@example.ca2", "password123")
+        user2.add_to_database()
+        assert user2.id == 2
+        
+        with self.assertRaises(exc.IntegrityError):
+            user.add_to_database()
+        
+        user3= User("testUser2", "user@example.ca2", "password123")
+        with self.assertRaises(exc.DatabaseError):
+            user3.add_to_database()
+
+    def test_r1_1_user_register(self):
+        """ Testing R1-1:
+        Email and password cannot be empty.
+        """
+
+        assert register("u00", "test0@test.com", "Onetwo!") is True
+        assert register("u01", "", "Onetwo!") is False
+        assert register("u02", "test2@test.com", "") is False
+
+    # need login function + database
+    # def test_r1_2_user_register():
+    #     """ Testing R1-2:
+    #     User is uniquely identified by their user id.
+    #     """
+
+    #     user = login("test0@test.com", "Onetwo!")
+    #     assert user is not None
+    #     # might have to change later
+    #     uuid_obj = UUID(user.id, version=4)
+    #     assert str(uuid_obj) == user.id
 
 
-def test_r1_1_user_register():
-    """ Testing R1-1:
-    Email and password cannot be empty.
-    """
+    def test_r1_3_user_register(self):
+        """ Testing R1-3:
+        Email has to follow addr-spec defined in RFC 5322.
+        """
 
-    assert register("u00", "test0@test.com", "Onetwo!") is True
-    assert register("u01", "", "Onetwo!") is False
-    assert register("u02", "test2@test.com", "") is False
-
-# need login function + database
-# def test_r1_2_user_register():
-#     """ Testing R1-2:
-#     User is uniquely identified by their user id.
-#     """
-
-#     user = login("test0@test.com", "Onetwo!")
-#     assert user is not None
-#     # might have to change later
-#     uuid_obj = UUID(user.id, version=4)
-#     assert str(uuid_obj) == user.id
+        assert register("u01", "test.1@test.com", "Onetwo!") is True
+        assert register("u02", "test2@test", "Onetwo!") is False
+        assert register("u02", "test2@.com", "Onetwo!") is False
+        assert register("u02", "@test.com", "Onetwo!") is False
+        assert register("u02", "testing", "Onetwo!") is False
+        assert register("u02", "(Jon Test) test2@test.com", "Onetwo!") is False
 
 
-def test_r1_3_user_register():
-    """ Testing R1-3:
-    Email has to follow addr-spec defined in RFC 5322.
-    """
+    def test_r1_4_user_register(self):
+        """ Testing R1-4:
+        Password meets required complexity.
+        """
 
-    assert register("u01", "test.1@test.com", "Onetwo!") is True
-    assert register("u02", "test2@test", "Onetwo!") is False
-    assert register("u02", "test2@.com", "Onetwo!") is False
-    assert register("u02", "@test.com", "Onetwo!") is False
-    assert register("u02", "testing", "Onetwo!") is False
-    assert register("u02", "(Jon Test) test2@test.com", "Onetwo!") is False
-
-
-def test_r1_4_user_register():
-    """ Testing R1-4:
-    Password meets required complexity.
-    """
-
-    assert register("u02", "test2@test.com", "One23!") is True
-    assert register("u03", "test3@test.com", "One2!") is False
-    assert register("u03", "test3@test.com", "onetwo!") is False
-    assert register("u03", "test3@test.com", "ONETWO!") is False
-    assert register("u03", "test3@test.com", "Onetwo") is False
+        assert register("u02", "test2@test.com", "One23!") is True
+        assert register("u03", "test3@test.com", "One2!") is False
+        assert register("u03", "test3@test.com", "onetwo!") is False
+        assert register("u03", "test3@test.com", "ONETWO!") is False
+        assert register("u03", "test3@test.com", "Onetwo") is False
 
 
-def test_r1_5_user_register():
-    """ Testing R1-5:
-    User name is non-empty, alphanumeric-only, and spaces are allowed
-    only if it is not as the prefix or suffix.
-    """
+    def test_r1_5_user_register(self):
+        """ Testing R1-5:
+        User name is non-empty, alphanumeric-only, and spaces are allowed
+        only if it is not as the prefix or suffix.
+        """
 
-    assert register("u03", "test3@test.com", "Onetwo!") is True
-    assert register("User 04", "test4@test.com", "Onetwo!") is True
-    assert register("", "test5@test.com", "Onetwo!") is False
-    assert register("u05!", "test5@test.com", "Onetwo!") is False
-    assert register("u05 ", "test5@test.com", "Onetwo!") is False
-    assert register(" u05", "test5@test.com", "Onetwo!") is False
+        assert register("u03", "test3@test.com", "Onetwo!") is True
+        assert register("User 04", "test4@test.com", "Onetwo!") is True
+        assert register("", "test5@test.com", "Onetwo!") is False
+        assert register("u05!", "test5@test.com", "Onetwo!") is False
+        assert register("u05 ", "test5@test.com", "Onetwo!") is False
+        assert register(" u05", "test5@test.com", "Onetwo!") is False
 
 
-def test_r1_6_user_register():
-    """ Testing R1-6:
-    User name length is longer 2 and less than 20 characters.
-    """
+    def test_r1_6_user_register(self):
+        """ Testing R1-6:
+        User name length is longer 2 and less than 20 characters.
+        """
 
-    assert register("u05", "test5@test.com", "Onetwo!") is True
-    assert register("u06ThisUsernameWork",
-                    "test6@test.com", "Onetwo!") is True
-    assert register("u07ThisUsernameWillNotWork",
-                    "test7@test.com", "Onetwo!") is False
-    assert register("u7", "test7@test.com", "Onetwo!") is False
+        assert register("u05", "test5@test.com", "Onetwo!") is True
+        assert register("u06ThisUsernameWork",
+                        "test6@test.com", "Onetwo!") is True
+        assert register("u07ThisUsernameWillNotWork",
+                        "test7@test.com", "Onetwo!") is False
+        assert register("u7", "test7@test.com", "Onetwo!") is False
 
 # need database to check existing emails
 # def test_r1_7_user_register():
