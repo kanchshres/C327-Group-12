@@ -268,5 +268,46 @@ class UnitTest(unittest.TestCase):
 #     assert user.balance == 100
 
 
+def test_r2_1():
+    """Test if user can log in using her/his email address and the 
+    password.
+
+    Note:
+    User.login will return 0 if login success
+    User.login will return 1 if login failure due to invalid username 
+                                                            or password
+    User.login will return 2 if login failure due to incorrect 
+                                                   username or password
+    """
+    User.register("Bob", "bob@gmail.com", "Password123!")
+    User.register("Fred", "fred@gmail.com", "Password321!")
+
+    assert User.login("Bob", "Password123!") == 0
+    assert User.login("Fred", "Password321!") == 0
+    assert User.login("Bob", "IncorrectPassword123!") == 2
+    assert User.login("Fred", "Password123!") == 2
+
+
+def test_r2_2():
+    """Test that the login function should check if the supplied 
+    inputs meet the same email/password requirements as above, before 
+    checking the database.
+
+    Note:
+    User.login will return 0 if login success
+    User.login will return 1 if login failure due to invalid username 
+                                                            or password
+    User.login will return 2 if login failure due to incorrect 
+                                                   username or password
+    """
+    User.register("Bob", "bob@gmail.com", "Password123!")
+
+    assert User.login("Bob", "Password123!") == 0
+
+    assert User.login("b", "Password123!") == 1
+    assert User.login("Bob", "psw") == 1
+    assert User.login("b", "psw") == 1
+
+
 if __name__ == "__main__":
     unittest.main()
