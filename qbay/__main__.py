@@ -1,2 +1,4 @@
 from qbay import *
-# from qbay.models import *
+
+if __name__ == '__main__':
+    print("This is main")

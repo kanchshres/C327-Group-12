@@ -14,7 +14,7 @@ class Wallet:
     - transactions: A list of transactions associated with the wallet
     """
     def __init__(self):
-        self._id = None
+        self._id = -1
         self._balance: int = 0
         self._bankingAccount: 'BankingAccount' = None
         self._transactions: 'list[Transaction]' = []
@@ -22,6 +22,10 @@ class Wallet:
     @property
     def __str__(self):
         return str(self._id, self._balance)
+
+    @property
+    def id(self) -> int:
+        return self._id
 
     @property
     def balance(self) -> int:
@@ -64,7 +68,7 @@ class BankingAccount:
 
     """
     def __init__(self):
-        self._id = 0
+        self._id = -1
         self._account_holer_name = ""
         self._balance: int = 0
         self._currency = ""
