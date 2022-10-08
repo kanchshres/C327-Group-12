@@ -277,7 +277,7 @@ def test_r2_1():
     User.login will return 1 if login failure due to invalid username 
                                                             or password
     User.login will return 2 if login failure due to incorrect 
-                                                   username or password
+                                                username or password
     """
     User.register("Bob", "bob@gmail.com", "Password123!")
     User.register("Fred", "fred@gmail.com", "Password321!")

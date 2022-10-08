@@ -268,3 +268,25 @@ class User():
         # db.session.commit()
 
         return True
+
+    @staticmethod
+    def login(username, password):
+        """Logs user in if correct corresponding username and password
+
+        Note: other than returning if login was successful or not, 
+        logging in doesn't yet give the user any additional features or
+        permissions.
+
+        Returns 0 for login success
+        Returns 1 for login failure due to invalid username or password
+        Returns 2 for login failure due to incorrect username or 
+                                                password (non-matching)
+        """
+        if not (User.valid_username(username) and User.valid_password(password)):
+            return 1
+
+        for i in db.session.execute(db.select(users).filter(db.users.username == username)).all():
+            if i.password == password:
+                # login
+                return 0
+        return 2
