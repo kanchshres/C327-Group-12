@@ -123,6 +123,30 @@ class UnitTest(unittest.TestCase):
             transact.status = User()
 
     def test_listing(self):
+        """Sprint 1 Testing"""
+        # Testing Initialization
+        obj = Listing()
+        # Testing param manipulation #
+        obj.title = "4 Bed 2 Bath"
+        obj.address = "Queen's University"
+        obj.price = 8000.57
+        obj._description = "Shittiest school to ever exist"
+        obj.seller.username = "bob"
+        r = []
+        r1 = Review()
+        r.append(r1)
+        obj.reviews = r
+        r2 = Review()
+        obj.add_review(r2)
+        
+        assert obj.title == "4 Bed 2 Bath"
+        assert obj.price == 8000.57
+        assert obj.address == "Queen's University"
+        assert obj._description == "Shittiest school to ever exist"
+        assert obj.seller.username == "bob"
+        assert obj.reviews == [r1, r2]
+        """Sprint 1 Testing"""
+        
         """Sprint 2 Testing"""
         # Testing Titles
         t1 = ""

@@ -22,7 +22,8 @@ class Listing:
     """
 
     """ Initialize digital Listing"""
-    def __init__(self, title, description, price, owner, address: str = ""):
+    def __init__(self, title: str = "", description: str = "", 
+                 price: float = 0.0, owner=User(), address: str = ""):
         # Required
         self._title = title
         self._description = description
@@ -32,8 +33,7 @@ class Listing:
 
         # Extra
         self._address: str = address
-        #self._reviews: list[Review] = []
-
+        self._reviews: list[Review] = []
 
     # Required
     """Fetches title of digital Listing"""
@@ -101,7 +101,6 @@ class Listing:
             return True
         return False
 
-
     # Extra
     """Fetches address of Listing"""
     @property
@@ -127,18 +126,16 @@ class Listing:
     def add_review(self, review: 'Review'):
         self._reviews.append(review)
 
-
     """Create a new listing - return true of succssfull and false otherwise"""
     @staticmethod
     def create_listing(title, description, price, mod_date, owner):
-        if (Listing.valid_title(title) and Listing.valid_price(price) and 
-            Listing.valid_seller (owner) and Listing.valid_date(mod_date) and
-            Listing.valid_description(description, title)):
+        if (Listing.valid_title(title) and Listing.valid_seller(owner) and 
+                Listing.valid_price(price) and Listing.valid_date(mod_date) and
+                Listing.valid_description(description, title)):
             listing = Listing(title, description, price, owner)
             # Commit to database as well
             return True
         return False
-
 
     """Determine if a given title is valid """
     @staticmethod
@@ -162,7 +159,7 @@ class Listing:
                     valid_char = True
 
                 # Check if c is a valid character
-                if (valid_char == False):
+                if (valid_char is False):
                     passed = False
                     break
             
@@ -170,7 +167,6 @@ class Listing:
                 validation_status = True
 
         return validation_status
-
 
     """Determine if a given description is valid"""
     @staticmethod
@@ -180,14 +176,12 @@ class Listing:
                 return True
         return False
 
-
     """Determine if a given price is valid"""
     @staticmethod
     def valid_price(price):
         if (10.00 <= price <= 10000.00):
             return True
         return False
-
 
     """Determine if a given last modification date is valid"""
     @staticmethod
@@ -197,7 +191,6 @@ class Listing:
         if (min_date < mod_date < max_date):
             return True
         return False
-
 
     """Determine if a given owner is valid"""
     @staticmethod
