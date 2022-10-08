@@ -335,9 +335,82 @@ def test_r5_4_update_listing():
     When updating an attribute, one has to make sure that it follows 
     the same requirements as above. Mainly the subsections of R4.
     """
-    # Copy and modify test cases for R4-1 through R4-8.
-    # Modify so updating instead of creating.
-    # Waiting on completion create listing test cases.
+    listing = Listing()
+    # Testing Titles
+    t1 = ""
+    i = 0
+    while (i < 80):
+        t1 = t1 + "a"
+        i = i + 1
+    t2 = " 4 bed 2 bath"
+    t3 = "4 bed 2 bath "
+    t4 = ""
+    i = 0
+    while (i < 81):
+        t4 = t4 + "a"
+        i = i + 1
+    t5 = "4 bed 2 bath?"
+    listing.update_title(t1)
+    assert (listing.title == t1)
+
+    listing.update_title(t2)
+    assert (listing.title != t2)
+
+    listing.update_title(t3)
+    assert (listing.title != t3)
+
+    listing.update_title(t4)
+    assert (listing.title != t4)
+
+    listing.update_title(t5)
+    assert (listing.title != t5)
+
+    # Testing Descriptions
+    listing.update_title("qwertyuiopqwertyui")
+    des1 = ""
+    i = 0
+    while (i < 2000):
+        des1 = des1 + "a"
+        i = i + 1
+    des2 = "qwertyuiopqwertyuiop"
+    des3 = "qwertyuiopqwertyu"
+    des4 = ""
+    i = 0
+    while (i < 2001):
+        des4 = des4 + "a"
+        i = i + 1
+
+    listing.update_description(des1)
+    assert (listing.description == des1)
+
+    listing.update_description(des2)
+    assert (listing.description == des2)
+
+    listing.update_description(des3)
+    assert (listing.description != des3)
+
+    listing.update_description(des4)
+    assert (listing.description != des4)
+
+    # Testing Prices
+    p1 = 9.999999
+    p2 = 10
+    p3 = 10000
+    p4 = 10000.001
+
+    listing.update_price(p1)
+    assert (listing.price != p1)
+
+    listing.update_price(p2)
+    assert (listing.price == p2)
+
+    listing.update_price(p3)
+    assert (listing.price == p3)
+
+    listing.update_price(p4)
+    assert (listing.price != p4)
+
+    # Still missing test where updating title conforms to R4-8
 
 
 if __name__ == "__main__":
