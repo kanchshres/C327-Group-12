@@ -1,11 +1,12 @@
 # user.py
 from ast import Str
+from pdb import post_mortem
 import sys
 from typing import TYPE_CHECKING
 import re
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import exc
+from sqlalchemy import exc, update, delete, insert
 
 from qbay import database
 from qbay.database import db
@@ -34,6 +35,7 @@ class User():
                  email: str = "", password: str = "",
                  postal_code: str = "", billing_address: str = ""):
 
+        self._user = None
         self._id = None  # should be random unique int, change later
         self._username: str = username
         self._email: str = email   # should also be unique
@@ -54,6 +56,7 @@ class User():
                              password=self.password,
                              postal_code=self.postal_code,
                              billing_address=self.billing_address)
+        self._user = user
         with database.app.app_context():
             db.session.add(user)
             db.session.commit()
@@ -141,8 +144,12 @@ class User():
         return self._postal_code
 
     @postal_code.setter
-    def postal_code(self, pos_code: str):
-        self._postal_code = pos_code
+    def postal_code(self, postal_code: str):
+        regex = re.compile("(?!.*[DFIOQU])[A-VXY][0-9][A-Z] ?[0-9][A-Z][0-9]")
+        if re.fullmatch(regex, postal_code):
+            self._postal_code = postal_code
+        else:
+            raise ValueError(f"Invalid postal code: {postal_code}")
 
     @property
     def billing_address(self):
@@ -150,6 +157,7 @@ class User():
 
     @billing_address.setter
     def billing_address(self, bill_addr: str):
+        
         self._billing_address = bill_addr
 
     @staticmethod
@@ -272,3 +280,50 @@ class User():
         # db.session.commit()
 
         return True
+
+    def update_username(self, username):
+        try:
+            self.username = username            
+        except ValueError as e:
+            print(e)
+            return False
+        
+        try:
+            with database.app_context():
+                self._user.username = username
+                db.session.commit()
+        except exc.IntegrityError as e:
+            print(f"Username already exists: {username}")
+            return False
+        
+        return True        
+    
+    def update_email(self, email):
+        try:
+            self.username = email            
+        except ValueError as e:
+            print(e, stream=sys.stderr)
+            return False
+        
+        try:
+            with database.app_context():
+                self._user.username = email
+                db.session.commit()
+        except exc.IntegrityError as e:
+            print(f"Email already exists: {email}")
+            return False
+        
+        return True   
+    
+    def update_billing_address(self, address):
+        self._address = address
+        
+    def update_postal_code(self, postal_code):
+        try:
+            self.postal_code = postal_code
+        except ValueError as e:
+            print(e, stream=sys.stderr)
+            return False
+        with database.app_context():
+            self._user.postal_code = postal_code
+            db.session.commit()
