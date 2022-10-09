@@ -26,7 +26,7 @@ class User(db.Model):
     password = db.Column(db.String(255), nullable=False)
     postal_code = db.Column(db.String(7), nullable=True)
     billing_address = db.Column(db.String(46), nullable=True)
-    
+
     wallet = relationship('Wallet', back_populates='user', uselist=False)
     listings = relationship('Listing', back_populates='owner')
     reviews = relationship('Review', back_populates='user')
@@ -43,7 +43,7 @@ class Listing(db.Model):
     description = db.Column(db.String(5000), nullable=False)
     price = db.Column(db.Float(precision=2, asdecimal=True), nullable=False)
     last_modified_date = db.Column(db.String(20), nullable=True)
-    
+
     owner_id = db.Column(db.Integer, db.ForeignKey(User.id))
     owner = relationship('User', back_populates='listings')
 
@@ -60,10 +60,10 @@ class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     review_text = db.Column(db.String(5000), nullable=True)
     date = db.Column(db.Integer, nullable=False)
-    
+
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     user = relationship('User', back_populates='reviews')
-    
+
     listing_id = db.Column(db.Integer, db.ForeignKey(Listing.id))
     listing = relationship('Listing', back_populates='reviews')
 
@@ -77,12 +77,12 @@ class Booking(db.Model):
     listing_id = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float(precision=2, asdecimal=True), nullable=False)
     last_modified_date = db.Column(db.String(20), nullable=True)
-    
+
     user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
     user = relationship('User', back_populates='bookings')
-    
+
     listing_id = db.Column(db.Integer, db.ForeignKey(Listing.id))
-    listing = relationship('Listing', back_populates='bookings')    
+    listing = relationship('Listing', back_populates='bookings')
 
     def __repr__(self) -> str:
         return f'<Booking {self.id}>'
@@ -90,27 +90,28 @@ class Booking(db.Model):
 
 class BankingAccount(db.Model):
     __tablename__ = 'banking_accounts'
-    
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     balance = db.Column(db.Float(precision=2, asdecimal=True), nullable=False)
-    
+
     def __repr__(self) -> str:
         return f'<BankingAccount {self.id}>'
-    
-    
+
+
 class Wallet(db.Model):
     __tablename__ = 'wallets'
-    
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     balance = db.Column(db.Float(precision=2, asdecimal=True), nullable=False)
-    
+
     #  transactions = db.Column(db.ARRAY(db.Integer()), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     user = relationship('User', back_populates='wallet')
 
-    banking_account_id = db.Column(db.Integer, db.ForeignKey(BankingAccount.id))
+    banking_account_id = db.Column(
+        db.Integer, db.ForeignKey(BankingAccount.id))
     banking_account = relationship('BankingAccount')
-    
+
     def __repr__(self) -> str:
         return f'<Wallet {self.id}>'
 
