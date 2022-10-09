@@ -20,7 +20,7 @@ class Review():
     Note: Checking that the user is a verified guest to the listing 
     has not been implemented yet
     """
-    
+
     def __init__(self):
         self._id = None
         self._date_posted = None

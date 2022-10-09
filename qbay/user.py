@@ -7,8 +7,9 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import exc
 
-from qbay import database, wallet
+from qbay import database
 from qbay.database import db
+from qbay.wallet import Wallet
 
 if TYPE_CHECKING:
     from .wallet import Wallet
@@ -41,6 +42,7 @@ class User():
         self._billing_address = billing_address
         self._wallet: Wallet = None  # user adds wallet after account creation
         self._reviews: 'list[Review]' = []
+        self._balance = 0
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -50,7 +52,6 @@ class User():
         user = database.User(username=self.username,
                              email=self.email,
                              password=self.password,
-                             wallet=self.wallet or None,
                              postal_code=self.postal_code,
                              billing_address=self.billing_address)
         with database.app.app_context():
@@ -119,7 +120,10 @@ class User():
 
     @property
     def balance(self):
-        return self.wallet.balance
+        if self.wallet:
+            return self.wallet.balance
+        else:
+            return 0
 
     @property
     def reviews(self):
