@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from sqlalchemy.sql import func
 from sqlalchemy import Column, ForeignKey, Integer, Table
+import sqlalchemy.types
 from sqlalchemy.orm import relationship
 
 import datetime
@@ -104,9 +105,11 @@ class Wallet(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     balance = db.Column(db.Float(precision=2, asdecimal=True), nullable=False)
 
-    #  transactions = db.Column(db.ARRAY(db.Integer()), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     user = relationship('User', back_populates='wallet')
+
+    transactions = relationship(
+        'Transaction', primaryjoin="Wallet.id==Transaction.payer_id")
 
     banking_account_id = db.Column(
         db.Integer, db.ForeignKey(BankingAccount.id))
@@ -117,16 +120,18 @@ class Wallet(db.Model):
 
 
 class Transaction(db.Model):
+    __tablename__ = 'transaction'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     amount = db.Column(db.Float(precision=2, asdecimal=True), nullable=False)
     status = db.Column(db.String(30), nullable=False)
-    
-    payer_id = db.Column(db.Integer, db.ForeignKey(User.id))
-    payer = relationship('User')
-    
-    payee_id = db.Column(db.Integer, db.ForeignKey(User.id))
-    payee = relationship('User')
-    
+
+    payer_id = db.Column(db.Integer, db.ForeignKey(Wallet.id))
+    payer = relationship('Wallet', foreign_keys=[
+                         payer_id], back_populates='transactions')
+
+    payee_id = db.Column(db.Integer, db.ForeignKey(Wallet.id))
+    payee = relationship('Wallet', foreign_keys=[payee_id])
+
     booking_id = db.Column(db.Integer, db.ForeignKey(Booking.id))
     booking = relationship('Booking')
 
