@@ -126,8 +126,8 @@ class Transaction(db.Model):
     status = db.Column(db.String(30), nullable=False)
 
     payer_id = db.Column(db.Integer, db.ForeignKey(Wallet.id))
-    payer = relationship('Wallet', foreign_keys=[
-                         payer_id], back_populates='transactions')
+    payer = relationship(
+        'Wallet', foreign_keys=[payer_id], back_populates='transactions')
 
     payee_id = db.Column(db.Integer, db.ForeignKey(Wallet.id))
     payee = relationship('Wallet', foreign_keys=[payee_id])

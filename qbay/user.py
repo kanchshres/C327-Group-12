@@ -35,8 +35,8 @@ class User():
                  email: str = "", password: str = "",
                  postal_code: str = "", billing_address: str = ""):
 
-        self._user = None
-        self._id = None  # should be random unique int, change later
+        self._database_obj: database.User = None
+        self._id = None  # created upon being added to database
         self._username: str = username
         self._email: str = email   # should also be unique
         self._password = password
@@ -77,6 +77,10 @@ class User():
             return False
 
     @property
+    def database_obj(self):
+        return self._user
+    
+    @property
     def id(self):
         return self._id
 
@@ -86,26 +90,28 @@ class User():
 
     @username.setter
     def username(self, username: str):
-        regex = re.compile(r"^[A-Za-z]+( +[A-Za-z])*[A-Za-z]*")
-        if (2 < len(username) < 20) and re.fullmatch(regex, username):
-            self._username = username
-        else:
-            raise ValueError("Invalid username: %r" % username)
-
+        if not User.valid_username(username):
+            raise ValueError(f"Invalid username: {username}")
+        self._username = username
+        
     @property
     def email(self) -> str:
         return self._email
 
     @email.setter
     def email(self, email: str):
+        if not User.valid_email(email):
+            raise ValueError(f"Invalid email: {email}")
         self._email = email
-
+        
     @property
     def password(self) -> str:
         return self._password
 
     @password.setter
     def password(self, password: str):
+        # if not User.valid_email(password):
+        #     raise ValueError(f'Invalid password: {password}')
         self._password = password
 
     @property
@@ -145,7 +151,7 @@ class User():
 
     @postal_code.setter
     def postal_code(self, postal_code: str):
-        regex = re.compile("(?!.*[DFIOQU])[A-VXY][0-9][A-Z] ?[0-9][A-Z][0-9]")
+        regex = re.compile("(?!.*[DFIOQU])[A-VXY][0-9][A-Z][0-9][A-Z][0-9]")
         if re.fullmatch(regex, postal_code):
             self._postal_code: str = postal_code
         else:
@@ -173,7 +179,7 @@ class User():
         Returns:
             True if user name is valid, False if not
         """
-        if name == "":
+        if not name:
             return False
         if name[0] == " " or name[-1] == " ":
             return False
@@ -195,7 +201,7 @@ class User():
         Returns:
             True if email is valid, False if not
         """
-        if email == "":
+        if not email:
             return False
 
         regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+'
@@ -228,6 +234,7 @@ class User():
             return False
         if not (any(not c.isalnum() for c in password)):
             return False
+        # regex = re.compile(r'^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&(){}[]:;<>,.?/~_+-=|\]).{8,32}$')
         return True
 
     @staticmethod
@@ -287,9 +294,9 @@ class User():
         except ValueError as e:
             print(e)
             return False
-        
+
         try:
-            with database.app_context():
+            with database.app.app_context():
                 self._user.username = username
                 db.session.commit()
         except exc.IntegrityError as e:
@@ -300,30 +307,38 @@ class User():
     
     def update_email(self, email):
         try:
-            self.username = email            
+            self.email = email            
         except ValueError as e:
-            print(e, stream=sys.stderr)
+            print(e)
             return False
-        
         try:
-            with database.app_context():
-                self._user.username = email
+            with database.app.app_context():
+                self._user.email = email
                 db.session.commit()
         except exc.IntegrityError as e:
             print(f"Email already exists: {email}")
             return False
-        
         return True   
     
     def update_billing_address(self, address):
-        self._address = address
+        try:
+            self.billing_address = address
+        except ValueError as e:
+            print(e)
+            return False
+        with database.app.app_context():
+            self._user.billing_address = address
+            db.session.commit()
+        self._billing_address = address
+        return True
         
     def update_postal_code(self, postal_code):
         try:
             self.postal_code = postal_code
         except ValueError as e:
-            print(e, stream=sys.stderr)
+            print(e)
             return False
-        with database.app_context():
+        with database.app.app_context():
             self._user.postal_code = postal_code
             db.session.commit()
+        return True
