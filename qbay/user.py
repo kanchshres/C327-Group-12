@@ -234,7 +234,6 @@ class User():
             return False
         if not (any(not c.isalnum() for c in password)):
             return False
-        # regex = re.compile(r'^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&(){}[]:;<>,.?/~_+-=|\]).{8,32}$')
         return True
 
     @staticmethod

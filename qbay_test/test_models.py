@@ -15,15 +15,6 @@ This file defines the testing for implemented data models
 """
 
 
-@pytest.fixture
-def db_session(setup_database, connection):
-    transaction = connection.begin()
-    yield scoped_session(
-        sessionmaker(autocommit=False, autoflush=False, bind=connection)
-    )
-    transaction.rollback()
-
-
 class UnitTest(unittest.TestCase):
 
     def test_user(self):
@@ -275,7 +266,8 @@ class UnitTest(unittest.TestCase):
 
     def test_r3_2_r3_3_update_postal_code(self):
         """Testing R3-2: 
-        postal code should be non-empty, alphanumeric-only, and no special characters such as !.
+        postal code should be non-empty, alphanumeric-only,
+        and no special characters such as !.
         """
         with database.app.app_context():
             db.drop_all()
@@ -290,7 +282,8 @@ class UnitTest(unittest.TestCase):
             user.database_obj.postal_code == i
 
         invalid_postal_codes = ["", "!C1Ajd", "a!a1a1",
-                                "AAAAAA", "123904", "ASD2U1", "1A2C3D", "D1C9E7"]
+                                "AAAAAA", "123904", "ASD2U1",
+                                "1A2C3D", "D1C9E7"]
         for i in invalid_postal_codes:
             assert user.update_postal_code(i) is False
 
@@ -306,7 +299,8 @@ class UnitTest(unittest.TestCase):
         for i in valid_usernames:
             user.update_username(i)
             assert user.database_obj.username == i
-        invalid_usernames = ["", " ASD", "! ASD", "as", "1246789012317823678123678678904"]
+        invalid_usernames = ["", " ASD", "! ASD",
+                             "as", "1246789012317823678123678678904"]
 
         for i in invalid_usernames:
             assert user.update_username(i) is False
