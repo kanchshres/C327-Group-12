@@ -118,11 +118,17 @@ class Wallet(db.Model):
 
 class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    payer_id = db.Column(db.Integer(), nullable=False)
-    payee_id = db.Column(db.Integer(), nullable=False)
     amount = db.Column(db.Float(precision=2, asdecimal=True), nullable=False)
-    booking = db.Column(db.Integer(), nullable=False)
     status = db.Column(db.String(30), nullable=False)
+    
+    payer_id = db.Column(db.Integer, db.ForeignKey(User.id))
+    payer = relationship('User')
+    
+    payee_id = db.Column(db.Integer, db.ForeignKey(User.id))
+    payee = relationship('User')
+    
+    booking_id = db.Column(db.Integer, db.ForeignKey(Booking.id))
+    booking = relationship('Booking')
 
     def __repr__(self) -> str:
         return f'<Transaction {self.id}>'

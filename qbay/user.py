@@ -147,7 +147,7 @@ class User():
     def postal_code(self, postal_code: str):
         regex = re.compile("(?!.*[DFIOQU])[A-VXY][0-9][A-Z] ?[0-9][A-Z][0-9]")
         if re.fullmatch(regex, postal_code):
-            self._postal_code = postal_code
+            self._postal_code: str = postal_code
         else:
             raise ValueError(f"Invalid postal code: {postal_code}")
 
