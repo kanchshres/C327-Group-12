@@ -1,14 +1,9 @@
 # listing.py
 from enum import Enum, unique
+from multiprocessing.sharedctypes import Value
 from qbay.user import User
 from qbay.review import Review
 from datetime import datetime
-
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import exc
-from qbay import database
-from qbay.database import db
 
 
 class Listing:
@@ -28,9 +23,7 @@ class Listing:
     """
 
     """ Initialize digital Listing"""
-
-    def __init__(self, title: str = "", description: str = "",
-                 price: float = 0.0, owner=User(), address: str = ""):
+    def __init__(self, title, description, price, owner, address: str = ""):
         # Required
         self._title = title
         self._description = description
@@ -42,6 +35,7 @@ class Listing:
         self._address: str = address
         self._reviews: list[Review] = []
 
+
     # Required
     """Fetches title of digital Listing"""
     @property
@@ -51,10 +45,9 @@ class Listing:
     """Sets title for digital Listing"""
     @title.setter
     def title(self, title):
-        if (Listing.valid_title(title)):
-            self._title = title
-            return True
-        return False
+        if (not Listing.valid_title(title)):
+            raise ValueError(f"Invalid Title: {title}")
+        self._title = title
 
     """Fetches description of digital Listing"""
     @property
@@ -64,10 +57,9 @@ class Listing:
     """Sets title for digital Listing"""
     @description.setter
     def description(self, description, title):
-        if (Listing.valid_description(description, title)):
-            self._description = description
-            return True
-        return False
+        if (not Listing.valid_description(description, title)):
+            raise ValueError(f"Invalid Description: {description}")
+        self._description = description
 
     """Fetches price of digital Listing"""
     @property
@@ -77,10 +69,9 @@ class Listing:
     """Sets price for digital Listing"""
     @price.setter
     def price(self, price):
-        if (Listing.valid_price(price)):
-            self._price = price
-            return True
-        return False
+        if (not Listing.valid_price(price)):
+            raise ValueError(f"Invalid Price: {price}")
+        self._price = price
 
     """Fetches last modification date of digital listing"""
     @property
@@ -90,10 +81,9 @@ class Listing:
     """Updates last modification date of digital listing"""
     @date.setter
     def date(self, mod_date):
-        if (Listing.valid_date(mod_date)):
-            self._date = mod_date
-            return True
-        return False
+        if (not Listing.valid_date(mod_date)):
+            raise ValueError(f"Invalid Date: {mod_date}")
+        self._date = mod_date
 
     """Fetches owner of digital Listing"""
     @property
@@ -103,10 +93,9 @@ class Listing:
     """Sets owner of digital Listing"""
     @seller.setter
     def seller(self, owner):
-        if (Listing.valid_seller(owner)):
-            self._seller = owner
-            return True
-        return False
+        if (not Listing.valid_seller(owner)):
+            raise ValueError(f"Invalid Seller: {owner}")
+        self._seller = owner
 
     # Extra
     """Fetches address of Listing"""
@@ -118,7 +107,7 @@ class Listing:
     @address.setter
     def address(self, location):
         self._address = location
-
+    
     """Fetches reviews of Listing"""
     @property
     def reviews(self) -> 'list[Review]':
