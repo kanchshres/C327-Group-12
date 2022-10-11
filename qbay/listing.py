@@ -1,7 +1,8 @@
 # listing.py
 from enum import Enum, unique
+from multiprocessing.sharedctypes import Value
 from qbay.user import User
-# from qbay.review import Review
+from qbay.review import Review
 from datetime import datetime
 
 
@@ -22,7 +23,7 @@ class Listing:
     """
 
     """ Initialize digital Listing"""
-    def __init__(self, title: str = "", description: str = "", 
+    def __init__(self, title: str = "", description: str = "",
                  price: float = 0.0, owner=User(), address: str = ""):
         # Required
         self._title = title
@@ -44,11 +45,10 @@ class Listing:
     """Sets title for digital Listing"""
     @title.setter
     def title(self, title):
-        if (valid_title(title)):
-            self._title = title
-            self.__date = datetime.now()
-            return True
-        return False
+        if (not Listing.valid_title(title)):
+            raise ValueError(f"Invalid Title: {title}")
+        self._title = title
+        self.__date = datetime.now()
 
     """Fetches description of digital Listing"""
     @property
@@ -57,12 +57,11 @@ class Listing:
 
     """Sets title for digital Listing"""
     @description.setter
-    def description(self, description):
-        if (valid_description(description, self.title)):
-            self._description = description
-            self.__date = datetime.now()
-            return True
-        return False
+    def description(self, description, title):
+        if (not Listing.valid_description(description, title)):
+            raise ValueError(f"Invalid Description: {description}")
+        self._description = description
+        self.__date = datetime.now()
 
     """Fetches price of digital Listing"""
     @property
@@ -72,11 +71,10 @@ class Listing:
     """Sets price for digital Listing"""
     @price.setter
     def price(self, price):
-        if (valid_price(self, price)):
-            self._price = price
-            self.__date = datetime.now()
-            return True
-        return False
+        if (not Listing.valid_price(price)):
+            raise ValueError(f"Invalid Price: {price}")
+        self._price = price
+        self.__date = datetime.now()
 
     """Fetches last modification date of digital listing"""
     @property
@@ -86,10 +84,9 @@ class Listing:
     """Updates last modification date of digital listing"""
     @date.setter
     def __date(self, mod_date):
-        if (valid_date(mod_date)):
-            self._date = mod_date
-            return True
-        return False
+        if (not Listing.valid_date(mod_date)):
+            raise ValueError(f"Invalid Date: {mod_date}")
+        self._date = mod_date
 
     """Fetches owner of digital Listing"""
     @property
@@ -98,12 +95,11 @@ class Listing:
 
     """Sets owner of digital Listing"""
     @seller.setter
-    def __seller(self, owner):
-        if (valid_seller(owner)):
-            self._seller = owner
-            self.__date = datetime.now()
-            return True
-        return False
+    def seller(self, owner):
+        if (not Listing.valid_seller(owner)):
+            raise ValueError(f"Invalid Seller: {owner}")
+        self._seller = owner
+        self.__date = datetime.now()
 
     # Extra
     """Fetches address of Listing"""
@@ -121,7 +117,7 @@ class Listing:
     @property
     def reviews(self) -> 'list[Review]':
         return self._reviews
-    
+
     """Sets reviews of Listing"""
     @reviews.setter
     def reviews(self, comments: 'list[Review]'):
@@ -134,83 +130,79 @@ class Listing:
         # note: adding a review will currently not update the 
         # last_modified_date, since it's not modifying the actual post
 
-
-def create_listing(title, description, price, mod_date, owner):
     """Create a new listing - return true of succssfull and false otherwise"""
-    if (valid_title(title) and valid_description(description, title) and
-        valid_price(price) and valid_date(mod_date) and
-            valid_seller(owner)):
-        listing = Listing(title, description, price, mod_date, owner)
-        # Commit to database as well
-        return True
-    return False
+    @staticmethod
+    def create_listing(title, description, price, mod_date, owner):
+        if (Listing.valid_title(title) and Listing.valid_seller(owner) and
+                Listing.valid_price(price) and Listing.valid_date(mod_date) and
+                Listing.valid_description(description, title)):
+            listing = Listing(title, description, price, owner)
+            # Commit to database as well
+            return True
+        return False
 
-
-def valid_title(title):
     """Determine if a given title is valid """
-    validation_status = False
+    @staticmethod
+    def valid_title(title):
+        validation_status = False
 
-    # Validate title has maximum 80 characters and prefix/suffix of not 'space'
-    if ((len(title) < 81) and (title[0] != ' ') and (title[-1] != ' ')):
+        # Validate title has maximum 80 characters and prefix/suffix of not ' '
+        if ((len(title) < 81) and (title[0] != ' ') and (title[-1] != ' ')):
 
-        # Validate title only contains alphanumeric or 'space' characters
-        passed = True
-        for c in title:
-            valid_char = False
-            if ((47 < ord(c)) and (ord(c) < 58)):
-                valid_char = True
-            elif ((64 < ord(c)) and (ord(c) < 91)):
-                valid_char = True
-            elif ((96 < ord(c)) and (ord(c) < 123)):
-                valid_char = True
-            elif (ord(c) == 32):
-                valid_char = True
+            # Validate title only contains alphanumeric or 'space' characters
+            passed = True
+            for c in title:
+                valid_char = False
+                if ((47 < ord(c) < 58)):
+                    valid_char = True
+                elif ((64 < ord(c) < 91)):
+                    valid_char = True
+                elif ((96 < ord(c) < 123)):
+                    valid_char = True
+                elif (ord(c) == 32):
+                    valid_char = True
 
-            # Check if c is a valid character
-            if not valid_char:
-                passed = False
-                break
-        
-        if (passed):
-            validation_status = True
+                # Check if c is a valid character
+                if (valid_char is False):
+                    passed = False
+                    break
 
-    return validation_status
+            if (passed):
+                validation_status = True
 
+        return validation_status
 
-def valid_description(description, title):
     """Determine if a given description is valid"""
-    if ((19 < len(description)) and (len(description) < 2001)):
-        if (len(title) < len(description)):
-            return True
-    return False
+    @staticmethod
+    def valid_description(description, title):
+        return ((19 < len(description) < 2001)
+                and (len(title) < len(description)))
 
-
-def valid_price(self, price):
     """Determine if a given price is valid"""
-    if (10.00 <= price) and (price <= 10000.00):
-        # If price hasn't been set yet, return true.
-        if self.price == 0:
-            return True
-        # If price has been set before, also check that price has not 
-        # decreased.
-        else:
-            if price > self.price:
+    @staticmethod
+    def valid_price(price):
+        if (10.00 <= price) and (price <= 10000.00):
+            # If price hasn't been set yet, return true.
+            if self.price == 0:
                 return True
-    return False
+            # If price has been set before, also check that price has not 
+            # decreased.
+            else:
+                if price > self.price:
+                    return True
+        return False
 
-
-def valid_date(mod_date):
     """Determine if a given last modification date is valid"""
-    min_date = datetime(2021, 1, 2)
-    max_date = datetime(2025, 1, 2)
-    if (min_date < mod_date) and (mod_date < max_date):
-        return True
-    return False
+    @staticmethod
+    def valid_date(mod_date):
+        min_date = datetime(2021, 1, 2)
+        max_date = datetime(2025, 1, 2)
+        return (min_date < mod_date < max_date)
 
-
-def valid_seller(owner):
     """Determine if a given owner is valid"""
-    if (owner.email != ""):
-        # Also need to check of owner is in database
-        return True
-    return False
+    @staticmethod
+    def valid_seller(owner):
+        if (owner.email != ""):
+            # Also need to check of owner is in database
+            return True
+        return False
