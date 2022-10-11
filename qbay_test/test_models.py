@@ -262,10 +262,12 @@ def test_r5_3_update_listing():
     seller = User()
     obj = Listing(title, description, price, seller, address)
 
+    # used as a margin of error when testing if 2 times are equal
+    margin = timedelta(milliseconds=100)
+
     # test that initializing the listing creates an accurate 
     # last_modified_date (aka creation date)
     now = datetime.now()
-    margin = timedelta(milliseconds=100)
     assert now - margin <= obj.last_mod_datetime <= now + margin
 
     # test that update_title also updates last_modified_date
@@ -277,7 +279,6 @@ def test_r5_3_update_listing():
     # test that new last_modified_date is close enough to the current
     # time (margin accounts for execution time)
     now = datetime.now()
-    margin = timedelta(milliseconds=100)
     assert now - margin <= obj.last_mod_datetime <= now + margin
 
     # test that update_address also updates last_modified_date
@@ -289,7 +290,6 @@ def test_r5_3_update_listing():
     # test that new last_modified_date is close enough to the current
     # time (margin accounts for execution time)
     now = datetime.now()
-    margin = timedelta(milliseconds=100)
     assert now - margin <= obj.last_mod_datetime <= now + margin
 
     # test that update_price also updates last_modified_date
@@ -301,7 +301,6 @@ def test_r5_3_update_listing():
     # test that new last_modified_date is close enough to the current
     # time (margin accounts for execution time)
     now = datetime.now()
-    margin = timedelta(milliseconds=100)
     assert now - margin <= obj.last_mod_datetime <= now + margin
 
     # test that if update_price failes, last_modified_date is not 
@@ -320,7 +319,6 @@ def test_r5_3_update_listing():
     # test that new last_modified_date is close enough to the current
     # time (margin accounts for execution time)
     now = datetime.now()
-    margin = timedelta(milliseconds=100)
     assert now - margin <= obj.last_mod_datetime <= now + margin
 
     # test that add_review also updates last_modified_date
@@ -332,7 +330,6 @@ def test_r5_3_update_listing():
     # test that new last_modified_date is close enough to the current
     # time (margin accounts for execution time)
     now = datetime.now()
-    margin = timedelta(milliseconds=100)
     assert now - margin <= obj.last_mod_datetime <= now + margin
 
 
