@@ -71,7 +71,7 @@ class Listing:
     """Sets price for digital Listing"""
     @price.setter
     def price(self, price):
-        if (not Listing.valid_price(price)):
+        if (not Listing.valid_price(self, price)):
             raise ValueError(f"Invalid Price: {price}")
         self._price = price
         self.__date = datetime.now()
@@ -179,8 +179,7 @@ class Listing:
                 and (len(title) < len(description)))
 
     """Determine if a given price is valid"""
-    @staticmethod
-    def valid_price(price):
+    def valid_price(self, price):
         if (10.00 <= price) and (price <= 10000.00):
             # If price hasn't been set yet, return true.
             if self.price == 0:
@@ -188,7 +187,7 @@ class Listing:
             # If price has been set before, also check that price has not 
             # decreased.
             else:
-                if price > self.price:
+                if price >= self.price:
                     return True
         return False
 

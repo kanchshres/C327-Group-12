@@ -140,7 +140,7 @@ class UnitTest(unittest.TestCase):
         # Testing param manipulation
         obj.title = "4 Bed 2 Bath"
         obj.address = "Queen's University"
-        obj.price = 8000.57
+        obj.price = 10
         obj._description = "Shittiest school to ever exist"
         obj.seller.username = "bob"
         r = []
@@ -151,7 +151,7 @@ class UnitTest(unittest.TestCase):
         obj.add_review(r2)
         
         assert obj.title == "4 Bed 2 Bath"
-        assert obj.price == 8000.57
+        assert obj.price == 10
         assert obj.address == "Queen's University"
         assert obj._description == "Shittiest school to ever exist"
         assert obj.seller.username == "bob"
@@ -206,10 +206,10 @@ class UnitTest(unittest.TestCase):
         p2 = 10
         p3 = 10000
         p4 = 10000.001
-        assert (Listing.valid_price(p1)) is False
-        assert (Listing.valid_price(p2)) is True
-        assert (Listing.valid_price(p3)) is True
-        assert (Listing.valid_price(p4)) is False
+        assert (obj.valid_price(p1)) is False
+        assert (obj.valid_price(p2)) is True
+        assert (obj.valid_price(p3)) is True
+        assert (obj.valid_price(p4)) is False
         # False, True, True, False
 
         # Testing Dates
