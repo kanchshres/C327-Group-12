@@ -4,6 +4,7 @@ from qbay import database
 from qbay.review import Review
 from qbay.user import User
 from qbay.listing import Listing
+from datetime import datetime
 from qbay.transaction import Transaction, TransactionStatus
 from qbay.wallet import Wallet, BankingAccount
 from qbay.database import db, app
@@ -125,6 +126,7 @@ class UnitTest(unittest.TestCase):
             transact.status = User()
 
     def test_listing(self):
+        """Sprint 1 Testing"""
         # Testing Initialization
         obj = Listing()
         # Testing param manipulation #
@@ -139,13 +141,83 @@ class UnitTest(unittest.TestCase):
         obj.reviews = r
         r2 = Review()
         obj.add_review(r2)
-
+        
         assert obj.title == "4 Bed 2 Bath"
         assert obj.price == 8000.57
         assert obj.address == "Queen's University"
         assert obj._description == "Shittiest school to ever exist"
         assert obj.seller.username == "bob"
         assert obj.reviews == [r1, r2]
+        """Sprint 1 Testing"""
+        
+        """Sprint 2 Testing"""
+        # Testing Titles
+        t1 = ""
+        i = 0
+        while (i < 80):
+            t1 = t1 + "a"
+            i = i + 1
+        t2 = " 4 bed 2 bath"
+        t3 = "4 bed 2 bath "
+        t4 = ""
+        i = 0
+        while (i < 81):
+            t4 = t4 + "a"
+            i = i + 1
+        t5 = "4 bed 2 bath?"
+        assert (Listing.valid_title(t1)) is True
+        assert (Listing.valid_title(t2)) is False
+        assert (Listing.valid_title(t3)) is False
+        assert (Listing.valid_title(t4)) is False
+        assert (Listing.valid_title(t5)) is False
+        # True, False, False, False, False
+
+        # Testing Descriptions
+        t0 = "qwertyuiopqwertyui"
+        des1 = ""
+        i = 0
+        while (i < 2000):
+            des1 = des1 + "a"
+            i = i + 1
+        des2 = "qwertyuiopqwertyuiop"
+        des3 = "qwertyuiopqwertyu"
+        des4 = ""
+        i = 0
+        while (i < 2001):
+            des4 = des4 + "a"
+            i = i + 1
+
+        assert (Listing.valid_description(des1, t0)) is True
+        assert (Listing.valid_description(des2, t0)) is True
+        assert (Listing.valid_description(des3, t0)) is False
+        assert (Listing.valid_description(des4, t0)) is False
+        # True, True, False, False
+
+        # Testing Prices
+        p1 = 9.999999
+        p2 = 10
+        p3 = 10000
+        p4 = 10000.001
+        assert (Listing.valid_price(p1)) is False
+        assert (Listing.valid_price(p2)) is True
+        assert (Listing.valid_price(p3)) is True
+        assert (Listing.valid_price(p4)) is False
+        # False, True, True, False
+
+        # Testing Dates
+        d1 = datetime(2021, 1, 2)
+        d2 = datetime(2021, 1, 3)
+        d3 = datetime(2025, 1, 1)
+        d4 = datetime(2025, 1, 2)
+        assert (Listing.valid_date(d1)) is False
+        assert (Listing.valid_date(d2)) is True
+        assert (Listing.valid_date(d3)) is True
+        assert (Listing.valid_date(d4)) is False
+        # False, True, True, False
+
+        # Testing Ownership
+        # Insert tests here
+        """Sprint 2 Testing"""
 
     def test_user_database(self):
         with app.app_context():
