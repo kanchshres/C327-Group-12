@@ -299,9 +299,9 @@ class UnitTest(unittest.TestCase):
         for i in valid_usernames:
             user.update_username(i)
             assert user.database_obj.username == i
+            
         invalid_usernames = ["", " ASD", "! ASD",
                              "as", "1246789012317823678123678678904"]
-
         for i in invalid_usernames:
             assert user.update_username(i) is False
 
