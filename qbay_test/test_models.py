@@ -1,11 +1,14 @@
 import unittest
 from sqlalchemy import exc
+from qbay import database
 from qbay.review import Review
 from qbay.user import User
 from qbay.listing import Listing
 from datetime import datetime
 from qbay.transaction import Transaction, TransactionStatus
 from qbay.wallet import Wallet, BankingAccount
+from qbay.database import db, app
+import pytest
 
 
 """
@@ -24,8 +27,8 @@ class UnitTest(unittest.TestCase):
         user.email = "19ks62@queensu.ca"
         assert user.email == "19ks62@queensu.ca"
 
-        user.password = "password123"
-        assert user.password == "password123"
+        user.password = "Password123@!#&$^&*"
+        assert user.password == "Password123@!#&$^&*"
 
         test_wall = Wallet()
         user.wallet = test_wall
@@ -217,6 +220,10 @@ class UnitTest(unittest.TestCase):
         """Sprint 2 Testing"""
 
     def test_user_database(self):
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
+
         user = User("testUser", "user@example.ca", "password123")
         user.add_to_database()
         assert user.id == 1
@@ -302,6 +309,74 @@ class UnitTest(unittest.TestCase):
                              "test7@test.com", "Onetwo!") is False
         assert User.register("u7", "test7@test.com", "Onetwo!") is False
 
+    def test_r3_1_update_user(self):
+        """ Testing R3-1:
+        A user is only able to update his/her user name, user email,
+        billing address, and postal code.
+        """
+        with database.app.app_context():
+            db.drop_all()
+            db.create_all()
+        user = User("testUser", "user@example.ca", "password123")
+        user.add_to_database()
+
+        # Update username
+        user.update_username("updatedUsername")
+        assert user.database_obj.username == "updatedUsername"
+
+        # Update user email
+        user.update_email("updated@email.com")
+        assert user.database_obj.email == "updated@email.com"
+
+        # Update address
+        user.update_billing_address("123 Update")
+        assert user.database_obj.billing_address == "123 Update"
+
+        # Update postal code
+        user.update_postal_code("A1A1A1")
+        assert user.database_obj.postal_code == "A1A1A1"
+
+    def test_r3_2_r3_3_update_postal_code(self):
+        """Testing R3-2: 
+        postal code should be non-empty, alphanumeric-only,
+        and no special characters such as !.
+        """
+        with database.app.app_context():
+            db.drop_all()
+            db.create_all()
+        user = User("testUser", "user@example.ca", "password123")
+        user.add_to_database()
+
+        valid_postal_codes = ["a1a1a1", "A1A1A1",
+                              "N1P0A0", "N1T9Z9", "V0C0A0", "V0C9Z9"]
+        for i in valid_postal_codes:
+            user.update_postal_code(i)
+            user.database_obj.postal_code == i
+
+        invalid_postal_codes = ["", "!C1Ajd", "a!a1a1",
+                                "AAAAAA", "123904", "ASD2U1",
+                                "1A2C3D", "D1C9E7"]
+        for i in invalid_postal_codes:
+            assert user.update_postal_code(i) is False
+
+    def test_r3_4_update_username(self):
+        with database.app.app_context():
+            db.drop_all()
+            db.create_all()
+        user = User("testUser", "user@example.ca", "password123")
+        user.add_to_database()
+
+        valid_usernames = ["asdhjk", "userName",
+                           "USERNAME", "user name", "123 1112 4902"]
+        for i in valid_usernames:
+            user.update_username(i)
+            assert user.database_obj.username == i
+        invalid_usernames = ["", " ASD", "! ASD",
+                             "as", "1246789012317823678123678678904"]
+
+        for i in invalid_usernames:
+            assert user.update_username(i) is False
+
 # need database to check existing emails
 # def test_r1_7_user_register():
 #     """ Testing R1-7:
@@ -338,6 +413,65 @@ class UnitTest(unittest.TestCase):
 #     user = login("u00", "test0@test.com", "Onetwo!")
 #     assert user is not None
 #     assert user.balance == 100
+
+
+def test_r2_1():
+    """Test if user can log in using her/his email address and the 
+    password.
+
+    Note:
+    User.login will return 0 if login success
+    User.login will return 1 if login failure due to invalid username 
+                                                            or password
+    User.login will return 2 if login failure due to incorrect 
+                                                username or password
+    """
+    with app.app_context():
+        db.drop_all()
+        db.create_all()
+
+    bob = User()
+    bob.email = "bob@gmail.com"
+    bob.password = "Password123!"
+    bob.add_to_database()
+
+    fred = User()
+    fred.email = "fred@gmail.com"
+    fred.password = "Password321!"
+    fred.add_to_database()
+
+    assert User.login("bob@gmail.com", "Password123!") == 0
+    assert User.login("fred@gmail.com", "Password321!") == 0
+    assert User.login("bob@gmail.com", "IncorrectPassword123!") == 2
+    assert User.login("fred@gmail.com", "Password123!") == 2
+
+
+def test_r2_2():
+    """Test that the login function should check if the supplied 
+    inputs meet the same email/password requirements as above, before 
+    checking the database.
+
+    Note:
+    User.login will return 0 if login success
+    User.login will return 1 if login failure due to invalid username 
+                                                            or password
+    User.login will return 2 if login failure due to incorrect 
+                                                   username or password
+    """
+    with app.app_context():
+        db.drop_all()
+        db.create_all()
+
+    bob = User()
+    bob.email = "bob@gmail.com"
+    bob.password = "Password123!"
+    bob.add_to_database()
+
+    assert User.login("bob@gmail.com", "Password123!") == 0
+
+    assert User.login("b.o.b.@gmail..com", "Password123!") == 1
+    assert User.login("bob@gmail.com", "psw") == 1
+    assert User.login("b.o.b.@gmail..com", "psw") == 1
 
 
 if __name__ == "__main__":

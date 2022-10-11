@@ -1,14 +1,16 @@
 # user.py
 from ast import Str
+from pdb import post_mortem
 import sys
 from typing import TYPE_CHECKING
 import re
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import exc
+from sqlalchemy import exc, update, delete, insert, select
 
-from qbay import database, wallet
+from qbay import database
 from qbay.database import db
+from qbay.wallet import Wallet
 
 if TYPE_CHECKING:
     from .wallet import Wallet
@@ -33,7 +35,8 @@ class User():
                  email: str = "", password: str = "",
                  postal_code: str = "", billing_address: str = ""):
 
-        self._id = None  # should be random unique int, change later
+        self._database_obj: database.User = None
+        self._id = None  # created upon being added to database
         self._username: str = username
         self._email: str = email   # should also be unique
         self._password = password
@@ -41,6 +44,7 @@ class User():
         self._billing_address = billing_address
         self._wallet: Wallet = None  # user adds wallet after account creation
         self._reviews: 'list[Review]' = []
+        self._balance = 0
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -50,9 +54,9 @@ class User():
         user = database.User(username=self.username,
                              email=self.email,
                              password=self.password,
-                             wallet=self.wallet or None,
                              postal_code=self.postal_code,
                              billing_address=self.billing_address)
+        self._user = user
         with database.app.app_context():
             db.session.add(user)
             db.session.commit()
@@ -73,6 +77,10 @@ class User():
             return False
 
     @property
+    def database_obj(self):
+        return self._user
+    
+    @property
     def id(self):
         return self._id
 
@@ -82,26 +90,28 @@ class User():
 
     @username.setter
     def username(self, username: str):
-        regex = re.compile(r"^[A-Za-z]+( +[A-Za-z])*[A-Za-z]*")
-        if (2 < len(username) < 20) and re.fullmatch(regex, username):
-            self._username = username
-        else:
-            raise ValueError("Invalid username: %r" % username)
-
+        if not User.valid_username(username):
+            raise ValueError(f"Invalid username: {username}")
+        self._username = username
+        
     @property
     def email(self) -> str:
         return self._email
 
     @email.setter
     def email(self, email: str):
+        if not User.valid_email(email):
+            raise ValueError(f"Invalid email: {email}")
         self._email = email
-
+        
     @property
     def password(self) -> str:
         return self._password
 
     @password.setter
     def password(self, password: str):
+        # if not User.valid_email(password):
+        #     raise ValueError(f'Invalid password: {password}')
         self._password = password
 
     @property
@@ -119,7 +129,10 @@ class User():
 
     @property
     def balance(self):
-        return self.wallet.balance
+        if self.wallet:
+            return self.wallet.balance
+        else:
+            return 0
 
     @property
     def reviews(self):
@@ -137,8 +150,12 @@ class User():
         return self._postal_code
 
     @postal_code.setter
-    def postal_code(self, pos_code: str):
-        self._postal_code = pos_code
+    def postal_code(self, postal_code: str):
+        regex = re.compile("(?!.*[DFIOQU])[A-VXY][0-9][A-Z][0-9][A-Z][0-9]")
+        if re.fullmatch(regex, postal_code):
+            self._postal_code: str = postal_code
+        else:
+            raise ValueError(f"Invalid postal code: {postal_code}")
 
     @property
     def billing_address(self):
@@ -146,6 +163,7 @@ class User():
 
     @billing_address.setter
     def billing_address(self, bill_addr: str):
+        
         self._billing_address = bill_addr
 
     @staticmethod
@@ -161,7 +179,7 @@ class User():
         Returns:
             True if user name is valid, False if not
         """
-        if name == "":
+        if not name:
             return False
         if name[0] == " " or name[-1] == " ":
             return False
@@ -183,7 +201,7 @@ class User():
         Returns:
             True if email is valid, False if not
         """
-        if email == "":
+        if not email:
             return False
 
         regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+'
@@ -267,4 +285,85 @@ class User():
         # # save user object
         # db.session.commit()
 
+        return True
+
+    @staticmethod
+    def login(email, password):
+        """Logs user in if correct corresponding email and password
+
+        Note: other than returning if login was successful or not, 
+        logging in doesn't yet give the user any additional features or
+        permissions.
+
+        Returns 0 for login success
+        Returns 1 for login failure due to invalid username or password
+        Returns 2 for login failure due to incorrect username or 
+                                                password (non-matching)
+        """
+        if not (User.valid_email(email) and User.valid_password(password)):
+            return 1
+
+        with database.app.app_context():
+            user = database.User.query.filter_by(email=email).first()
+
+            if user:
+                if user.password == password:
+                    # login
+                    return 0            
+
+        return 2
+
+    def update_username(self, username):
+        try:
+            self.username = username            
+        except ValueError as e:
+            print(e)
+            return False
+
+        try:
+            with database.app.app_context():
+                self._user.username = username
+                db.session.commit()
+        except exc.IntegrityError as e:
+            print(f"Username already exists: {username}")
+            return False
+        
+        return True        
+    
+    def update_email(self, email):
+        try:
+            self.email = email            
+        except ValueError as e:
+            print(e)
+            return False
+        try:
+            with database.app.app_context():
+                self._user.email = email
+                db.session.commit()
+        except exc.IntegrityError as e:
+            print(f"Email already exists: {email}")
+            return False
+        return True   
+    
+    def update_billing_address(self, address):
+        try:
+            self.billing_address = address
+        except ValueError as e:
+            print(e)
+            return False
+        with database.app.app_context():
+            self._user.billing_address = address
+            db.session.commit()
+        self._billing_address = address
+        return True
+        
+    def update_postal_code(self, postal_code):
+        try:
+            self.postal_code = postal_code
+        except ValueError as e:
+            print(e)
+            return False
+        with database.app.app_context():
+            self._user.postal_code = postal_code
+            db.session.commit()
         return True
