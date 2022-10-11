@@ -1,6 +1,10 @@
 import unittest
-from sqlalchemy import exc
+
 from qbay import database
+from flask import Flask
+from sqlalchemy import exc
+from qbay.user import User
+from qbay.database import app, db
 from qbay.review import Review
 from qbay.user import User
 from qbay.listing import Listing
@@ -15,6 +19,9 @@ import pytest
 This file defines the testing for implemented data models
 """
 
+ctx = app.app_context()
+ctx.push()
+
 
 class UnitTest(unittest.TestCase):
 
@@ -27,8 +34,8 @@ class UnitTest(unittest.TestCase):
         user.email = "19ks62@queensu.ca"
         assert user.email == "19ks62@queensu.ca"
 
-        user.password = "Password123@!#&$^&*"
-        assert user.password == "Password123@!#&$^&*"
+        user.password = "Password123!"
+        assert user.password == "Password123!"
 
         test_wall = Wallet()
         user.wallet = test_wall
@@ -129,7 +136,7 @@ class UnitTest(unittest.TestCase):
         """Sprint 1 Testing"""
         # Testing Initialization
         obj = Listing()
-        # Testing param manipulation #
+        # Testing param manipulation
         obj.title = "4 Bed 2 Bath"
         obj.address = "Queen's University"
         obj.price = 8000.57
@@ -243,53 +250,73 @@ class UnitTest(unittest.TestCase):
         """ Testing R1-1:
         Email and password cannot be empty.
         """
-
-        assert User.register("u00", "test0@test.com", "Onetwo!") is True
-        assert User.register("u01", "", "Onetwo!") is False
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
+            
+        assert User.register("u01", "test1@test.com", "Onetwo!") is True
+        assert User.register("u02", "", "Onetwo!") is False
         assert User.register("u02", "test2@test.com", "") is False
+        assert User.register("u02", "", "") is False
 
-    # need login function + database
-    # def test_r1_2_user_register():
-    #     """ Testing R1-2:
-    #     User is uniquely identified by their user id.
-    #     """
-
-    #     user = login("test0@test.com", "Onetwo!")
-    #     assert user is not None
-    #     # might have to change later
-    #     uuid_obj = UUID(user.id, version=4)
-    #     assert str(uuid_obj) == user.id
+    def test_r1_2_user_register(self):
+        """ Testing R1-2:
+        User is uniquely identified by their user id.
+        """
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
+            
+        assert User.register("u01", "test2.1@test.com", "Onetwo!") is True
+        user = database.User.query.get(1)
+        assert user is not None
+        assert user.id == 1
+        
+        assert User.register("u02", "test2.2@test.com", "Onetwo!") is True
+        user2 = database.User.query.get(2)
+        assert user2 is not None
+        assert user2.id == 2
 
     def test_r1_3_user_register(self):
         """ Testing R1-3:
         Email has to follow addr-spec defined in RFC 5322.
         """
-
-        assert User.register("u01", "test.1@test.com", "Onetwo!") is True
-        assert User.register("u02", "test2@test", "Onetwo!") is False
-        assert User.register("u02", "test2@.com", "Onetwo!") is False
-        assert User.register("u02", "@test.com", "Onetwo!") is False
-        assert User.register("u02", "testing", "Onetwo!") is False
-        assert User.register(
-            "u02", "(Jon Test) test2@test.com", "Onetwo!") is False
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
+            
+        assert User.register("u03", "test.1@test.com", "Onetwo!") is True
+        assert User.register("u04", "test4@test", "Onetwo!") is False
+        assert User.register("u04", "test4@.com", "Onetwo!") is False
+        assert User.register("u04", "@test.com", "Onetwo!") is False
+        assert User.register("u04", "testing", "Onetwo!") is False
+        assert User.register("u04", "(Jon) test4@test.com", "Onetwo!") is False
 
     def test_r1_4_user_register(self):
         """ Testing R1-4:
         Password meets required complexity.
         """
-
-        assert User.register("u02", "test2@test.com", "One23!") is True
-        assert User.register("u03", "test3@test.com", "One2!") is False
-        assert User.register("u03", "test3@test.com", "onetwo!") is False
-        assert User.register("u03", "test3@test.com", "ONETWO!") is False
-        assert User.register("u03", "test3@test.com", "Onetwo") is False
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
+            
+        assert User.register("u04", "test4@test.com", "One23!") is True
+        assert User.register("u05", "test5@test.com", "One2!") is False
+        assert User.register("u05", "test5@test.com", "onetwo!") is False
+        assert User.register("u05", "test5@test.com", "ONETWO!") is False
+        assert User.register("u05", "test5@test.com", "Onetwo") is False
+        assert User.register("u05", "test5@test.com", "ONETWO") is False
+        assert User.register("u05", "test5@test.com", "onetwo") is False
 
     def test_r1_5_user_register(self):
         """ Testing R1-5:
         User name is non-empty, alphanumeric-only, and spaces are allowed
         only if it is not as the prefix or suffix.
         """
-
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
+            
         assert User.register("u03", "test3@test.com", "Onetwo!") is True
         assert User.register("User 04", "test4@test.com", "Onetwo!") is True
         assert User.register("", "test5@test.com", "Onetwo!") is False
@@ -301,7 +328,10 @@ class UnitTest(unittest.TestCase):
         """ Testing R1-6:
         User name length is longer 2 and less than 20 characters.
         """
-
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
+            
         assert User.register("u05", "test5@test.com", "Onetwo!") is True
         assert User.register("u06ThisUsernameWork",
                              "test6@test.com", "Onetwo!") is True
@@ -317,6 +347,7 @@ class UnitTest(unittest.TestCase):
         with database.app.app_context():
             db.drop_all()
             db.create_all()
+            
         user = User("testUser", "user@example.ca", "password123")
         user.add_to_database()
 
@@ -344,6 +375,7 @@ class UnitTest(unittest.TestCase):
         with database.app.app_context():
             db.drop_all()
             db.create_all()
+            
         user = User("testUser", "user@example.ca", "password123")
         user.add_to_database()
 
@@ -363,6 +395,7 @@ class UnitTest(unittest.TestCase):
         with database.app.app_context():
             db.drop_all()
             db.create_all()
+            
         user = User("testUser", "user@example.ca", "password123")
         user.add_to_database()
 
@@ -392,27 +425,55 @@ class UnitTest(unittest.TestCase):
 #     Billing Address is empty at time of registration.
 #     """
 
-#     user = login("u00", "test0@test.com", "Onetwo!")
-#     assert user is not None
-#     assert user.billing_address == ""
+    def test_r1_7_user_register(self):
+        """ Testing R1-7:
+        If email has been used, operation failed.
+        """
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
+            
+        assert User.register("u07", "test7@test.com", "Onetwo!") is True
+        assert User.register("u08", "test7@test.com", "Onetwo!") is False
 
-# def test_r1_9_user_register():
-#     """ Testing R1-9:
-#     Postal Code is empty at time of registration.
-#     """
+    def test_r1_8_user_register(self):
+        """ Testing R1-8:
+        Billing Address is empty at time of registration.
+        """
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
+            
+        User.register("u01", "test7@test.com", "Onetwo!")
+        user = database.User.query.get(1)
+        assert user is not None
+        assert user.billing_address == ""
 
-#     user = login("u00", "test0@test.com", "Onetwo!")
-#     assert user is not None
-#     assert user.postal_code == ""
+    def test_r1_9_user_register(self):
+        """ Testing R1-9:
+        Postal Code is empty at time of registration.
+        """
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
+            
+        User.register("u09", "test9@test.com", "Onetwo!")
+        user = database.User.query.get(1)
+        assert user is not None
+        assert user.postal_code == ""
 
-# def test_r1_10_user_register():
-#     """ Testing R1-10:
-#     Balance should be initialized as 100 at time of registration.
-#     """
-
-#     user = login("u00", "test0@test.com", "Onetwo!")
-#     assert user is not None
-#     assert user.balance == 100
+    def test_r1_10_user_register(self):
+        """ Testing R1-10:
+        Balance should be initialized as 100 at time of registration.
+        """
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
+            
+        User.register("u10", "test10@test.com", "Onetwo!")
+        user = database.User.query.get(1)
+        assert user is not None
+        assert user.postal_code == ""
 
 
 def test_r2_1():
