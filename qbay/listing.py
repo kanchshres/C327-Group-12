@@ -4,6 +4,10 @@ from multiprocessing.sharedctypes import Value
 from qbay.user import User
 from qbay.review import Review
 from datetime import datetime
+import re
+
+from qbay import database
+from qbay.database import db
 
 
 class Listing:
@@ -16,16 +20,18 @@ class Listing:
     - price: The cost of renting the listing (float)
     - date: The last modification date (date)
     - seller: The User associated with the listing (User)
-    
+
     EXTRA
     - address: The location of the listing (string)
     - reviews: A list of reviews associates with the listing (list[Review])
     """
 
     """ Initialize digital Listing"""
+
     def __init__(self, title: str = "", description: str = "",
-                 price: float = 0.0, owner=User(), address: str = ""):
+                 price: float = 0.0, owner: User = User(), address: str = ""):
         # Required
+        self._dbobj: database.Listing = None
         self._title = title
         self._description = description
         self._price = price
@@ -45,10 +51,10 @@ class Listing:
     """Sets title for digital Listing"""
     @title.setter
     def title(self, title):
-        if (not Listing.valid_title(title)):
+        if not (Listing.valid_title(title)):
             raise ValueError(f"Invalid Title: {title}")
         self._title = title
-        self.__date = datetime.now()
+        self.__date = datetime.now
 
     """Fetches description of digital Listing"""
     @property
@@ -58,10 +64,10 @@ class Listing:
     """Sets title for digital Listing"""
     @description.setter
     def description(self, description, title):
-        if (not Listing.valid_description(description, title)):
+        if not (Listing.valid_description(description, title)):
             raise ValueError(f"Invalid Description: {description}")
         self._description = description
-        self.__date = datetime.now()
+        self.__date = datetime.now
 
     """Fetches price of digital Listing"""
     @property
@@ -71,10 +77,10 @@ class Listing:
     """Sets price for digital Listing"""
     @price.setter
     def price(self, price):
-        if (not Listing.valid_price(self, price)):
+        if not (self.valid_price(price)):
             raise ValueError(f"Invalid Price: {price}")
         self._price = price
-        self.__date = datetime.now()
+        self.__date = datetime.now
 
     """Fetches last modification date of digital listing"""
     @property
@@ -83,8 +89,8 @@ class Listing:
 
     """Updates last modification date of digital listing"""
     @date.setter
-    def __date(self, mod_date):
-        if (not Listing.valid_date(mod_date)):
+    def date(self, mod_date):
+        if not (Listing.valid_date(mod_date)):
             raise ValueError(f"Invalid Date: {mod_date}")
         self._date = mod_date
 
@@ -99,7 +105,7 @@ class Listing:
         if (not Listing.valid_seller(owner)):
             raise ValueError(f"Invalid Seller: {owner}")
         self._seller = owner
-        self.__date = datetime.now()
+        self.__date = datetime.now
 
     # Extra
     """Fetches address of Listing"""
@@ -111,35 +117,59 @@ class Listing:
     @address.setter
     def address(self, location):
         self._address = location
-        self.__date = datetime.now()
-    
+        self.__date = datetime.now
+
     """Fetches reviews of Listing"""
     @property
     def reviews(self) -> 'list[Review]':
         return self._reviews
+        self.__date = datetime.now
 
     """Sets reviews of Listing"""
     @reviews.setter
     def reviews(self, comments: 'list[Review]'):
         self._reviews = comments
-        self.__date = datetime.now()
-    
+        self.__date = datetime.now
+
     """Add reviews to listing"""
+
     def add_review(self, review: 'Review'):
         self._reviews.append(review)
         # note: adding a review will currently not update the 
         # last_modified_date, since it's not modifying the actual post
 
-    """Create a new listing - return true of succssfull and false otherwise"""
+    """Adds listing to the database"""
+
+    def add_to_database(self):
+        listing = database.Listing(title=self.title,
+                                   description=self.description,
+                                   price=self.price,
+                                   owner_id=self.seller.id)
+        with database.app.app_context():
+            db.session.commit()
+            db.session.add(listing)
+            self._dbobj = listing
+            self.date = listing.last_modified_date
+
     @staticmethod
-    def create_listing(title, description, price, mod_date, owner):
+    def create_listing(title, description, price, owner):
+        """Creates new listing
+        Client can not modify the mod_date, rather, it is handled in the 
+        server database upon entry update 
+
+        params:
+        - title: Title of listing (string)
+        - description: A short description (string)
+        - price: The cost of renting the listing (float)
+        - seller: The User associated with the listing (User)
+
+        """
         if (Listing.valid_title(title) and Listing.valid_seller(owner) and
-                Listing.valid_price(price) and Listing.valid_date(mod_date) and
+                Listing.valid_price(price) and
                 Listing.valid_description(description, title)):
             listing = Listing(title, description, price, owner)
-            # Commit to database as well
-            return True
-        return False
+            listing.add_to_database()
+        return listing
 
     """Determine if a given title is valid """
     @staticmethod
@@ -169,6 +199,8 @@ class Listing:
 
             if (passed):
                 validation_status = True
+
+        # regex = re.compile()
 
         return validation_status
 
@@ -201,7 +233,8 @@ class Listing:
     """Determine if a given owner is valid"""
     @staticmethod
     def valid_seller(owner):
-        if (owner.email != ""):
-            # Also need to check of owner is in database
-            return True
+        if (owner.id):
+            with database.app.app_context():
+                user = database.User.query.get(owner.id)
+                return ((user is not None) and (user.email != ""))
         return False
