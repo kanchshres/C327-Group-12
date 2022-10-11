@@ -185,31 +185,14 @@ def test_r5_1_update_listing():
 
     # test that changing the seller should not work
     old_seller = obj.seller
-    try:
-        obj.udpate_seller(User())  # attempt 1: shouldn't work
-    except AttributeError:
-        pass
-    try:
-        obj.seller = User()  # attempt 2: shouldn't work
-    except AttributeError:
-        pass
-
+    with self.assertRaises(AttributeError):
+        obj.seller = User()
     assert obj.seller == old_seller
 
     # test that changing last_modified_date should not work
     old_last_date_modified = obj.last_mod_datetime
-    # trying to call the update function shouldn't work since it 
-    # doesn't exist
-    try:
-        obj.update_last_mod_datetime(datetime.now())
-    except AttributeError:
-        pass
-    # trying to update the attribute directly also shouldn't work, 
-    # since it's private
-    try:
+    with self.assertRaises(AttributeError):
         obj.last_mod_datetime = datetime.now()
-    except AttributeError:
-        pass
     assert obj.last_mod_datetime == old_last_date_modified
 
     
@@ -227,10 +210,8 @@ def test_r5_2_update_listing():
 
     # test that price does not change, as change is invalid
     obj.update_price(8100)
-    try:
+    with self.assertRaises(ValueError):
         obj.update_price(1500)
-    except ValueError:
-        pass
     assert obj.price == 8100
 
     # test that price does change, as change is valid
@@ -238,10 +219,8 @@ def test_r5_2_update_listing():
     assert obj.price == 8200
 
     # test that price does not change, as change is invalid
-    try:
+    with self.assertRaises(ValueError):
         obj.update_price(8199.99)
-    except ValueError:
-        pass
     assert obj.price == 8200
 
     # test that price does not change, as there is no change
