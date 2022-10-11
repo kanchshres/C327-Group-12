@@ -23,7 +23,8 @@ class Listing:
     """
 
     """ Initialize digital Listing"""
-    def __init__(self, title, description, price, owner, address: str = ""):
+    def __init__(self, title: str = "", description: str = "",
+                 price: float = 0.0, owner=User(), address: str = ""):
         # Required
         self._title = title
         self._description = description
@@ -34,7 +35,6 @@ class Listing:
         # Extra
         self._address: str = address
         self._reviews: list[Review] = []
-
 
     # Required
     """Fetches title of digital Listing"""
