@@ -354,13 +354,24 @@ def test_r2_1():
     User.login will return 2 if login failure due to incorrect 
                                                 username or password
     """
-    User.register("Bob", "bob@gmail.com", "Password123!")
-    User.register("Fred", "fred@gmail.com", "Password321!")
+    with app.app_context():
+        db.drop_all()
+        db.create_all()
 
-    assert User.login("Bob", "Password123!") == 0
-    assert User.login("Fred", "Password321!") == 0
-    assert User.login("Bob", "IncorrectPassword123!") == 2
-    assert User.login("Fred", "Password123!") == 2
+    bob = User()
+    bob.email = "bob@gmail.com"
+    bob.password = "Password123!"
+    bob.add_to_database()
+
+    fred = User()
+    fred.email = "fred@gmail.com"
+    fred.password = "Password321!"
+    fred.add_to_database()
+
+    assert User.login("bob@gmail.com", "Password123!") == 0
+    assert User.login("fred@gmail.com", "Password321!") == 0
+    assert User.login("bob@gmail.com", "IncorrectPassword123!") == 2
+    assert User.login("fred@gmail.com", "Password123!") == 2
 
 
 def test_r2_2():
@@ -375,13 +386,20 @@ def test_r2_2():
     User.login will return 2 if login failure due to incorrect 
                                                    username or password
     """
-    User.register("Bob", "bob@gmail.com", "Password123!")
+    with app.app_context():
+        db.drop_all()
+        db.create_all()
 
-    assert User.login("Bob", "Password123!") == 0
+    bob = User()
+    bob.email = "bob@gmail.com"
+    bob.password = "Password123!"
+    bob.add_to_database()
 
-    assert User.login("b", "Password123!") == 1
-    assert User.login("Bob", "psw") == 1
-    assert User.login("b", "psw") == 1
+    assert User.login("bob@gmail.com", "Password123!") == 0
+
+    assert User.login("b.o.b.@gmail..com", "Password123!") == 1
+    assert User.login("bob@gmail.com", "psw") == 1
+    assert User.login("b.o.b.@gmail..com", "psw") == 1
 
 
 if __name__ == "__main__":

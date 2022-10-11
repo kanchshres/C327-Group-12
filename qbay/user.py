@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 import re
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import exc, update, delete, insert
+from sqlalchemy import exc, update, delete, insert, select
 
 from qbay import database
 from qbay.database import db
@@ -288,8 +288,8 @@ class User():
         return True
 
     @staticmethod
-    def login(username, password):
-        """Logs user in if correct corresponding username and password
+    def login(email, password):
+        """Logs user in if correct corresponding email and password
 
         Note: other than returning if login was successful or not, 
         logging in doesn't yet give the user any additional features or
@@ -300,15 +300,18 @@ class User():
         Returns 2 for login failure due to incorrect username or 
                                                 password (non-matching)
         """
-        if not (User.valid_username(username) and User.valid_password(password)):
+        if not (User.valid_email(email) and User.valid_password(password)):
             return 1
 
-        for i in db.session.execute(db.select(users).filter(db.users.username == username)).all():
-            if i.password == password:
-                # login
-                return 0
-        return 2
+        with database.app.app_context():
+            user = database.User.query.filter_by(email=email).first()
 
+            if user:
+                if user.password == password:
+                    # login
+                    return 0            
+
+        return 2
 
     def update_username(self, username):
         try:
