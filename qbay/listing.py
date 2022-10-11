@@ -74,7 +74,6 @@ class Listing:
             raise ValueError(f"Invalid Price: {price}")
         self._price = price
 
-
     """Fetches last modification date of digital listing"""
     @property
     def date(self):
