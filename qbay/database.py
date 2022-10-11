@@ -40,7 +40,7 @@ class User(db.Model):
 class Listing(db.Model):
     __tablename__ = 'listings'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    title = db.Column(db.String(255), unique=True)
+    title = db.Column(db.String(255), unique=True, nullable=False)
     description = db.Column(db.String(5000), nullable=False)
     price = db.Column(db.Float(precision=2, asdecimal=True), nullable=False)
     last_modified_date = db.Column(db.String(20), nullable=True)
