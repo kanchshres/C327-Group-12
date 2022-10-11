@@ -2,8 +2,8 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from qbay.user import User
-    from qbay.listing import Listing
+    from .user import User
+    from .listing import Listing
 
 
 class Review():
@@ -20,7 +20,7 @@ class Review():
     Note: Checking that the user is a verified guest to the listing 
     has not been implemented yet
     """
-    
+
     def __init__(self):
         self._id = None
         self._date_posted = None

@@ -1,7 +1,7 @@
 # listing.py
 from enum import Enum, unique
-from qbay.user import User
-from qbay.review import Review
+from .user import User
+from .review import Review
 
 
 class Listing:
@@ -15,6 +15,7 @@ class Listing:
     - description: A short description (string)
     - reviews: A list of reviews associates with the listing (list[Review])
     """
+
     def __init__(self):
         self._title = ""
         self._address = ""
@@ -66,10 +67,10 @@ class Listing:
     @property
     def reviews(self) -> 'list[Review]':
         return self._reviews
-    
+
     @reviews.setter
     def reviews(self, comments: 'list[Review]'):
         self._reviews = comments
-    
+
     def add_review(self, review: 'Review'):
         self._reviews.append(review)
