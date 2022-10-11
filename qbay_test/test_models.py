@@ -143,256 +143,250 @@ class UnitTest(unittest.TestCase):
         assert obj.seller.username == "bob"
         assert obj.reviews == [r1, r2]
 
+    def test_r5_1_update_listing(self):
+        """ Testing R5-1:
+        One can update all attributes of the listing, except 
+        owner_id and last_modified_date.
+        """
+        # Initialize Listing
+        title = "4 Bed 2 Bath"
+        address = "Queen's University"
+        price = 8000.57
+        description = "Shittiest school to ever exist"
+        seller = User()
+        obj = Listing(title, description, price, seller, address)
 
-def test_r5_1_update_listing():
-    """ Testing R5-1:
-    One can update all attributes of the listing, except 
-    owner_id and last_modified_date.
-    """
-    # Initialize Listing
-    title = "4 Bed 2 Bath"
-    address = "Queen's University"
-    price = 8000.57
-    description = "Shittiest school to ever exist"
-    seller = User()
-    obj = Listing(title, description, price, seller, address)
+        r1 = Review()
+        obj.add_review(r1)
 
-    r1 = Review()
-    obj.add_review(r1)
+        # test if changing the title works
+        obj.title = "different title"
+        assert obj.title == "different title"
 
-    # test if changing the title works
-    obj.update_title("different title")
-    assert obj.title == "different title"
+        # test if chaning the address works
+        obj.address = "different address"
+        assert obj.address == "different address"
 
-    # test if chaning the address works
-    obj.update_address("different address")
-    assert obj.address == "different address"
+        # test if changing the price works (not testing R5-3 yet)
+        obj.price = 8100
+        assert obj.price == 8100
 
-    # test if changing the price works (not testing R5-3 yet)
-    obj.update_price(8100)
-    assert obj.price == 8100
+        # test if changing the description works
+        obj.description = "different description"
+        assert obj.description == "different description"
 
-    # test if changing the description works
-    obj.update_description("different description")
-    assert obj.description == "different description"
+        # test that adding review works
+        old_reviews = obj.reviews
+        r1 = Review()
+        obj.add_review(r1)
+        old_reviews.append(r1)
+        assert obj.reviews == old_reviews
 
-    # test that adding review works
-    old_reviews = obj.reviews
-    r1 = Review()
-    obj.add_review(r1)
-    old_reviews.append(r1)
-    assert obj.reviews == old_reviews
+        # test that changing the seller should not work
+        old_seller = obj.seller
+        with self.assertRaises(AttributeError):
+            obj.seller = User()
+        assert obj.seller == old_seller
 
-    # test that changing the seller should not work
-    old_seller = obj.seller
-    with self.assertRaises(AttributeError):
-        obj.seller = User()
-    assert obj.seller == old_seller
+        # test that changing last_modified_date should not work
+        old_last_date_modified = obj.date
+        with self.assertRaises(AttributeError):
+            obj.date = datetime.now()
+        assert obj.date == old_last_date_modified
 
-    # test that changing last_modified_date should not work
-    old_last_date_modified = obj.last_mod_datetime
-    with self.assertRaises(AttributeError):
-        obj.last_mod_datetime = datetime.now()
-    assert obj.last_mod_datetime == old_last_date_modified
+    def test_r5_2_update_listing(self):
+        """ Testing R5-2:
+        Price can be only increased but cannot be decreased.
+        """
+        # Initialize Listing
+        title = "4 Bed 2 Bath"
+        address = "Queen's University"
+        price = 8000.57
+        description = "Shittiest school to ever exist"
+        seller = User()
+        obj = Listing(title, description, price, seller, address)
 
-    
-def test_r5_2_update_listing():
-    """ Testing R5-2:
-    Price can be only increased but cannot be decreased.
-    """
-    # Initialize Listing
-    title = "4 Bed 2 Bath"
-    address = "Queen's University"
-    price = 8000.57
-    description = "Shittiest school to ever exist"
-    seller = User()
-    obj = Listing(title, description, price, seller, address)
+        # test that price does not change, as change is invalid
+        obj.price = 8100
+        obj.price = 1500
+        assert obj.price == 8100
 
-    # test that price does not change, as change is invalid
-    obj.update_price(8100)
-    with self.assertRaises(ValueError):
-        obj.update_price(1500)
-    assert obj.price == 8100
+        # test that price does change, as change is valid
+        obj.price = 8200
+        assert obj.price == 8200
 
-    # test that price does change, as change is valid
-    obj.update_price(8200)
-    assert obj.price == 8200
+        # test that price does not change, as change is invalid
+        obj.price = 8199.99
+        assert obj.price == 8200
 
-    # test that price does not change, as change is invalid
-    with self.assertRaises(ValueError):
-        obj.update_price(8199.99)
-    assert obj.price == 8200
+        # test that price does not change, as there is no change
+        obj.price = 8200
+        assert obj.price == 8200
 
-    # test that price does not change, as there is no change
-    obj.update_price(8200)
-    assert obj.price == 8200
+    def test_r5_3_update_listing(self):
+        """ Testing R5-3:
+        last_modified_date should be updated when the update operation 
+        is successful.
+        """
+        # Initialize Listing
+        title = "4 Bed 2 Bath"
+        address = "Queen's University"
+        price = 8000.57
+        description = "Shittiest school to ever exist"
+        seller = User()
+        obj = Listing(title, description, price, seller, address)
 
+        # used as a margin of error when testing if 2 times are equal
+        margin = timedelta(milliseconds=1)
 
-def test_r5_3_update_listing():
-    """ Testing R5-3:
-    last_modified_date should be updated when the update operation 
-    is successful.
-    """
-    # Initialize Listing
-    title = "4 Bed 2 Bath"
-    address = "Queen's University"
-    price = 8000.57
-    description = "Shittiest school to ever exist"
-    seller = User()
-    obj = Listing(title, description, price, seller, address)
+        # test that initializing the listing creates an accurate 
+        # last_modified_date (aka creation date)
+        now = datetime.now()
+        assert now - margin <= obj.date <= now + margin
 
-    # used as a margin of error when testing if 2 times are equal
-    margin = timedelta(milliseconds=100)
+        # test that update_title also updates last_modified_date
+        old_last_modified_date = obj.date
+        obj.title = "new title"
+        # test that updated last_modified_date is later than 
+        # last_modified_date before title was updated
+        assert obj.date >= old_last_modified_date
+        # test that new last_modified_date is close enough to the current
+        # time (margin accounts for execution time)
+        now = datetime.now()
+        assert now - margin <= obj.date <= now + margin
 
-    # test that initializing the listing creates an accurate 
-    # last_modified_date (aka creation date)
-    now = datetime.now()
-    assert now - margin <= obj.last_mod_datetime <= now + margin
+        # test that update_address also updates last_modified_date
+        old_last_modified_date = obj.date
+        obj.address = "new address"
+        # test that updated last_modified_date is later than 
+        # last_modified_date before address was updated
+        assert obj.date >= old_last_modified_date
+        # test that new last_modified_date is close enough to the current
+        # time (margin accounts for execution time)
+        now = datetime.now()
+        assert now - margin <= obj.date <= now + margin
 
-    # test that update_title also updates last_modified_date
-    old_last_modified_date = obj.last_mod_datetime
-    obj.update_title("new title")
-    # test that updated last_modified_date is later than 
-    # last_modified_date before title was updated
-    assert obj.last_mod_datetime >= old_last_modified_date
-    # test that new last_modified_date is close enough to the current
-    # time (margin accounts for execution time)
-    now = datetime.now()
-    assert now - margin <= obj.last_mod_datetime <= now + margin
+        # test that update_price also updates last_modified_date
+        old_last_modified_date = obj.date
+        obj.price = 8500
+        # test that updated last_modified_date is later than 
+        # last_modified_date before price was updated
+        assert obj.date >= old_last_modified_date
+        # test that new last_modified_date is close enough to the current
+        # time (margin accounts for execution time)
+        now = datetime.now()
+        assert now - margin <= obj.date <= now + margin
 
-    # test that update_address also updates last_modified_date
-    old_last_modified_date = obj.last_mod_datetime
-    obj.update_address("new address")
-    # test that updated last_modified_date is later than 
-    # last_modified_date before address was updated
-    assert obj.last_mod_datetime >= old_last_modified_date
-    # test that new last_modified_date is close enough to the current
-    # time (margin accounts for execution time)
-    now = datetime.now()
-    assert now - margin <= obj.last_mod_datetime <= now + margin
+        # test that if update_price failes, last_modified_date is not 
+        # updated
+        old_last_modified_date = obj.date
+        obj.price = 8500
+        # test that last_modified_date didn't change
+        assert obj.date == old_last_modified_date
 
-    # test that update_price also updates last_modified_date
-    old_last_modified_date = obj.last_mod_datetime
-    obj.update_price(8500)
-    # test that updated last_modified_date is later than 
-    # last_modified_date before price was updated
-    assert obj.last_mod_datetime >= old_last_modified_date
-    # test that new last_modified_date is close enough to the current
-    # time (margin accounts for execution time)
-    now = datetime.now()
-    assert now - margin <= obj.last_mod_datetime <= now + margin
+        # test that update_description also updates last_modified_date
+        old_last_modified_date = obj.date
+        obj.description = "new description"
+        # test that updated last_modified_date is later than 
+        # last_modified_date before description was updated
+        assert obj.date >= old_last_modified_date
+        # test that new last_modified_date is close enough to the current
+        # time (margin accounts for execution time)
+        now = datetime.now()
+        assert now - margin <= obj.date <= now + margin
 
-    # test that if update_price failes, last_modified_date is not 
-    # updated
-    old_last_modified_date = obj.last_mod_datetime
-    obj.update_price(8500)
-    # test that last_modified_date didn't change
-    assert obj.last_mod_datetime == old_last_modified_date
+        # test that add_review also updates last_modified_date
+        old_last_modified_date = obj.date
+        obj.add_review(Review())
+        # test that updated last_modified_date is later than 
+        # last_modified_date before price was updated
+        assert obj.date >= old_last_modified_date
+        # test that new last_modified_date is close enough to the current
+        # time (margin accounts for execution time)
+        now = datetime.now()
+        assert now - margin <= obj.date <= now + margin
 
-    # test that update_description also updates last_modified_date
-    old_last_modified_date = obj.last_mod_datetime
-    obj.update_description("new description")
-    # test that updated last_modified_date is later than 
-    # last_modified_date before description was updated
-    assert obj.last_mod_datetime >= old_last_modified_date
-    # test that new last_modified_date is close enough to the current
-    # time (margin accounts for execution time)
-    now = datetime.now()
-    assert now - margin <= obj.last_mod_datetime <= now + margin
+    def test_r5_4_update_listing(self):
+        """ Testing R5-4:
+        When updating an attribute, one has to make sure that it follows 
+        the same requirements as above. Mainly the subsections of R4.
+        """
+        listing = Listing()
+        # Testing Titles
+        t1 = ""
+        i = 0
+        while (i < 80):
+            t1 = t1 + "a"
+            i = i + 1
+        t2 = " 4 bed 2 bath"
+        t3 = "4 bed 2 bath "
+        t4 = ""
+        i = 0
+        while (i < 81):
+            t4 = t4 + "a"
+            i = i + 1
+        t5 = "4 bed 2 bath?"
+        listing.title = t1
+        assert (listing.title == t1)
 
-    # test that add_review also updates last_modified_date
-    old_last_modified_date = obj.last_mod_datetime
-    obj.update_price(8500)
-    # test that updated last_modified_date is later than 
-    # last_modified_date before price was updated
-    assert obj.last_mod_datetime >= old_last_modified_date
-    # test that new last_modified_date is close enough to the current
-    # time (margin accounts for execution time)
-    now = datetime.now()
-    assert now - margin <= obj.last_mod_datetime <= now + margin
+        listing.title = t2
+        assert (listing.title != t2)
 
+        listing.title = t3
+        assert (listing.title != t3)
 
-def test_r5_4_update_listing():
-    """ Testing R5-4:
-    When updating an attribute, one has to make sure that it follows 
-    the same requirements as above. Mainly the subsections of R4.
-    """
-    listing = Listing()
-    # Testing Titles
-    t1 = ""
-    i = 0
-    while (i < 80):
-        t1 = t1 + "a"
-        i = i + 1
-    t2 = " 4 bed 2 bath"
-    t3 = "4 bed 2 bath "
-    t4 = ""
-    i = 0
-    while (i < 81):
-        t4 = t4 + "a"
-        i = i + 1
-    t5 = "4 bed 2 bath?"
-    listing.update_title(t1)
-    assert (listing.title == t1)
+        listing.title = t4
+        assert (listing.title != t4)
 
-    listing.update_title(t2)
-    assert (listing.title != t2)
+        listing.title = t5
+        assert (listing.title != t5)
 
-    listing.update_title(t3)
-    assert (listing.title != t3)
+        # Testing Descriptions
+        listing.title = "qwertyuiopqwertyui"
+        des1 = ""
+        i = 0
+        while (i < 2000):
+            des1 = des1 + "a"
+            i = i + 1
+        des2 = "qwertyuiopqwertyuiop"
+        des3 = "qwertyuiopqwertyu"
+        des4 = ""
+        i = 0
+        while (i < 2001):
+            des4 = des4 + "a"
+            i = i + 1
 
-    listing.update_title(t4)
-    assert (listing.title != t4)
+        listing.description = des1
+        assert (listing.description == des1)
 
-    listing.update_title(t5)
-    assert (listing.title != t5)
+        listing.description = des2
+        assert (listing.description == des2)
 
-    # Testing Descriptions
-    listing.update_title("qwertyuiopqwertyui")
-    des1 = ""
-    i = 0
-    while (i < 2000):
-        des1 = des1 + "a"
-        i = i + 1
-    des2 = "qwertyuiopqwertyuiop"
-    des3 = "qwertyuiopqwertyu"
-    des4 = ""
-    i = 0
-    while (i < 2001):
-        des4 = des4 + "a"
-        i = i + 1
+        listing.description = des3
+        assert (listing.description != des3)
 
-    listing.update_description(des1)
-    assert (listing.description == des1)
+        listing.description = des4
+        assert (listing.description != des4)
 
-    listing.update_description(des2)
-    assert (listing.description == des2)
+        # Testing Prices
+        p1 = 9.999999
+        p2 = 10
+        p3 = 10000
+        p4 = 10000.001
 
-    listing.update_description(des3)
-    assert (listing.description != des3)
+        listing.price = p1
+        assert (listing.price != p1)
 
-    listing.update_description(des4)
-    assert (listing.description != des4)
+        listing.price = p2
+        assert (listing.price == p2)
 
-    # Testing Prices
-    p1 = 9.999999
-    p2 = 10
-    p3 = 10000
-    p4 = 10000.001
+        listing.price = p3
+        assert (listing.price == p3)
 
-    listing.update_price(p1)
-    assert (listing.price != p1)
+        listing.price = p4
+        assert (listing.price != p4)
 
-    listing.update_price(p2)
-    assert (listing.price == p2)
-
-    listing.update_price(p3)
-    assert (listing.price == p3)
-
-    listing.update_price(p4)
-    assert (listing.price != p4)
-
-    # Still missing test where updating title conforms to R4-8
+        # Still missing test where updating title conforms to R4-8
 
 
 if __name__ == "__main__":
