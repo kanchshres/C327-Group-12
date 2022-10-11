@@ -1,5 +1,6 @@
 # listing.py
 from enum import Enum, unique
+from multiprocessing.sharedctypes import Value
 from qbay.user import User
 from qbay.review import Review
 from datetime import datetime
@@ -22,7 +23,8 @@ class Listing:
     """
 
     """ Initialize digital Listing"""
-    def __init__(self, title: str = "", description: str = "", 
+
+    def __init__(self, title: str = "", description: str = "",
                  price: float = 0.0, owner=User(), address: str = ""):
         # Required
         self._title = title
@@ -44,10 +46,9 @@ class Listing:
     """Sets title for digital Listing"""
     @title.setter
     def title(self, title):
-        if (Listing.valid_title(title)):
-            self._title = title
-            return True
-        return False
+        if (not Listing.valid_title(title)):
+            raise ValueError(f"Invalid Title: {title}")
+        self._title = title
 
     """Fetches description of digital Listing"""
     @property
@@ -57,10 +58,9 @@ class Listing:
     """Sets title for digital Listing"""
     @description.setter
     def description(self, description, title):
-        if (Listing.valid_description(description, title)):
-            self._description = description
-            return True
-        return False
+        if (not Listing.valid_description(description, title)):
+            raise ValueError(f"Invalid Description: {description}")
+        self._description = description
 
     """Fetches price of digital Listing"""
     @property
@@ -70,10 +70,10 @@ class Listing:
     """Sets price for digital Listing"""
     @price.setter
     def price(self, price):
-        if (Listing.valid_price(price)):
-            self._price = price
-            return True
-        return False
+        if (not Listing.valid_price(price)):
+            raise ValueError(f"Invalid Price: {price}")
+        self._price = price
+
 
     """Fetches last modification date of digital listing"""
     @property
@@ -83,10 +83,9 @@ class Listing:
     """Updates last modification date of digital listing"""
     @date.setter
     def date(self, mod_date):
-        if (Listing.valid_date(mod_date)):
-            self._date = mod_date
-            return True
-        return False
+        if (not Listing.valid_date(mod_date)):
+            raise ValueError(f"Invalid Date: {mod_date}")
+        self._date = mod_date
 
     """Fetches owner of digital Listing"""
     @property
@@ -96,10 +95,9 @@ class Listing:
     """Sets owner of digital Listing"""
     @seller.setter
     def seller(self, owner):
-        if (Listing.valid_seller(owner)):
-            self._seller = owner
-            return True
-        return False
+        if (not Listing.valid_seller(owner)):
+            raise ValueError(f"Invalid Seller: {owner}")
+        self._seller = owner
 
     # Extra
     """Fetches address of Listing"""
@@ -111,25 +109,26 @@ class Listing:
     @address.setter
     def address(self, location):
         self._address = location
-    
+
     """Fetches reviews of Listing"""
     @property
     def reviews(self) -> 'list[Review]':
         return self._reviews
-    
+
     """Sets reviews of Listing"""
     @reviews.setter
     def reviews(self, comments: 'list[Review]'):
         self._reviews = comments
-    
+
     """Add reviews to listing"""
+
     def add_review(self, review: 'Review'):
         self._reviews.append(review)
 
     """Create a new listing - return true of succssfull and false otherwise"""
     @staticmethod
     def create_listing(title, description, price, mod_date, owner):
-        if (Listing.valid_title(title) and Listing.valid_seller(owner) and 
+        if (Listing.valid_title(title) and Listing.valid_seller(owner) and
                 Listing.valid_price(price) and Listing.valid_date(mod_date) and
                 Listing.valid_description(description, title)):
             listing = Listing(title, description, price, owner)
@@ -162,7 +161,7 @@ class Listing:
                 if (valid_char is False):
                     passed = False
                     break
-            
+
             if (passed):
                 validation_status = True
 
@@ -171,26 +170,20 @@ class Listing:
     """Determine if a given description is valid"""
     @staticmethod
     def valid_description(description, title):
-        if ((19 < len(description) < 2001)):
-            if (len(title) < len(description)):
-                return True
-        return False
+        return ((19 < len(description) < 2001)
+                and (len(title) < len(description)))
 
     """Determine if a given price is valid"""
     @staticmethod
     def valid_price(price):
-        if (10.00 <= price <= 10000.00):
-            return True
-        return False
+        return (10.00 <= price <= 10000.00)
 
     """Determine if a given last modification date is valid"""
     @staticmethod
     def valid_date(mod_date):
         min_date = datetime(2021, 1, 2)
         max_date = datetime(2025, 1, 2)
-        if (min_date < mod_date < max_date):
-            return True
-        return False
+        return (min_date < mod_date < max_date)
 
     """Determine if a given owner is valid"""
     @staticmethod
