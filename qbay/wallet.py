@@ -6,13 +6,14 @@ if TYPE_CHECKING:
 
 class Wallet:
     """Object representation of a digital wallet.
-    
+
     params:
     - id: An UID of the wallet
     - balance: the current account balance
     - bankingAccount: The associated banking account with the wallet
     - transactions: A list of transactions associated with the wallet
     """
+
     def __init__(self):
         self._id = -1
         self._balance: int = 0
@@ -53,7 +54,7 @@ class Wallet:
     def transfer_balance(self, amount: int):
         if amount < 0:
             raise ValueError("Transfered amount cannot be negative")
-        
+
         self._balance += self.bankingAccount.transfer_balance(amount)
 
 
@@ -67,12 +68,13 @@ class BankingAccount:
     currency: the currency of the balance
 
     """
+
     def __init__(self):
         self._id = -1
         self._account_holer_name = ""
         self._balance: int = 0
         self._currency = ""
-    
+
     @property
     def id(self):
         return self._id
@@ -84,7 +86,7 @@ class BankingAccount:
     @property
     def balance(self):
         return self._balance
-    
+
     """Subtract balance from current account balance to a transaction
 
     params:
@@ -97,6 +99,7 @@ class BankingAccount:
     Returns:
         amount (int): the transferred amount
     """
+
     def transfer_balance(self, amount: int) -> int:
         if amount < 0:
             raise ValueError("amount must be greater than zero")
