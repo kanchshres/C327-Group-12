@@ -24,13 +24,12 @@ class Listing:
 
     """ Initialize digital Listing"""
     def __init__(self, title: str = "", description: str = "", 
-                 price: float = 0.0, mod_date=datetime.now(), 
-                 owner=User(), address: str = ""):
+                 price: float = 0.0, owner=User(), address: str = ""):
         # Required
         self._title = title
         self._description = description
         self._price = price
-        self._date = mod_date
+        self._date = None
         self._seller = owner
         self._last_mod_datetime = datetime.now()
 
