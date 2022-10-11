@@ -35,7 +35,7 @@ class Listing:
         self._title = title
         self._description = description
         self._price = price
-        self._date = None
+        self._date = datetime.now()
         self._seller = owner
 
         # Extra
@@ -54,6 +54,7 @@ class Listing:
         if not (Listing.valid_title(title)):
             raise ValueError(f"Invalid Title: {title}")
         self._title = title
+        self.__date = datetime.now
 
     """Fetches description of digital Listing"""
     @property
@@ -66,6 +67,7 @@ class Listing:
         if not (Listing.valid_description(description, title)):
             raise ValueError(f"Invalid Description: {description}")
         self._description = description
+        self.__date = datetime.now
 
     """Fetches price of digital Listing"""
     @property
@@ -75,9 +77,10 @@ class Listing:
     """Sets price for digital Listing"""
     @price.setter
     def price(self, price):
-        if not (Listing.valid_price(price)):
+        if not (self.valid_price(price)):
             raise ValueError(f"Invalid Price: {price}")
         self._price = price
+        self.__date = datetime.now
 
     """Fetches last modification date of digital listing"""
     @property
@@ -102,6 +105,7 @@ class Listing:
         if (not Listing.valid_seller(owner)):
             raise ValueError(f"Invalid Seller: {owner}")
         self._seller = owner
+        self.__date = datetime.now
 
     # Extra
     """Fetches address of Listing"""
@@ -113,21 +117,26 @@ class Listing:
     @address.setter
     def address(self, location):
         self._address = location
+        self.__date = datetime.now
 
     """Fetches reviews of Listing"""
     @property
     def reviews(self) -> 'list[Review]':
         return self._reviews
+        self.__date = datetime.now
 
     """Sets reviews of Listing"""
     @reviews.setter
     def reviews(self, comments: 'list[Review]'):
         self._reviews = comments
+        self.__date = datetime.now
 
     """Add reviews to listing"""
 
     def add_review(self, review: 'Review'):
         self._reviews.append(review)
+        # note: adding a review will currently not update the 
+        # last_modified_date, since it's not modifying the actual post
 
     """Adds listing to the database"""
 
@@ -202,9 +211,17 @@ class Listing:
                 and (len(title) < len(description)))
 
     """Determine if a given price is valid"""
-    @staticmethod
-    def valid_price(price):
-        return (10.00 <= price <= 10000.00)
+    def valid_price(self, price):
+        if (10.00 <= price) and (price <= 10000.00):
+            # If price hasn't been set yet, return true.
+            if self.price == 0:
+                return True
+            # If price has been set before, also check that price has not 
+            # decreased.
+            else:
+                if price >= self.price:
+                    return True
+        return False
 
     """Determine if a given last modification date is valid"""
     @staticmethod
