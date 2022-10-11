@@ -216,7 +216,21 @@ class UnitTest(unittest.TestCase):
         # False, True, True, False
 
         # Testing Ownership
-        # Insert tests here
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
+
+        u1 = User("bob", "bob69@gmail.com", "pizza")
+        u1.add_to_database()
+        u2 = User("Ross", "", "pizza")
+        u2.add_to_database()
+        u3 = User("Tom", "tom69@gmail.com", "pizza")
+        u4 = User("Sam", "", "pizza")
+        assert (Listing.valid_seller(u1)) is True
+        assert (Listing.valid_seller(u2)) is False
+        assert (Listing.valid_seller(u3)) is False
+        assert (Listing.valid_seller(u4)) is False
+        # True, False, False, False
         """Sprint 2 Testing"""
 
     def test_user_database(self):
