@@ -1,16 +1,14 @@
 # user.py
-from ast import Str
-from pdb import post_mortem
 import sys
 from typing import TYPE_CHECKING
 import re
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import exc, update, delete, insert
+from sqlalchemy import exc, update, delete, insert, select
 
 from qbay import database
 from qbay.database import db
-from qbay.wallet import Wallet
+from qbay.wallet import Wallet, BankingAccount
 
 if TYPE_CHECKING:
     from .wallet import Wallet
@@ -38,7 +36,7 @@ class User():
         self._database_obj: database.User = None
         self._id = None  # created upon being added to database
         self._username: str = username
-        self._email: str = email   # should also be unique
+        self._email: str = email
         self._password = password
         self._postal_code = postal_code
         self._billing_address = billing_address
@@ -61,13 +59,6 @@ class User():
             db.session.add(user)
             db.session.commit()
             self._id = user.id
-        # try:
-        #     db.session.add(user)
-        #     db.session.commit()
-        #     self._id = user.id
-        #     return self.id
-        # except exc.IntegrityError as e:
-        #     print(f'Object exists in database, error: {e}', file=sys.stderr)
 
     def update_username(self, username) -> bool:
         try:
@@ -110,8 +101,8 @@ class User():
 
     @password.setter
     def password(self, password: str):
-        # if not User.valid_email(password):
-        #     raise ValueError(f'Invalid password: {password}')
+        if not User.valid_password(password):
+            raise ValueError(f'Invalid password: {password}')
         self._password = password
 
     @property
@@ -176,9 +167,9 @@ class User():
         params:
             name (string): user name
 
-        Returns:
-            True if user name is valid, False if not
-        """
+            Returns:
+                True if user name is valid, False if not
+            """
         if not name:
             return False
         if name[0] == " " or name[-1] == " ":
@@ -223,7 +214,6 @@ class User():
         Returns:
             True if password is valid, False if not
         """
-
         if password == "":
             return False
         if len(password) < 6:
@@ -238,7 +228,8 @@ class User():
 
     @staticmethod
     def register(name, email, password):
-        """ Register a new user
+        """ Register a user and initialize a profile for them only if all 
+        requirements are met.
 
         params:
             name (string):     user name
@@ -248,44 +239,53 @@ class User():
         Returns:
             True if registration succeeded, otherwise False
         """
-
-        # R1-1: Email cannot be empty
-        # R1-3: Valid email addr-spec
-        if not User.valid_email(email):
+        # Validate parameters
+        if (not User.valid_email(email)):
+            return False
+        if (not User.valid_password(password)):
+            return False
+        if (not User.valid_username(name)):
             return False
 
-        # R1-1: Password cannot be empty
-        # R1-4: Password complexity requirements
-        if not User.valid_password(password):
+        existed = database.User.query.filter_by(email=email).all()
+        if len(existed) > 0:
             return False
+        user = User(username=name, email=email, password=password)
+        wallet = Wallet()
+        wallet.bankingAccount = BankingAccount()
+        wallet.bankingAccount.add_balance(100)
+        user.wallet = wallet.id
 
-        # R1-5: Username specific requirements
-        # R1-6: Username length requirements
-        if not User.valid_username(name):
-            return False
-
-        # R1-7: Email cannot be previously used
-        # need database for rest
-        # existed = User.query.filter_by(email=email).all()
-        # if len(existed) > 0:
-        #     return False
-        # user = User(username=name, email=email, password=password)
-
-        # R1-2: User is identified by unique ID
-        # user.id =
-
-        # R1-8: Billing address is empty
-        # R1-9: Postal code is empty
-
-        # R1-10: Balance is 100 at initialization
-        # user.wallet.balance = 100
-
-        # # add it to current database session
-        # db.session.add(user)
-        # # save user object
-        # db.session.commit()
+        # add it to current database session
+        user.add_to_database()
 
         return True
+
+    @staticmethod
+    def login(email, password):
+        """Logs user in if correct corresponding email and password
+
+        Note: other than returning if login was successful or not, 
+        logging in doesn't yet give the user any additional features or
+        permissions.
+
+        Returns 0 for login success
+        Returns 1 for login failure due to invalid username or password
+        Returns 2 for login failure due to incorrect username or 
+                                                password (non-matching)
+        """
+        if not (User.valid_email(email) and User.valid_password(password)):
+            return 1
+
+        with database.app.app_context():
+            user = database.User.query.filter_by(email=email).first()
+
+            if user:
+                if user.password == password:
+                    # login
+                    return 0            
+
+        return 2
 
     def update_username(self, username):
         try:

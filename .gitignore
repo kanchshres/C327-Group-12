@@ -128,5 +128,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Database Ignore
-qbay_database.db
+# VS Code settings
+.vscode/settings.json
+.vscode/launch.json
+
+# Database
+qbay/qbay_database.db
