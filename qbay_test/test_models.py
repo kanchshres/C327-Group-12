@@ -31,8 +31,8 @@ class UnitTest(unittest.TestCase):
         user.email = "19ks62@queensu.ca"
         assert user.email == "19ks62@queensu.ca"
 
-        user.password = "password123"
-        assert user.password == "password123"
+        user.password = "Password123!"
+        assert user.password == "Password123!"
 
         test_wall = Wallet()
         user.wallet = test_wall

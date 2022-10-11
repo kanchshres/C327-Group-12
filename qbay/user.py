@@ -87,7 +87,6 @@ class User():
             raise ValueError(f"Invalid email: {email}")
         self._email = email
 
-
     @property
     def password(self) -> str:
         return self._password
