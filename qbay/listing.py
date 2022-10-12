@@ -123,7 +123,6 @@ class Listing:
     @property
     def reviews(self) -> 'list[Review]':
         return self._reviews
-        self._modified_date = datetime.now
 
     """Sets reviews of Listing"""
     @reviews.setter
@@ -173,13 +172,13 @@ class Listing:
     @staticmethod
     def valid_title(title):
         regex = re.compile(r'^([A-Za-z0-9]([A-Za-z0-9]| ){,78}[A-Za-z0-9])$')
-        if re.fullmatch(regex, title):
-            with database.app.app_context():
-                exists = database.Listing.query.filter_by(title=title).all()
-                if len(exists):
-                    return False
+        if not re.fullmatch(regex, title):
+            return False
+        with database.app.app_context():
+            exists = database.Listing.query.filter_by(title=title).all()
+            if len(exists):
+                return False
             return True
-        return False
 
     """Determine if a given description is valid"""
     @staticmethod
@@ -189,7 +188,7 @@ class Listing:
 
     """Determine if a given price is valid"""
     def valid_price(self, price):
-        if (10.00 <= price) and (price <= 10000.00):
+        if (10.00 <= price <= 10000.00):
             # If price hasn't been set yet, return true.
             if self.price == 0:
                 return True
