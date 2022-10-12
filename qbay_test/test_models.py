@@ -419,7 +419,7 @@ class UnitTest(unittest.TestCase):
         user.update_postal_code("A1A1A1")
         assert user.database_obj.postal_code == "A1A1A1"
 
-    def test_r3_2_r3_3_update_postal_code(self):
+    def test_r3_2_update_user_profile(self):
         """Testing R3-2: 
         postal code should be non-empty, alphanumeric-only,
         and no special characters such as !.
@@ -435,15 +435,39 @@ class UnitTest(unittest.TestCase):
                               "N1P0A0", "N1T9Z9", "V0C0A0", "V0C9Z9"]
         for i in valid_postal_codes:
             assert user.update_postal_code(i)
-            user.database_obj.postal_code == i
+            assert user.database_obj.postal_code == i
 
         invalid_postal_codes = ["", "!C1Ajd", "a!a1a1",
                                 "AAAAAA", "123904", "ASD2U1",
-                                "1A2C3D", "D1C9E7"]
+                                "1A2C3D"]
+        for i in invalid_postal_codes:
+            assert user.update_postal_code(i) is False
+
+    def test_r3_3_update_user_profile(self):
+        """Testing R3-3: 
+        Postal code has to be a valid Canadian postal code.
+        """
+        with database.app.app_context():
+            db.drop_all()
+            db.create_all()
+
+        user = User("testUser", "user@example.ca", "password123")
+        user.add_to_database()
+
+        valid_postal_codes = ["A1A1A1", "N1P0A0", "N1T9Z9"]
+        for i in valid_postal_codes:
+            assert user.update_postal_code(i)
+            assert user.database_obj.postal_code == i
+
+        invalid_postal_codes = ["D1C9E7", "F1A1A1", "I1A1A1", "O1A1A1", 
+                                "Q1A1A1", "U1A1A1"]
         for i in invalid_postal_codes:
             assert user.update_postal_code(i) is False
 
     def test_r3_4_update_username(self):
+        """Testing R3-4: 
+        User name follows the requirements above.
+        """
         with database.app.app_context():
             db.drop_all()
             db.create_all()
@@ -454,7 +478,7 @@ class UnitTest(unittest.TestCase):
         valid_usernames = ["asdhjk", "userName",
                            "USERNAME", "user name", "123 1112 4902"]
         for i in valid_usernames:
-            user.update_username(i)
+            assert user.update_username(i)
             assert user.database_obj.username == i
 
         invalid_usernames = ["", " ASD", "! ASD",
@@ -463,7 +487,8 @@ class UnitTest(unittest.TestCase):
             assert user.update_username(i) is False
 
     def test_r4_1_create_listing(self):
-        """Testing R4-1: The title of the product has to be alphanumeric-only, 
+        """Testing R4-1:
+        The title of the product has to be alphanumeric-only, 
         and space allowed only if it is not as prefix and suffix.
         """
         with app.app_context():
@@ -483,17 +508,21 @@ class UnitTest(unittest.TestCase):
         # True, False, False, False, False
     
     def test_r4_2_create_listing(self):
-        """Testing R4-2: The title of the product is no longer than 80
+        """Testing R4-2:
+        The title of the product is no longer than 80
         characters.
         """
         t1 = "a" * 80
         t2 = t1 + "a"
         assert (Listing.valid_title(t1)) is True
         assert (Listing.valid_title(t2)) is False
-
+    
     def test_r4_3_create_listing(self):
-        # Testing Descriptions
-        list = Listing("Example Listing")
+        """Testing R4-3:
+        The description of the product can be arbitrary 
+        characters, with a minimum length of 20 characters and a 
+        maximum of 2000 characters.
+        """
         t0 = "qwertyuiopqwertyui"
         des1 = "a" * 2000
         des2 = "qwertyuiopqwertyuiop"
@@ -504,30 +533,48 @@ class UnitTest(unittest.TestCase):
         assert (Listing.valid_description(des3, t0)) is False
         assert (Listing.valid_description(des4, t0)) is False
 
-        # Testing Prices
+    def test_r4_4_create_listing(self):
+        """Testing R4-4:
+        Description has to be longer than the product's title.
+        """
+        t0 = "qwertyuiopqwertyuiywqewwqtwqwqe"
+        des1 = "a" * 35
+        des2 = "a" * 30
+        assert (Listing.valid_description(des1, t0)) is True
+        assert (Listing.valid_description(des2, t0)) is False
+
+    def test_r4_5_create_listing(self):
+        """Testing R4-5: Price has to be of range [10, 10000]."""
+        l1 = Listing()
         p1 = 9.999999
         p2 = 10
         p3 = 10000
         p4 = 10000.001
-        assert (list.valid_price(p1)) is False
-        assert (list.valid_price(p2)) is True
-        assert (list.valid_price(p3)) is True
-        assert (list.valid_price(p4)) is False
-        # False, True, True, False
-
-        # Testing Dates
+        assert (l1.valid_price(p1)) is False
+        assert (l1.valid_price(p2)) is True
+        assert (l1.valid_price(p3)) is True
+        assert (l1.valid_price(p4)) is False
+    
+    def test_r4_6_create_listing(self):
+        """Testing R4-6:
+        last_modified_date must be after 
+        2021-01-02 and before 2025-01-02.
+        """
+        l1 = Listing()
         d1 = datetime(2021, 1, 2)
         d2 = datetime(2021, 1, 3)
         d3 = datetime(2025, 1, 1)
         d4 = datetime(2025, 1, 2)
-        assert (Listing.valid_date(d1)) is False
-        assert (Listing.valid_date(d2)) is True
-        assert (Listing.valid_date(d3)) is True
-        assert (Listing.valid_date(d4)) is False
-        # False, True, True, False
+        assert (l1.valid_date(d1)) is False
+        assert (l1.valid_date(d2)) is True
+        assert (l1.valid_date(d3)) is True
+        assert (l1.valid_date(d4)) is False
 
-        # Testing Ownership
-
+    def test_r4_7_create_listing(self):
+        """Testing R4-7:
+        owner_email cannot be empty. The owner of the 
+        corresponding product must exist in the database.
+        """
         u1 = User("bob", "bob69@gmail.com", "pizza")
         u1.add_to_database()
         u2 = User("Ross", "", "pizza")
@@ -538,16 +585,21 @@ class UnitTest(unittest.TestCase):
         assert (Listing.valid_seller(u2)) is False
         assert (Listing.valid_seller(u3)) is False
         assert (Listing.valid_seller(u4)) is False
-        # True, False, False, False
-        
-        l1 = Listing("4 bed 2 bath", des2, p2)
+
+    def test_r4_8_create_listing(self):
+        """Testing R4-8:
+        A user cannot create products that have the same title
+        """
+        des1 = "Hello, this lovely home has 0 bathrooms"
+        p1 = 100.50
+        des2 = "Hey, this place sucks."
+
+        l1 = Listing("4 bed 2 bath", des1, p1)
         l1.add_to_database()
-        l2 = Listing("4 bed 2 bath", des1, p3)
-        l3 = Listing("4 bed 2 baths", des2, p3)
+        l2 = Listing("4 bed 2 bath", des2, p1)
+        l3 = Listing("4 bed 2 baths", des2, p1)
         assert (Listing.valid_title(l2.title)) is False
         assert (Listing.valid_title(l3.title)) is True
-        # False, True
-        """Sprint 2 Testing"""
 
     def test_r5_1_update_listing(self):
         """ Testing R5-1:
@@ -783,7 +835,23 @@ class UnitTest(unittest.TestCase):
             listing.price = p4
             listing.price = p1
 
-        # Still missing test where updating title conforms to R4-8
+        # test new title can't be same as existing listing title in 
+        # database when updating title
+        des1 = "Hello, this lovely home has 0 bathrooms"
+        p1 = 100.50
+        des2 = "Hey, this place sucks."
+
+        l1 = Listing("4 bed 2 bath", des1, p1)
+        l1.add_to_database()
+
+        l2 = Listing("4 bed 2 bath(1)", des2, p1)
+        with self.assertRaises(ValueError):
+            l2.title = "4 bed 2 bath"
+        assert l2.title == "4 bed 2 bath(1)"
+
+        l3 = Listing("4 bed 2 baths(2)", des2, p1)
+        l3.title = "4 bed 2 baths"
+        assert l3.title == "4 bed 2 baths"
 
 
 if __name__ == "__main__":
