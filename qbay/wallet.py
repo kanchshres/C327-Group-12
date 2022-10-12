@@ -16,7 +16,7 @@ class Wallet:
 
     def __init__(self):
         self._id = -1
-        self._balance: int = 0
+        self._balance: int = 100
         self._bankingAccount: 'BankingAccount' = None
         self._transactions: 'list[Transaction]' = []
 
