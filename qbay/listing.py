@@ -54,7 +54,7 @@ class Listing:
         if not (Listing.valid_title(title)):
             raise ValueError(f"Invalid Title: {title}")
         self._title = title
-        self.__date = datetime.now
+        self.__date = datetime.now()
 
     """Fetches description of digital Listing"""
     @property
@@ -67,7 +67,7 @@ class Listing:
         if not (Listing.valid_description(description, title)):
             raise ValueError(f"Invalid Description: {description}")
         self._description = description
-        self.__date = datetime.now
+        self.__date = datetime.now()
 
     """Fetches price of digital Listing"""
     @property
@@ -80,7 +80,7 @@ class Listing:
         if not (self.valid_price(price)):
             raise ValueError(f"Invalid Price: {price}")
         self._price = price
-        self.__date = datetime.now
+        self.__date = datetime.now()
 
     """Fetches last modification date of digital listing"""
     @property
@@ -89,7 +89,7 @@ class Listing:
 
     """Updates last modification date of digital listing"""
     @date.setter
-    def date(self, mod_date):
+    def __date(self, mod_date):
         if not (Listing.valid_date(mod_date)):
             raise ValueError(f"Invalid Date: {mod_date}")
         self._date = mod_date
@@ -105,7 +105,7 @@ class Listing:
         if (not Listing.valid_seller(owner)):
             raise ValueError(f"Invalid Seller: {owner}")
         self._seller = owner
-        self.__date = datetime.now
+        self.__date = datetime.now()
 
     # Extra
     """Fetches address of Listing"""
@@ -117,19 +117,19 @@ class Listing:
     @address.setter
     def address(self, location):
         self._address = location
-        self.__date = datetime.now
+        self.__date = datetime.now()
 
     """Fetches reviews of Listing"""
     @property
     def reviews(self) -> 'list[Review]':
         return self._reviews
-        self.__date = datetime.now
+        self.__date = datetime.now()
 
     """Sets reviews of Listing"""
     @reviews.setter
     def reviews(self, comments: 'list[Review]'):
         self._reviews = comments
-        self.__date = datetime.now
+        self.__date = datetime.now()
 
     """Add reviews to listing"""
 
