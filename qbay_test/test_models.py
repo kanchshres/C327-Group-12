@@ -835,6 +835,24 @@ class UnitTest(unittest.TestCase):
             listing.price = p4
             listing.price = p1
 
+        # test new title can't be same as existing listing title in 
+        # database when updating title
+        des1 = "Hello, this lovely home has 0 bathrooms"
+        p1 = 100.50
+        des2 = "Hey, this place sucks."
+
+        l1 = Listing("4 bed 2 bath", des1, p1)
+        l1.add_to_database()
+
+        l2 = Listing("4 bed 2 bath(1)", des2, p1)
+        with self.assertRaises(ValueError):
+            l2.title = "4 bed 2 bath"
+        assert l2.title == "4 bed 2 bath(1)"
+
+        l3 = Listing("4 bed 2 baths(2)", des2, p1)
+        l3.title = "4 bed 2 baths"
+        assert l3.title == "4 bed 2 baths"
+
 
 if __name__ == "__main__":
     unittest.main()
