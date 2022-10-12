@@ -473,12 +473,12 @@ class UnitTest(unittest.TestCase):
         t1 = "4 bed 2 bath"
         t2 = " 4 bed 2 bath"
         t3 = "4 bed 2 bath "
-        t4 = t1 + "a"
+        t4 = "A" * 80
         t5 = "4 bed 2 bath?"
         assert (Listing.valid_title(t1)) is True
         assert (Listing.valid_title(t2)) is False
         assert (Listing.valid_title(t3)) is False
-        assert (Listing.valid_title(t4)) is False
+        assert (Listing.valid_title(t4)) is True
         assert (Listing.valid_title(t5)) is False
         # True, False, False, False, False
     
@@ -494,6 +494,7 @@ class UnitTest(unittest.TestCase):
     
     def test_r4_3_create_listing(self):
         # Testing Descriptions
+        list = Listing("Example Listing")
         t0 = "qwertyuiopqwertyui"
         des1 = "a" * 2000
         des2 = "qwertyuiopqwertyuiop"
@@ -509,10 +510,10 @@ class UnitTest(unittest.TestCase):
         p2 = 10
         p3 = 10000
         p4 = 10000.001
-        assert (Listing.valid_price(p1)) is False
-        assert (Listing.valid_price(p2)) is False
-        assert (Listing.valid_price(p3)) is True
-        assert (Listing.valid_price(p4)) is False
+        assert (list.valid_price(p1)) is False
+        assert (list.valid_price(p2)) is True
+        assert (list.valid_price(p3)) is True
+        assert (list.valid_price(p4)) is False
         # False, True, True, False
 
         # Testing Dates
