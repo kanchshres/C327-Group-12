@@ -243,6 +243,14 @@ class UnitTest(unittest.TestCase):
         assert (Listing.valid_seller(u3)) is False
         assert (Listing.valid_seller(u4)) is False
         # True, False, False, False
+        
+        l1 = Listing("4 bed 2 bath", des2, p2)
+        l1.add_to_database()
+        l2 = Listing("4 bed 2 bath", des1, p3)
+        l3 = Listing("4 bed 2 baths", des2, p3)
+        assert (Listing.valid_title(l2.title)) is False
+        assert (Listing.valid_title(l3.title)) is True
+        # False, True
         """Sprint 2 Testing"""
 
     def test_user_database(self):

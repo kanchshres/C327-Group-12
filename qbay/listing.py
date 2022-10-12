@@ -145,8 +145,8 @@ class Listing:
                                    price=self.price,
                                    owner_id=self.seller.id)
         with database.app.app_context():
-            db.session.commit()
             db.session.add(listing)
+            db.session.commit()
             self._dbobj = listing
             self._modified_date = listing.last_modified_date
 
@@ -175,7 +175,7 @@ class Listing:
     def valid_title(title):
         validation_status = False
 
-        regex = re.compile(r'^([A-Za-z0-9]([A-Za-z0-9]| ){,18}[A-Za-z0-9])$')
+        regex = re.compile(r'^([A-Za-z0-9]([A-Za-z0-9]| ){,79}[A-Za-z0-9])$')
 
         # Validate title has maximum 80 characters and prefix/suffix of not ' '
         if ((len(title) < 81) and (title[0] != ' ') and (title[-1] != ' ')):
@@ -200,7 +200,11 @@ class Listing:
 
             if (passed):
                 validation_status = True
-
+                
+        with database.app.app_context():
+            exists = database.Listing.query.filter_by(title=title).all()
+            if len(exists):
+                validation_status = False
         # regex = re.compile()
 
         return validation_status
