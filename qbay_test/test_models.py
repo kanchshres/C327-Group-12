@@ -135,12 +135,8 @@ class UnitTest(unittest.TestCase):
 
         with self.assertRaises(TypeError):
             transact.status = User()
-
+    
     def test_listing(self):
-        with app.app_context():
-            db.drop_all()
-            db.create_all()
-
         """Sprint 1 Testing"""
         # Testing Initialization
         obj = Listing()
@@ -164,90 +160,6 @@ class UnitTest(unittest.TestCase):
         assert obj.seller.username == "bob"
         assert obj.reviews == [r1, r2]
         """Sprint 1 Testing"""
-
-        """Sprint 2 Testing"""
-        # Testing Titles
-        t1 = ""
-        i = 0
-        while (i < 80):
-            t1 = t1 + "a"
-            i = i + 1
-        t2 = " 4 bed 2 bath"
-        t3 = "4 bed 2 bath "
-        t4 = "A" * 81
-        t5 = "4 bed 2 bath?"
-        assert (Listing.valid_title(t1)) is True
-        assert (Listing.valid_title(t2)) is False
-        assert (Listing.valid_title(t3)) is False
-        assert (Listing.valid_title(t4)) is False
-        assert (Listing.valid_title(t5)) is False
-        # True, False, False, False, False
-
-        # Testing Descriptions
-        t0 = "qwertyuiopqwertyui"
-        des1 = ""
-        i = 0
-        while (i < 2000):
-            des1 = des1 + "a"
-            i = i + 1
-        des2 = "qwertyuiopqwertyuiop"
-        des3 = "qwertyuiopqwertyu"
-        des4 = ""
-        i = 0
-        while (i < 2001):
-            des4 = des4 + "a"
-            i = i + 1
-
-        assert (Listing.valid_description(des1, t0)) is True
-        assert (Listing.valid_description(des2, t0)) is True
-        assert (Listing.valid_description(des3, t0)) is False
-        assert (Listing.valid_description(des4, t0)) is False
-        # True, True, False, False
-
-        # Testing Prices
-        p1 = 9.999999
-        p2 = 10
-        p3 = 10000
-        p4 = 10000.001
-        assert (obj.valid_price(p1)) is False
-        assert (obj.valid_price(p2)) is False
-        assert (obj.valid_price(p3)) is True
-        assert (obj.valid_price(p4)) is False
-        # False, True, True, False
-
-        # Testing Dates
-        d1 = datetime(2021, 1, 2)
-        d2 = datetime(2021, 1, 3)
-        d3 = datetime(2025, 1, 1)
-        d4 = datetime(2025, 1, 2)
-        assert (Listing.valid_date(d1)) is False
-        assert (Listing.valid_date(d2)) is True
-        assert (Listing.valid_date(d3)) is True
-        assert (Listing.valid_date(d4)) is False
-        # False, True, True, False
-
-        # Testing Ownership
-
-        u1 = User("bob", "bob69@gmail.com", "pizza")
-        u1.add_to_database()
-        u2 = User("Ross", "", "pizza")
-        u2.add_to_database()
-        u3 = User("Tom", "tom69@gmail.com", "pizza")
-        u4 = User("Sam", "", "pizza")
-        assert (Listing.valid_seller(u1)) is True
-        assert (Listing.valid_seller(u2)) is False
-        assert (Listing.valid_seller(u3)) is False
-        assert (Listing.valid_seller(u4)) is False
-        # True, False, False, False
-
-        l1 = Listing("4 bed 2 bath", des2, p2)
-        l1.add_to_database()
-        l2 = Listing("4 bed 2 bath", des1, p3)
-        l3 = Listing("4 bed 2 baths", des2, p3)
-        assert (Listing.valid_title(l2.title)) is False
-        assert (Listing.valid_title(l3.title)) is True
-        # False, True
-        """Sprint 2 Testing"""
 
     def test_user_database(self):
         with app.app_context():
@@ -372,92 +284,6 @@ class UnitTest(unittest.TestCase):
                              "test7@test.com", "Onetwo!") is False
         assert User.register("u7", "test7@test.com", "Onetwo!") is False
 
-    def test_r3_1_update_user(self):
-        """ Testing R3-1:
-        A user is only able to update his/her user name, user email,
-        billing address, and postal code.
-        """
-        with database.app.app_context():
-            db.drop_all()
-            db.create_all()
-
-        user = User("testUser", "user@example.ca", "password123")
-        user.add_to_database()
-
-        # Update username
-        user.update_username("updatedUsername")
-        assert user.database_obj.username == "updatedUsername"
-
-        # Update user email
-        user.update_email("updated@email.com")
-        assert user.database_obj.email == "updated@email.com"
-
-        # Update address
-        user.update_billing_address("123 Update")
-        assert user.database_obj.billing_address == "123 Update"
-
-        # Update postal code
-        user.update_postal_code("A1A1A1")
-        assert user.database_obj.postal_code == "A1A1A1"
-
-    def test_r3_2_r3_3_update_postal_code(self):
-        """Testing R3-2: 
-        postal code should be non-empty, alphanumeric-only,
-        and no special characters such as !.
-        """
-        with database.app.app_context():
-            db.drop_all()
-            db.create_all()
-
-        user = User("testUser", "user@example.ca", "password123")
-        user.add_to_database()
-
-        valid_postal_codes = ["a1a1a1", "A1A1A1",
-                              "N1P0A0", "N1T9Z9", "V0C0A0", "V0C9Z9"]
-        for i in valid_postal_codes:
-            user.update_postal_code(i)
-            user.database_obj.postal_code == i
-
-        invalid_postal_codes = ["", "!C1Ajd", "a!a1a1",
-                                "AAAAAA", "123904", "ASD2U1",
-                                "1A2C3D", "D1C9E7"]
-        for i in invalid_postal_codes:
-            assert user.update_postal_code(i) is False
-
-    def test_r3_4_update_username(self):
-        with database.app.app_context():
-            db.drop_all()
-            db.create_all()
-
-        user = User("testUser", "user@example.ca", "password123")
-        user.add_to_database()
-
-        valid_usernames = ["asdhjk", "userName",
-                           "USERNAME", "user name", "123 1112 4902"]
-        for i in valid_usernames:
-            user.update_username(i)
-            assert user.database_obj.username == i
-
-        invalid_usernames = ["", " ASD", "! ASD",
-                             "as", "1246789012317823678123678678904"]
-        for i in invalid_usernames:
-            assert user.update_username(i) is False
-
-# need database to check existing emails
-# def test_r1_7_user_register():
-#     """ Testing R1-7:
-#     If email has been used, operation failed.
-#     """
-
-#     assert register("u07", "test7@test.com", "Onetwo!") is True
-#     assert register("u08", "test7@test.com", "Onetwo!") is False
-
-# need database for rest
-# def test_r1_8_user_register():
-#     """ Testing R1-8:
-#     Billing Address is empty at time of registration.
-#     """
-
     def test_r1_7_user_register(self):
         """ Testing R1-7:
         If email has been used, operation failed.
@@ -507,7 +333,7 @@ class UnitTest(unittest.TestCase):
         user = database.User.query.get(1)
         assert user is not None
         assert user.postal_code == ""
-
+    
     def test_r2_1(self):
         """Test if user can log in using her/his email address and the 
         password.
@@ -564,6 +390,164 @@ class UnitTest(unittest.TestCase):
         assert User.login("b.o.b.@gmail..com", "Password123!") == 1
         assert User.login("bob@gmail.com", "psw") == 1
         assert User.login("b.o.b.@gmail..com", "psw") == 1
+
+    def test_r3_1_update_user(self):
+        """ Testing R3-1:
+        A user is only able to update his/her user name, user email,
+        billing address, and postal code.
+        """
+        with database.app.app_context():
+            db.drop_all()
+            db.create_all()
+
+        user = User("testUser", "user@example.ca", "password123")
+        user.add_to_database()
+
+        # Update username
+        user.update_username("updatedUsername")
+        assert user.database_obj.username == "updatedUsername"
+
+        # Update user email
+        user.update_email("updated@email.com")
+        assert user.database_obj.email == "updated@email.com"
+
+        # Update address
+        user.update_billing_address("123 Update")
+        assert user.database_obj.billing_address == "123 Update"
+
+        # Update postal code
+        user.update_postal_code("A1A1A1")
+        assert user.database_obj.postal_code == "A1A1A1"
+
+    def test_r3_2_r3_3_update_postal_code(self):
+        """Testing R3-2: 
+        postal code should be non-empty, alphanumeric-only,
+        and no special characters such as !.
+        """
+        with database.app.app_context():
+            db.drop_all()
+            db.create_all()
+
+        user = User("testUser", "user@example.ca", "password123")
+        user.add_to_database()
+
+        valid_postal_codes = ["A1A1A1",
+                              "N1P0A0", "N1T9Z9", "V0C0A0", "V0C9Z9"]
+        for i in valid_postal_codes:
+            assert user.update_postal_code(i)
+            user.database_obj.postal_code == i
+
+        invalid_postal_codes = ["", "!C1Ajd", "a!a1a1",
+                                "AAAAAA", "123904", "ASD2U1",
+                                "1A2C3D", "D1C9E7"]
+        for i in invalid_postal_codes:
+            assert user.update_postal_code(i) is False
+
+    def test_r3_4_update_username(self):
+        with database.app.app_context():
+            db.drop_all()
+            db.create_all()
+
+        user = User("testUser", "user@example.ca", "password123")
+        user.add_to_database()
+
+        valid_usernames = ["asdhjk", "userName",
+                           "USERNAME", "user name", "123 1112 4902"]
+        for i in valid_usernames:
+            user.update_username(i)
+            assert user.database_obj.username == i
+
+        invalid_usernames = ["", " ASD", "! ASD",
+                             "as", "1246789012317823678123678678904"]
+        for i in invalid_usernames:
+            assert user.update_username(i) is False
+
+    def test_r4_1_create_listing(self):
+        """Testing R4-1: The title of the product has to be alphanumeric-only, 
+        and space allowed only if it is not as prefix and suffix.
+        """
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
+
+        t1 = "4 bed 2 bath"
+        t2 = " 4 bed 2 bath"
+        t3 = "4 bed 2 bath "
+        t4 = t1 + "a"
+        t5 = "4 bed 2 bath?"
+        assert (Listing.valid_title(t1)) is True
+        assert (Listing.valid_title(t2)) is False
+        assert (Listing.valid_title(t3)) is False
+        assert (Listing.valid_title(t4)) is False
+        assert (Listing.valid_title(t5)) is False
+        # True, False, False, False, False
+    
+    def test_r4_2_create_listing(self):
+        """Testing R4-2: The title of the product is no longer than 80
+        characters.
+        """
+        t1 = "a" * 80
+        t2 = t1 + "a"
+        assert (Listing.valid_title(t1)) is True
+        assert (Listing.valid_title(t2)) is False
+
+    
+    def test_r4_3_create_listing(self):
+        # Testing Descriptions
+        t0 = "qwertyuiopqwertyui"
+        des1 = "a" * 2000
+        des2 = "qwertyuiopqwertyuiop"
+        des3 = "qwertyuiopqwertyu"
+        des4 = des1 + "a"
+        assert (Listing.valid_description(des1, t0)) is True
+        assert (Listing.valid_description(des2, t0)) is True
+        assert (Listing.valid_description(des3, t0)) is False
+        assert (Listing.valid_description(des4, t0)) is False
+
+        # Testing Prices
+        p1 = 9.999999
+        p2 = 10
+        p3 = 10000
+        p4 = 10000.001
+        assert (Listing.valid_price(p1)) is False
+        assert (Listing.valid_price(p2)) is False
+        assert (Listing.valid_price(p3)) is True
+        assert (Listing.valid_price(p4)) is False
+        # False, True, True, False
+
+        # Testing Dates
+        d1 = datetime(2021, 1, 2)
+        d2 = datetime(2021, 1, 3)
+        d3 = datetime(2025, 1, 1)
+        d4 = datetime(2025, 1, 2)
+        assert (Listing.valid_date(d1)) is False
+        assert (Listing.valid_date(d2)) is True
+        assert (Listing.valid_date(d3)) is True
+        assert (Listing.valid_date(d4)) is False
+        # False, True, True, False
+
+        # Testing Ownership
+
+        u1 = User("bob", "bob69@gmail.com", "pizza")
+        u1.add_to_database()
+        u2 = User("Ross", "", "pizza")
+        u2.add_to_database()
+        u3 = User("Tom", "tom69@gmail.com", "pizza")
+        u4 = User("Sam", "", "pizza")
+        assert (Listing.valid_seller(u1)) is True
+        assert (Listing.valid_seller(u2)) is False
+        assert (Listing.valid_seller(u3)) is False
+        assert (Listing.valid_seller(u4)) is False
+        # True, False, False, False
+        
+        l1 = Listing("4 bed 2 bath", des2, p2)
+        l1.add_to_database()
+        l2 = Listing("4 bed 2 bath", des1, p3)
+        l3 = Listing("4 bed 2 baths", des2, p3)
+        assert (Listing.valid_title(l2.title)) is False
+        assert (Listing.valid_title(l3.title)) is True
+        # False, True
+        """Sprint 2 Testing"""
 
     def test_r5_1_update_listing(self):
         """ Testing R5-1:
