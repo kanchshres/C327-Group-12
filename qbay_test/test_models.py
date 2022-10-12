@@ -174,11 +174,7 @@ class UnitTest(unittest.TestCase):
             i = i + 1
         t2 = " 4 bed 2 bath"
         t3 = "4 bed 2 bath "
-        t4 = ""
-        i = 0
-        while (i < 81):
-            t4 = t4 + "a"
-            i = i + 1
+        t4 = "A" * 81
         t5 = "4 bed 2 bath?"
         assert (Listing.valid_title(t1)) is True
         assert (Listing.valid_title(t2)) is False
@@ -243,7 +239,7 @@ class UnitTest(unittest.TestCase):
         assert (Listing.valid_seller(u3)) is False
         assert (Listing.valid_seller(u4)) is False
         # True, False, False, False
-        
+
         l1 = Listing("4 bed 2 bath", des2, p2)
         l1.add_to_database()
         l2 = Listing("4 bed 2 bath", des1, p3)
