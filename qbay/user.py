@@ -1,11 +1,18 @@
 # user.py
-from ast import Str
+import sys
 from typing import TYPE_CHECKING
 import re
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import exc, update, delete, insert, select
+
+from qbay import database
+from qbay.database import db
+from qbay.wallet import Wallet, BankingAccount
 
 if TYPE_CHECKING:
-    from qbay.wallet import Wallet
-    from qbay.review import Review
+    from .wallet import Wallet
+    from .review import Review
 
 
 class User():
@@ -22,215 +29,359 @@ class User():
     - review: All the reviews the user has created
     """
 
-    def __init__(self, id=0, username: str = "",
+    def __init__(self, username: str = "",
                  email: str = "", password: str = "",
                  postal_code: str = "", billing_address: str = ""):
 
-        self._id = id  # should be random unique int, change later
+        self._database_obj: database.User = None
+        self._id = None  # created upon being added to database
         self._username: str = username
-        self._email: str = email   # should also be unique
+        self._email: str = email
         self._password = password
         self._postal_code = postal_code
         self._billing_address = billing_address
         self._wallet: Wallet = None  # user adds wallet after account creation
         self._reviews: 'list[Review]' = []
+        self._balance = 0
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return f'<User {self.username}>'
+
+    # Will throw an exception if unique fields not satified
+    def add_to_database(self):
+        """add the user object to the database
+        return: True if successful, False otherwise
+        """
+        user = database.User(username=self.username,
+                             email=self.email,
+                             password=self.password,
+                             postal_code=self.postal_code,
+                             billing_address=self.billing_address)
+
+        try:
+            with database.app.app_context():
+                db.session.add(user)
+                db.session.commit()
+                self._database_obj = user
+                self._id = user.id
+            return True
+        except exc.IntegrityError as e:
+            print(e)
+            return False
+
+    @property
+    def database_obj(self):
+        """Returns a reference to the database"""
+        return self._database_obj
 
     @property
     def id(self):
+        """Fetches the user's id"""
         return self._id
-
-    @id.setter
-    def id(self, id):
-        self._id = id
 
     @property
     def username(self) -> str:
+        """Fetches the user's username"""
         return self._username
 
     @username.setter
     def username(self, username: str):
+        """Sets a new username, and checks if new username is valid"""
+        if not User.valid_username(username):
+            raise ValueError(f"Invalid username: {username}")
         self._username = username
 
     @property
     def email(self) -> str:
+        """Fetches the user's email"""
         return self._email
 
     @email.setter
     def email(self, email: str):
+        """Sets a new user email and checks if new email is valid"""
+        if not User.valid_email(email):
+            raise ValueError(f"Invalid email: {email}")
         self._email = email
 
     @property
     def password(self) -> str:
+        """Fetches the user's password"""
         return self._password
 
     @password.setter
     def password(self, password: str):
+        """Sets a new password, and checks if new password is valid"""
+        if not User.valid_password(password):
+            raise ValueError(f'Invalid password: {password}')
         self._password = password
 
     @property
     def wallet(self) -> 'Wallet':
+        """Fetches the user's wallet"""
         return self._wallet
 
     @wallet.setter
     def wallet(self, wallet: 'Wallet'):
+        """Sets a new wallet for the user"""
         self._wallet = wallet
 
     def create_wallet(self) -> 'Wallet':
+        """Creates a wallet object"""
         from qbay.wallet import Wallet
         self._wallet = Wallet()
         return self._wallet
 
     @property
     def balance(self):
-        return self.wallet.balance
+        """Fetches the user's balance
+        
+        Returns the user's wallet if the wallet exists, 0 otherwise
+        """
+        if self.wallet:
+            return self.wallet.balance
+        else:
+            return 0
 
     @property
     def reviews(self):
+        """Fetches the list of reviews"""
         return self._reviews
 
     @reviews.setter
     def reviews(self, reviews: 'list[Review]'):
+        """Sets a new list of reviews"""
         self._reviews = reviews
 
     def add_review(self, review: 'Review'):
+        """Adds a review to the list of reviews"""
         self._reviews.append(review)
-    
+
     @property
     def postal_code(self):
+        """Fetches the user's postal code"""
         return self._postal_code
-    
+
     @postal_code.setter
-    def postal_code(self, pos_code: str):
-        self._postal_code = pos_code
+    def postal_code(self, postal_code: str):
+        """Sets a new postal code, and checks that it is valid"""
+        regex = re.compile("(?!.*[DFIOQU])[A-VXY][0-9][A-Z][0-9][A-Z][0-9]")
+        if re.fullmatch(regex, postal_code):
+            self._postal_code: str = postal_code
+        else:
+            raise ValueError(f"Invalid postal code: {postal_code}")
 
     @property
     def billing_address(self):
+        """Fetches the billing address"""
         return self._billing_address
-    
+
     @billing_address.setter
     def billing_address(self, bill_addr: str):
+        """Sets a new billing address"""
         self._billing_address = bill_addr
 
+    @staticmethod
+    def valid_username(name):
+        """ Checks to see if given username follows requirements R1-5 and R1-6
+        R1-5: Username cannot be empty, have spaces as a prefix or suffix, and 
+            can only consist of alphanumeric characters.
+        R1-6: Username must be between 2 and 20 characters in length.
 
-def valid_username(name):
-    """ Checks to see if given username follows requirements R1-5 and R1-6
-    R1-5: Username cannot be empty, have spaces as a prefix or suffix, and 
-          can only consist of alphanumeric characters.
-    R1-6: Username must be between 2 and 20 characters in length.
-    
-    params:
-        name (string): user name
+        params:
+            name (string): user name
 
-    Returns:
-        True if user name is valid, False if not
-    """
-    if name == "":
-        return False
-    if name[0] == " " or name[-1] == " ":
-        return False
-    if any(not (c.isalnum() or c == " ") for c in name):
-        return False
-    if not (2 < len(name) < 20):
-        return False
-    return True
+            Returns:
+                True if user name is valid, False if not
+            """
+        if not name:
+            return False
+        if name[0] == " " or name[-1] == " ":
+            return False
+        if any(not (c.isalnum() or c == " ") for c in name):
+            return False
+        if not (2 < len(name) < 20):
+            return False
+        return True
 
+    @staticmethod
+    def valid_email(email):
+        """ Checks to see if email follows requirements R1-1 and R1-3
+        R1-1: Email is not empty.
+        R1-3: Email follows addr-spec from RFC 5322.
 
-def valid_email(email):
-    """ Checks to see if email follows requirements R1-1 and R1-3
-    R1-1: Email is not empty.
-    R1-3: Email follows addr-spec from RFC 5322.
-    
-    params:
-        email (string): user email
-    
-    Returns:
-        True if email is valid, False if not
-    """
-    if email == "":
-        return False
+        params:
+            email (string): user email
 
-    regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+'
-                       '@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
-    if not (re.fullmatch(regex, email)):
-        return False
-    return True
+        Returns:
+            True if email is valid, False if not
+        """
+        if not email:
+            return False
 
+        regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+'
+                           '@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
+        if not (re.fullmatch(regex, email)):
+            return False
+        return True
 
-def valid_password(password):
-    """ Check if given password follows requirements R1-2 and R1-4
-    R1-1: Password is not empty.
-    R1-4: Password cannot be shorter than 6 characters, and requires at least 
-          one upper case, lower case, and special character.
-    
-    params:
-        password (string): user password
-        
-    Returns:
-        True if password is valid, False if not
-    """
+    @staticmethod
+    def valid_password(password):
+        """ Check if given password follows requirements R1-2 and R1-4
+        R1-1: Password is not empty.
+        R1-4: Password cannot be shorter than 6 characters, and requires
+            at least one upper case, lower case, and special character.
 
-    if password == "":
-        return False
-    if len(password) < 6:
-        return False
-    if not (any(c.isupper() for c in password)):
-        return False
-    if not (any(c.islower() for c in password)):
-        return False
-    if not (any(not c.isalnum() for c in password)):
-        return False
-    return True
+        params:
+            password (string): user password
 
+        Returns:
+            True if password is valid, False if not
+        """
+        if password == "":
+            return False
+        if len(password) < 6:
+            return False
+        if not (any(c.isupper() for c in password)):
+            return False
+        if not (any(c.islower() for c in password)):
+            return False
+        if not (any(not c.isalnum() for c in password)):
+            return False
+        return True
 
-def register(name, email, password):
-    """ Register a new user
+    @staticmethod
+    def register(name, email, password):
+        """ Register a user and initialize a profile for them only if all 
+        requirements are met.
+        Wallet's balance is initialized to 100 upon creation
 
-    params:
-        name (string):     user name
-        email (string):    user email
-        password (string): user password
-    
-    Returns:
-        True if registration succeeded, otherwise False
-    """
+        params:
+            name (string):     user name
+            email (string):    user email
+            password (string): user password
 
-    # R1-1: Email cannot be empty
-    # R1-3: Valid email addr-spec
-    if not valid_email(email):
-        return False
+        Returns:
+            True if registration succeeded, otherwise False
+        """
+        # Validate parameters
+        if (not User.valid_email(email)):
+            return False
+        if (not User.valid_password(password)):
+            return False
+        if (not User.valid_username(name)):
+            return False
 
-    # R1-1: Password cannot be empty
-    # R1-4: Password complexity requirements
-    if not valid_password(password):
-        return False
+        existed = database.User.query.filter_by(email=email).all()
+        if len(existed):
+            return False
 
-    # R1-5: Username specific requirements
-    # R1-6: Username length requirements
-    if not valid_username(name):
-        return False
-    
-    # R1-7: Email cannot be previously used
-    # need database for rest
-    # existed = User.query.filter_by(email=email).all()
-    # if len(existed) > 0:
-    #     return False
-    # user = User(username=name, email=email, password=password)
-    
-    # R1-2: User is identified by unique ID
-    # user.id = 
+        user = User(username=name, email=email, password=password)
+        wallet = Wallet()
+        wallet.bankingAccount = BankingAccount()
+        user.wallet = wallet.id
 
-    # R1-8: Billing address is empty
-    # R1-9: Postal code is empty
+        # add it to current database session
+        user.add_to_database()
 
-    # R1-10: Balance is 100 at initialization
-    # user.wallet.balance = 100
+        return True
 
-    # # add it to current database session
-    # db.session.add(user)
-    # # save user object
-    # db.session.commit()
+    @staticmethod
+    def login(email, password):
+        """Logs user in if correct corresponding email and password
 
-    return True
+        Note: other than returning if login was successful or not, 
+        logging in doesn't yet give the user any additional features or
+        permissions.
+
+        Returns 0 for login success
+        Returns 1 for login failure due to invalid username or password
+        Returns 2 for login failure due to incorrect username or 
+                                                password (non-matching)
+        """
+        if not (User.valid_email(email) and User.valid_password(password)):
+            return 1
+
+        with database.app.app_context():
+            user = database.User.query.filter_by(email=email).first()
+
+            if user:
+                if user.password == password:
+                    # login
+                    return 0
+
+        return 2
+
+    def update_username(self, username):
+        """Updates the user's username and pushes changes to the 
+        database (assuming the username isn't already in the database)
+
+        Returns True if sucessful, False otherwise
+        """
+        try:
+            self.username = username
+        except ValueError as e:
+            print(e)
+            return False
+
+        try:
+            with database.app.app_context():
+                self._database_obj.username = username
+                db.session.commit()
+        except exc.IntegrityError as e:
+            print(f"Username already exists: {username}")
+            return False
+
+        return True
+
+    def update_email(self, email):
+        """Updates the user's email and pushes changes to the 
+        database (if the email isn't already in the database)
+
+        Returns True if sucessful, False otherwise
+        """
+        try:
+            self.email = email
+        except ValueError as e:
+            print(e)
+            return False
+        try:
+            with database.app.app_context():
+                self._database_obj.email = email
+                db.session.commit()
+        except exc.IntegrityError as e:
+            print(f"Email already exists: {email}")
+            return False
+        return True
+
+    def update_billing_address(self, address):
+        """Updates the billing address and pushes changes to the 
+        database.
+
+        Returns True if sucessful, False otherwise
+        """
+        try:
+            self.billing_address = address
+        except ValueError as e:
+            print(e)
+            return False
+        with database.app.app_context():
+            self._database_obj.billing_address = address
+            db.session.commit()
+        self._billing_address = address
+        return True
+
+    def update_postal_code(self, postal_code):
+        """Updates the postal code and pushes changes to the 
+        database.
+
+        Returns True if sucessful, False otherwise
+        """
+        try:
+            self.postal_code = postal_code
+        except ValueError as e:
+            print(e)
+            return False
+        with database.app.app_context():
+            self._database_obj.postal_code = postal_code
+            db.session.commit()
+        return True
