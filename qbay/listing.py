@@ -35,7 +35,8 @@ class Listing:
         self._title = title
         self._description = description
         self._price = price
-        self._date = datetime.now()
+        self._created_date: datetime = datetime.now()
+        self._modified_date: datetime = datetime.now()
         self._seller = owner
 
         # Extra
@@ -54,7 +55,7 @@ class Listing:
         if not (Listing.valid_title(title)):
             raise ValueError(f"Invalid Title: {title}")
         self._title = title
-        self.__date = datetime.now
+        self._modified_date = datetime.now()
 
     """Fetches description of digital Listing"""
     @property
@@ -63,11 +64,11 @@ class Listing:
 
     """Sets title for digital Listing"""
     @description.setter
-    def description(self, description, title):
-        if not (Listing.valid_description(description, title)):
+    def description(self, description):
+        if not ((20 <= len(description) <= 2000) and(len(description) > len(self.title))):
             raise ValueError(f"Invalid Description: {description}")
         self._description = description
-        self.__date = datetime.now
+        self._modified_date = datetime.now()
 
     """Fetches price of digital Listing"""
     @property
@@ -80,19 +81,16 @@ class Listing:
         if not (self.valid_price(price)):
             raise ValueError(f"Invalid Price: {price}")
         self._price = price
-        self.__date = datetime.now
+        self._modified_date = datetime.now()
 
     """Fetches last modification date of digital listing"""
     @property
-    def date(self):
-        return self._date
-
-    """Updates last modification date of digital listing"""
-    @date.setter
-    def date(self, mod_date):
-        if not (Listing.valid_date(mod_date)):
-            raise ValueError(f"Invalid Date: {mod_date}")
-        self._date = mod_date
+    def created_date(self):
+        return self._created_date
+    
+    @property
+    def updated_date(self):
+        return self._modified_date
 
     """Fetches owner of digital Listing"""
     @property
@@ -105,7 +103,7 @@ class Listing:
         if (not Listing.valid_seller(owner)):
             raise ValueError(f"Invalid Seller: {owner}")
         self._seller = owner
-        self.__date = datetime.now
+        self._modified_date = datetime.now()
 
     # Extra
     """Fetches address of Listing"""
@@ -117,19 +115,19 @@ class Listing:
     @address.setter
     def address(self, location):
         self._address = location
-        self.__date = datetime.now
+        self._modified_date = datetime.now()
 
     """Fetches reviews of Listing"""
     @property
     def reviews(self) -> 'list[Review]':
         return self._reviews
-        self.__date = datetime.now
+        self._modified_date = datetime.now
 
     """Sets reviews of Listing"""
     @reviews.setter
     def reviews(self, comments: 'list[Review]'):
         self._reviews = comments
-        self.__date = datetime.now
+        self._modified_date = datetime.now()
 
     """Add reviews to listing"""
 
@@ -149,7 +147,7 @@ class Listing:
             db.session.commit()
             db.session.add(listing)
             self._dbobj = listing
-            self.date = listing.last_modified_date
+            self._modified_date = listing.last_modified_date
 
     @staticmethod
     def create_listing(title, description, price, owner):
@@ -176,6 +174,9 @@ class Listing:
     def valid_title(title):
         validation_status = False
 
+        regex = re.compile(r'^([A-Za-z0-9]([A-Za-z0-9]| ){,18}[A-Za-z0-9])$')
+            
+        
         # Validate title has maximum 80 characters and prefix/suffix of not ' '
         if ((len(title) < 81) and (title[0] != ' ') and (title[-1] != ' ')):
 
@@ -218,9 +219,8 @@ class Listing:
                 return True
             # If price has been set before, also check that price has not 
             # decreased.
-            else:
-                if price >= self.price:
-                    return True
+            elif price > self.price:
+                return True
         return False
 
     """Determine if a given last modification date is valid"""

@@ -49,20 +49,30 @@ class User():
 
     # Will throw an exception if unique fields not satified
     def add_to_database(self):
+        """add the user object to the database
+        return: True if successful, False otherwise
+        """
         user = database.User(username=self.username,
-                             email=self.email,
-                             password=self.password,
-                             postal_code=self.postal_code,
-                             billing_address=self.billing_address)
-        self._user = user
-        with database.app.app_context():
-            db.session.add(user)
-            db.session.commit()
-            self._id = user.id
+                        email=self.email,
+                        password=self.password,
+                        postal_code=self.postal_code,
+                        billing_address=self.billing_address)
+
+        try:
+            with database.app.app_context():
+                db.session.add(user)
+                db.session.commit()
+                self._user = user
+                self._id = user.id
+            return True
+        except exc.IntegrityError as e:
+            print(e)
+            return False
 
     def update_username(self, username) -> bool:
         try:
             self.username = username
+            return True
         except ValueError as e:
             print(e)
             return False
@@ -230,6 +240,7 @@ class User():
     def register(name, email, password):
         """ Register a user and initialize a profile for them only if all 
         requirements are met.
+        Wallet's balance is initialized to 100 upon creation
 
         params:
             name (string):     user name
@@ -248,12 +259,12 @@ class User():
             return False
 
         existed = database.User.query.filter_by(email=email).all()
-        if len(existed) > 0:
+        if len(existed):
             return False
+        
         user = User(username=name, email=email, password=password)
         wallet = Wallet()
         wallet.bankingAccount = BankingAccount()
-        wallet.bankingAccount.add_balance(100)
         user.wallet = wallet.id
 
         # add it to current database session
