@@ -123,7 +123,6 @@ class Listing:
     @property
     def reviews(self) -> 'list[Review]':
         return self._reviews
-        self._modified_date = datetime.now
 
     """Sets reviews of Listing"""
     @reviews.setter
@@ -187,7 +186,7 @@ class Listing:
 
     """Determine if a given price is valid"""
     def valid_price(self, price):
-        if (10.00 <= price) and (price <= 10000.00):
+        if (10.00 <= price <= 10000.00):
             # If price hasn't been set yet, return true.
             if self.price == 0:
                 return True
