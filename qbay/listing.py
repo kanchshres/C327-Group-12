@@ -176,9 +176,7 @@ class Listing:
         if re.fullmatch(regex, title):
             with database.app.app_context():
                 exists = database.Listing.query.filter_by(title=title).all()
-                if len(exists):
-                    return False
-            return True
+            return not len(exists)
         return False
 
     """Determine if a given description is valid"""
