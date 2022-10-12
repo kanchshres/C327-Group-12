@@ -173,41 +173,14 @@ class Listing:
     """Determine if a given title is valid """
     @staticmethod
     def valid_title(title):
-        validation_status = False
-
-        regex = re.compile(r'^([A-Za-z0-9]([A-Za-z0-9]| ){,79}[A-Za-z0-9])$')
-
-        # Validate title has maximum 80 characters and prefix/suffix of not ' '
-        if ((len(title) < 81) and (title[0] != ' ') and (title[-1] != ' ')):
-
-            # Validate title only contains alphanumeric or 'space' characters
-            passed = True
-            for c in title:
-                valid_char = False
-                if ((47 < ord(c) < 58)):
-                    valid_char = True
-                elif ((64 < ord(c) < 91)):
-                    valid_char = True
-                elif ((96 < ord(c) < 123)):
-                    valid_char = True
-                elif (ord(c) == 32):
-                    valid_char = True
-
-                # Check if c is a valid character
-                if (valid_char is False):
-                    passed = False
-                    break
-
-            if (passed):
-                validation_status = True
-                
-        with database.app.app_context():
-            exists = database.Listing.query.filter_by(title=title).all()
-            if len(exists):
-                validation_status = False
-        # regex = re.compile()
-
-        return validation_status
+        regex = re.compile(r'^([A-Za-z0-9]([A-Za-z0-9]| ){,78}[A-Za-z0-9])$')
+        if re.fullmatch(regex, title):
+            with database.app.app_context():
+                exists = database.Listing.query.filter_by(title=title).all()
+                if len(exists):
+                    return False
+            return True
+        return False
 
     """Determine if a given description is valid"""
     @staticmethod
