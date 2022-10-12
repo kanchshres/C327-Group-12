@@ -498,11 +498,14 @@ class UnitTest(unittest.TestCase):
         t1 = "4 bed 2 bath"
         t2 = " 4 bed 2 bath"
         t3 = "4 bed 2 bath "
-        t4 = "4 bed 2 bath?"
+        t4 = "A" * 80
+        t5 = "4 bed 2 bath?"
         assert (Listing.valid_title(t1)) is True
         assert (Listing.valid_title(t2)) is False
         assert (Listing.valid_title(t3)) is False
-        assert (Listing.valid_title(t4)) is False
+        assert (Listing.valid_title(t4)) is True
+        assert (Listing.valid_title(t5)) is False
+        # True, False, False, False, False
     
     def test_r4_2_create_listing(self):
         """Testing R4-2:

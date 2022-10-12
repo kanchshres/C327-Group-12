@@ -49,7 +49,7 @@ class Listing:
     def title(self):
         return self._title
 
-    """Sets title for digital Listing"""
+    """Sets title for digital Listing if valid"""
     @title.setter
     def title(self, title):
         if not (Listing.valid_title(title)):
@@ -62,7 +62,7 @@ class Listing:
     def description(self):
         return self._description
 
-    """Sets title for digital Listing"""
+    """Sets title for digital Listing if valid"""
     @description.setter
     def description(self, description):
         if not ((20 <= len(description) <= 2000)
@@ -76,7 +76,7 @@ class Listing:
     def price(self):
         return self._price
 
-    """Sets price for digital Listing"""
+    """Sets price for digital Listing if valid"""
     @price.setter
     def price(self, price):
         if not (self.valid_price(price)):
@@ -89,6 +89,7 @@ class Listing:
     def created_date(self):
         return self._created_date
 
+    """Fetches last date modifed"""
     @property
     def updated_date(self):
         return self._modified_date
@@ -98,7 +99,7 @@ class Listing:
     def seller(self):
         return self._seller
 
-    """Sets owner of digital Listing"""
+    """Sets owner of digital Listing if valid"""
     @seller.setter
     def seller(self, owner):
         if (not Listing.valid_seller(owner)):
@@ -131,14 +132,12 @@ class Listing:
         self._modified_date = datetime.now()
 
     """Add reviews to listing"""
-
     def add_review(self, review: 'Review'):
         self._reviews.append(review)
         # note: adding a review will currently not update the
         # last_modified_date, since it's not modifying the actual post
 
     """Adds listing to the database"""
-
     def add_to_database(self):
         listing = database.Listing(title=self.title,
                                    description=self.description,
@@ -160,7 +159,7 @@ class Listing:
         - title: Title of listing (string)
         - description: A short description (string)
         - price: The cost of renting the listing (float)
-        - seller: The User associated with the listing (User)
+        - owner: The User associated with the listing (User)
 
         """
         if (Listing.valid_title(title) and Listing.valid_seller(owner) and
@@ -189,7 +188,6 @@ class Listing:
                 and (len(title) < len(description)))
 
     """Determine if a given price is valid"""
-
     def valid_price(self, price):
         if (10.00 <= price) and (price <= 10000.00):
             # If price hasn't been set yet, return true.
