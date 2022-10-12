@@ -186,15 +186,7 @@ class Listing:
 
     """Determine if a given price is valid"""
     def valid_price(self, price):
-        if (10.00 <= price <= 10000.00):
-            # If price hasn't been set yet, return true.
-            if self.price == 0:
-                return True
-            # If price has been set before, also check that price has not
-            # decreased.
-            elif price > self.price:
-                return True
-        return False
+        return (10.00 <= price <= 10000.00) and (self.price < price)
 
     """Determine if a given last modification date is valid"""
     @staticmethod
