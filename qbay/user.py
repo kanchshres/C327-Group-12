@@ -62,74 +62,81 @@ class User():
             with database.app.app_context():
                 db.session.add(user)
                 db.session.commit()
-                self._user = user
+                self._database_obj = user
                 self._id = user.id
             return True
         except exc.IntegrityError as e:
             print(e)
             return False
 
-    def update_username(self, username) -> bool:
-        try:
-            self.username = username
-            return True
-        except ValueError as e:
-            print(e)
-            return False
-
     @property
     def database_obj(self):
-        return self._user
+        """Returns a reference to the database"""
+        return self._database_obj
 
     @property
     def id(self):
+        """Fetches the user's id"""
         return self._id
 
     @property
     def username(self) -> str:
+        """Fetches the user's username"""
         return self._username
 
     @username.setter
     def username(self, username: str):
+        """Sets a new username, and checks if new username is valid"""
         if not User.valid_username(username):
             raise ValueError(f"Invalid username: {username}")
         self._username = username
 
     @property
     def email(self) -> str:
+        """Fetches the user's email"""
         return self._email
 
     @email.setter
     def email(self, email: str):
+        """Sets a new user email and checks if new email is valid"""
         if not User.valid_email(email):
             raise ValueError(f"Invalid email: {email}")
         self._email = email
 
     @property
     def password(self) -> str:
+        """Fetches the user's password"""
         return self._password
 
     @password.setter
     def password(self, password: str):
+        """Sets a new password, and checks if new password is valid"""
         if not User.valid_password(password):
             raise ValueError(f'Invalid password: {password}')
         self._password = password
 
     @property
     def wallet(self) -> 'Wallet':
+        """Fetches the user's wallet"""
         return self._wallet
 
     @wallet.setter
     def wallet(self, wallet: 'Wallet'):
+        """Sets a new wallet for the user"""
         self._wallet = wallet
 
     def create_wallet(self) -> 'Wallet':
+        """Creates a wallet object"""
         from qbay.wallet import Wallet
         self._wallet = Wallet()
         return self._wallet
 
     @property
     def balance(self):
+        """Fetches the user's balance
+        
+        Returns the user's wallet if the wallet exists, 0 otherwise
+        """
         if self.wallet:
             return self.wallet.balance
         else:
@@ -137,21 +144,26 @@ class User():
 
     @property
     def reviews(self):
+        """Fetches the list of reviews"""
         return self._reviews
 
     @reviews.setter
     def reviews(self, reviews: 'list[Review]'):
+        """Sets a new list of reviews"""
         self._reviews = reviews
 
     def add_review(self, review: 'Review'):
+        """Adds a review to the list of reviews"""
         self._reviews.append(review)
 
     @property
     def postal_code(self):
+        """Fetches the user's postal code"""
         return self._postal_code
 
     @postal_code.setter
     def postal_code(self, postal_code: str):
+        """Sets a new postal code, and checks that it is valid"""
         regex = re.compile("(?!.*[DFIOQU])[A-VXY][0-9][A-Z][0-9][A-Z][0-9]")
         if re.fullmatch(regex, postal_code):
             self._postal_code: str = postal_code
@@ -160,11 +172,12 @@ class User():
 
     @property
     def billing_address(self):
+        """Fetches the billing address"""
         return self._billing_address
 
     @billing_address.setter
     def billing_address(self, bill_addr: str):
-
+        """Sets a new billing address"""
         self._billing_address = bill_addr
 
     @staticmethod
@@ -299,6 +312,11 @@ class User():
         return 2
 
     def update_username(self, username):
+        """Updates the user's username and pushes changes to the 
+        database (assuming the username isn't already in the database)
+
+        Returns True if sucessful, False otherwise
+        """
         try:
             self.username = username
         except ValueError as e:
@@ -307,7 +325,7 @@ class User():
 
         try:
             with database.app.app_context():
-                self._user.username = username
+                self._database_obj.username = username
                 db.session.commit()
         except exc.IntegrityError as e:
             print(f"Username already exists: {username}")
@@ -316,6 +334,11 @@ class User():
         return True
 
     def update_email(self, email):
+        """Updates the user's email and pushes changes to the 
+        database (if the email isn't already in the database)
+
+        Returns True if sucessful, False otherwise
+        """
         try:
             self.email = email
         except ValueError as e:
@@ -323,7 +346,7 @@ class User():
             return False
         try:
             with database.app.app_context():
-                self._user.email = email
+                self._database_obj.email = email
                 db.session.commit()
         except exc.IntegrityError as e:
             print(f"Email already exists: {email}")
@@ -331,24 +354,34 @@ class User():
         return True
 
     def update_billing_address(self, address):
+        """Updates the billing address and pushes changes to the 
+        database.
+
+        Returns True if sucessful, False otherwise
+        """
         try:
             self.billing_address = address
         except ValueError as e:
             print(e)
             return False
         with database.app.app_context():
-            self._user.billing_address = address
+            self._database_obj.billing_address = address
             db.session.commit()
         self._billing_address = address
         return True
 
     def update_postal_code(self, postal_code):
+        """Updates the postal code and pushes changes to the 
+        database.
+
+        Returns True if sucessful, False otherwise
+        """
         try:
             self.postal_code = postal_code
         except ValueError as e:
             print(e)
             return False
         with database.app.app_context():
-            self._user.postal_code = postal_code
+            self._database_obj.postal_code = postal_code
             db.session.commit()
         return True
