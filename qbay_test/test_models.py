@@ -491,7 +491,6 @@ class UnitTest(unittest.TestCase):
         assert (Listing.valid_title(t1)) is True
         assert (Listing.valid_title(t2)) is False
 
-    
     def test_r4_3_create_listing(self):
         # Testing Descriptions
         list = Listing("Example Listing")
