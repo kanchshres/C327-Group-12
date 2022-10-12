@@ -19,7 +19,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 
-
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -44,8 +43,10 @@ class Listing(db.Model):
     title = db.Column(db.String(255), unique=True, nullable=False)
     description = db.Column(db.String(5000), nullable=False)
     price = db.Column(db.Float(precision=2, asdecimal=True), nullable=False)
-    time_created = db.Column(db.DateTime(timezone=False), server_default=func.now())
-    last_modified_date = db.Column(db.DateTime(timezone=False), onupdate=func.now())
+    time_created = db.Column(db.DateTime(timezone=False),
+                             server_default=func.now())
+    last_modified_date = db.Column(db.DateTime(timezone=False),
+                                   onupdate=func.now())
 
     owner_id = db.Column(db.Integer, db.ForeignKey(User.id))
     owner = relationship('User', back_populates='listings')

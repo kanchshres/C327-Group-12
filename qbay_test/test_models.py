@@ -74,7 +74,7 @@ class UnitTest(unittest.TestCase):
         user = User()
         wallet = user.create_wallet()
         user.wallet.bankingAccount = bank_account
-        
+
         assert user.wallet.bankingAccount.balance == 0
         assert user.wallet.balance == 100
 
@@ -140,7 +140,7 @@ class UnitTest(unittest.TestCase):
         with app.app_context():
             db.drop_all()
             db.create_all()
-            
+
         """Sprint 1 Testing"""
         # Testing Initialization
         obj = Listing()
@@ -156,7 +156,7 @@ class UnitTest(unittest.TestCase):
         obj.reviews = r
         r2 = Review()
         obj.add_review(r2)
-        
+
         assert obj.title == "4 Bed 2 Bath"
         assert obj.price == 10
         assert obj.address == "Queen's University"
@@ -164,7 +164,7 @@ class UnitTest(unittest.TestCase):
         assert obj.seller.username == "bob"
         assert obj.reviews == [r1, r2]
         """Sprint 1 Testing"""
-        
+
         """Sprint 2 Testing"""
         # Testing Titles
         t1 = ""
@@ -262,15 +262,15 @@ class UnitTest(unittest.TestCase):
 
         user3 = User("testUser2", "user@example.ca2", "password123")
         assert user3.add_to_database() is False
-        
+
     def test_user_query(self):
         with app.app_context():
             db.drop_all()
             db.create_all()
-            
+
         user = User("testUser", "user@example.ca", "password123")
         user.add_to_database()
-        
+
         assert database.User.query.get(user.id).username == user.username
         assert database.User.query.get(user.id).email == user.email
         assert database.User.query.get(user.id).password == user.password
@@ -282,7 +282,7 @@ class UnitTest(unittest.TestCase):
         with app.app_context():
             db.drop_all()
             db.create_all()
-            
+
         assert User.register("u01", "test1@test.com", "Onetwo!") is True
         assert User.register("u02", "", "Onetwo!") is False
         assert User.register("u02", "test2@test.com", "") is False
@@ -295,12 +295,12 @@ class UnitTest(unittest.TestCase):
         with app.app_context():
             db.drop_all()
             db.create_all()
-            
+
         assert User.register("u01", "test2.1@test.com", "Onetwo!") is True
         user = database.User.query.get(1)
         assert user is not None
         assert user.id == 1
-        
+
         assert User.register("u02", "test2.2@test.com", "Onetwo!") is True
         user2 = database.User.query.get(2)
         assert user2 is not None
@@ -313,7 +313,7 @@ class UnitTest(unittest.TestCase):
         with app.app_context():
             db.drop_all()
             db.create_all()
-            
+
         assert User.register("u03", "test.1@test.com", "Onetwo!") is True
         assert User.register("u04", "test4@test", "Onetwo!") is False
         assert User.register("u04", "test4@.com", "Onetwo!") is False
@@ -328,7 +328,7 @@ class UnitTest(unittest.TestCase):
         with app.app_context():
             db.drop_all()
             db.create_all()
-            
+
         assert User.register("u04", "test4@test.com", "One23!") is True
         assert User.register("u05", "test5@test.com", "One2!") is False
         assert User.register("u05", "test5@test.com", "onetwo!") is False
@@ -345,7 +345,7 @@ class UnitTest(unittest.TestCase):
         with app.app_context():
             db.drop_all()
             db.create_all()
-            
+
         assert User.register("u03", "test3@test.com", "Onetwo!") is True
         assert User.register("User 04", "test4@test.com", "Onetwo!") is True
         assert User.register("", "test5@test.com", "Onetwo!") is False
@@ -360,7 +360,7 @@ class UnitTest(unittest.TestCase):
         with app.app_context():
             db.drop_all()
             db.create_all()
-            
+
         assert User.register("u05", "test5@test.com", "Onetwo!") is True
         assert User.register("u06ThisUsernameWork",
                              "test6@test.com", "Onetwo!") is True
@@ -376,7 +376,7 @@ class UnitTest(unittest.TestCase):
         with database.app.app_context():
             db.drop_all()
             db.create_all()
-            
+
         user = User("testUser", "user@example.ca", "password123")
         user.add_to_database()
 
@@ -404,7 +404,7 @@ class UnitTest(unittest.TestCase):
         with database.app.app_context():
             db.drop_all()
             db.create_all()
-            
+
         user = User("testUser", "user@example.ca", "password123")
         user.add_to_database()
 
@@ -424,7 +424,7 @@ class UnitTest(unittest.TestCase):
         with database.app.app_context():
             db.drop_all()
             db.create_all()
-            
+
         user = User("testUser", "user@example.ca", "password123")
         user.add_to_database()
 
@@ -433,7 +433,7 @@ class UnitTest(unittest.TestCase):
         for i in valid_usernames:
             user.update_username(i)
             assert user.database_obj.username == i
-            
+
         invalid_usernames = ["", " ASD", "! ASD",
                              "as", "1246789012317823678123678678904"]
         for i in invalid_usernames:
@@ -461,7 +461,7 @@ class UnitTest(unittest.TestCase):
         with app.app_context():
             db.drop_all()
             db.create_all()
-            
+
         assert User.register("u07", "test7@test.com", "Onetwo!") is True
         assert User.register("u08", "test7@test.com", "Onetwo!") is False
 
@@ -472,7 +472,7 @@ class UnitTest(unittest.TestCase):
         with app.app_context():
             db.drop_all()
             db.create_all()
-            
+
         User.register("u01", "test7@test.com", "Onetwo!")
         user = database.User.query.get(1)
         assert user is not None
@@ -485,7 +485,7 @@ class UnitTest(unittest.TestCase):
         with app.app_context():
             db.drop_all()
             db.create_all()
-            
+
         User.register("u09", "test9@test.com", "Onetwo!")
         user = database.User.query.get(1)
         assert user is not None
@@ -498,12 +498,11 @@ class UnitTest(unittest.TestCase):
         with app.app_context():
             db.drop_all()
             db.create_all()
-            
+
         User.register("u10", "test10@test.com", "Onetwo!")
         user = database.User.query.get(1)
         assert user is not None
         assert user.postal_code == ""
-
 
     def test_r2_1(self):
         """Test if user can log in using her/his email address and the 
@@ -534,7 +533,6 @@ class UnitTest(unittest.TestCase):
         assert User.login("fred@gmail.com", "Password321!") == 0
         assert User.login("bob@gmail.com", "IncorrectPassword123!") == 2
         assert User.login("fred@gmail.com", "Password123!") == 2
-
 
     def test_r2_2(self):
         """Test that the login function should check if the supplied 
@@ -628,7 +626,7 @@ class UnitTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             obj.price = 1500
         assert obj.price == 8100
-        
+
         # test that price does change, as change is valid
         obj.price = 8200
         assert obj.price == 8200
@@ -659,7 +657,7 @@ class UnitTest(unittest.TestCase):
         # used as a margin of error when testing if 2 times are equal
         margin = timedelta(milliseconds=1)
 
-        # test that initializing the listing creates an accurate 
+        # test that initializing the listing creates an accurate
         # last_modified_date (aka creation date)
         now = datetime.now()
         assert now - margin <= obj.updated_date <= now + margin
@@ -667,7 +665,7 @@ class UnitTest(unittest.TestCase):
         # test that update_title also updates last_modified_date
         old_last_modified_date = obj.updated_date
         obj.title = "new title"
-        # test that updated last_modified_date is later than 
+        # test that updated last_modified_date is later than
         # last_modified_date before title was updated
         assert obj.updated_date >= old_last_modified_date
         # test that new last_modified_date is close enough to the current
@@ -678,7 +676,7 @@ class UnitTest(unittest.TestCase):
         # test that update_address also updates last_modified_date
         old_last_modified_date = obj.updated_date
         obj.address = "new address"
-        # test that updated last_modified_date is later than 
+        # test that updated last_modified_date is later than
         # last_modified_date before address was updated
         assert obj.updated_date >= old_last_modified_date
         # test that new last_modified_date is close enough to the current
@@ -689,7 +687,7 @@ class UnitTest(unittest.TestCase):
         # test that update_price also updates last_modified_date
         old_last_modified_date = obj.updated_date
         obj.price = 8500
-        # test that updated last_modified_date is later than 
+        # test that updated last_modified_date is later than
         # last_modified_date before price was updated
         assert obj.updated_date >= old_last_modified_date
         # test that new last_modified_date is close enough to the current
@@ -697,7 +695,7 @@ class UnitTest(unittest.TestCase):
         now = datetime.now()
         assert now - margin <= obj.updated_date <= now + margin
 
-        # test that if update_price failes, last_modified_date is not 
+        # test that if update_price failes, last_modified_date is not
         # updated
         old_last_modified_date = obj.updated_date
         with self.assertRaises(ValueError):
@@ -707,8 +705,8 @@ class UnitTest(unittest.TestCase):
 
         # test that update_description also updates last_modified_date
         old_last_modified_date = obj.updated_date
-        obj.description = "new description 1236781263781263126312632112367812637812"
-        # test that updated last_modified_date is later than 
+        obj.description = "new description 123678121212367812637812"
+        # test that updated last_modified_date is later than
         # last_modified_date before description was updated
         assert obj.updated_date >= old_last_modified_date
         # test that new last_modified_date is close enough to the current
@@ -719,7 +717,7 @@ class UnitTest(unittest.TestCase):
         # test that add_review also updates last_modified_date
         old_last_modified_date = obj.updated_date
         obj.add_review(Review())
-        # test that updated last_modified_date is later than 
+        # test that updated last_modified_date is later than
         # last_modified_date before price was updated
         assert obj.updated_date >= old_last_modified_date
         # test that new last_modified_date is close enough to the current
@@ -755,7 +753,7 @@ class UnitTest(unittest.TestCase):
             listing.title = t3
             listing.title = t4
             listing.title = t5
-            
+
         # Testing Descriptions
         listing.title = "12345678901234567890"
         des1 = ""
@@ -787,13 +785,12 @@ class UnitTest(unittest.TestCase):
         p3 = 10000
         p4 = 10000.001
 
-
         listing.price = p2
         assert (listing.price == p2)
 
         listing.price = p3
         assert (listing.price == p3)
-        
+
         with self.assertRaises(ValueError):
             listing.price = p4
             listing.price = p1

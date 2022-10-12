@@ -53,10 +53,10 @@ class User():
         return: True if successful, False otherwise
         """
         user = database.User(username=self.username,
-                        email=self.email,
-                        password=self.password,
-                        postal_code=self.postal_code,
-                        billing_address=self.billing_address)
+                             email=self.email,
+                             password=self.password,
+                             postal_code=self.postal_code,
+                             billing_address=self.billing_address)
 
         try:
             with database.app.app_context():
@@ -80,7 +80,7 @@ class User():
     @property
     def database_obj(self):
         return self._user
-    
+
     @property
     def id(self):
         return self._id
@@ -94,7 +94,7 @@ class User():
         if not User.valid_username(username):
             raise ValueError(f"Invalid username: {username}")
         self._username = username
-        
+
     @property
     def email(self) -> str:
         return self._email
@@ -104,7 +104,7 @@ class User():
         if not User.valid_email(email):
             raise ValueError(f"Invalid email: {email}")
         self._email = email
-        
+
     @property
     def password(self) -> str:
         return self._password
@@ -164,7 +164,7 @@ class User():
 
     @billing_address.setter
     def billing_address(self, bill_addr: str):
-        
+
         self._billing_address = bill_addr
 
     @staticmethod
@@ -261,7 +261,7 @@ class User():
         existed = database.User.query.filter_by(email=email).all()
         if len(existed):
             return False
-        
+
         user = User(username=name, email=email, password=password)
         wallet = Wallet()
         wallet.bankingAccount = BankingAccount()
@@ -294,13 +294,13 @@ class User():
             if user:
                 if user.password == password:
                     # login
-                    return 0            
+                    return 0
 
         return 2
 
     def update_username(self, username):
         try:
-            self.username = username            
+            self.username = username
         except ValueError as e:
             print(e)
             return False
@@ -312,12 +312,12 @@ class User():
         except exc.IntegrityError as e:
             print(f"Username already exists: {username}")
             return False
-        
-        return True        
-    
+
+        return True
+
     def update_email(self, email):
         try:
-            self.email = email            
+            self.email = email
         except ValueError as e:
             print(e)
             return False
@@ -328,8 +328,8 @@ class User():
         except exc.IntegrityError as e:
             print(f"Email already exists: {email}")
             return False
-        return True   
-    
+        return True
+
     def update_billing_address(self, address):
         try:
             self.billing_address = address
@@ -341,7 +341,7 @@ class User():
             db.session.commit()
         self._billing_address = address
         return True
-        
+
     def update_postal_code(self, postal_code):
         try:
             self.postal_code = postal_code
