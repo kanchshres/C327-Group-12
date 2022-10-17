@@ -6,7 +6,6 @@ from sqlalchemy import exc
 from qbay.user import User
 from qbay.database import app, db
 from qbay.review import Review
-from qbay.user import User
 from qbay.listing import Listing
 from datetime import datetime
 from qbay.transaction import Transaction, TransactionStatus
