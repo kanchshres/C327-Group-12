@@ -293,13 +293,14 @@ class User():
         logging in doesn't yet give the user any additional features or
         permissions.
 
-        Returns 0 for login success
+        Returns reference to user if login success
         Returns 1 for login failure due to invalid username or password
         Returns 2 for login failure due to incorrect username or 
                                                 password (non-matching)
         """
         if not (User.valid_email(email) and User.valid_password(password)):
-            return 1
+            raise ValueError("Invalid username or password")
+            return None
 
         with database.app.app_context():
             user = database.User.query.filter_by(email=email).first()
@@ -307,9 +308,10 @@ class User():
             if user:
                 if user.password == password:
                     # login
-                    return 0
+                    return user
 
-        return 2
+        raise ValueError("Incorrect username or password")
+        return None
 
     def update_username(self, username):
         """Updates the user's username and pushes changes to the 

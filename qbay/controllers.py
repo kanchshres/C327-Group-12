@@ -47,7 +47,12 @@ def login_get():
 def login_post():
     email = request.form.get('email')
     password = request.form.get('password')
-    user = User.login(email, password)
+
+    try:
+        user = User.login(email, password)
+    except ValueError as err:
+        return render_template('login.html', message=err)
+
     if user:
         session['logged_in'] = user.email
         """
