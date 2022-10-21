@@ -25,7 +25,7 @@ def authenticate(inner_function):
         if 'logged_in' in session:
             id = session['logged_in']
             try:
-                user = database.User.query.get(id)
+                user = User.query_user(id)
                 if user:
                     # if the user exists, call the inner_function
                     # with user as parameter
@@ -126,9 +126,10 @@ def logout():
     return redirect('/')
 
 @app.route('/user_update')
-def update_informations():
+def update_informations(user):
     email = request.form.get('email')
     username = request.form.get('username')
     billing_address = request.form.get('billing_address')
     postal_code = request.form.get('postal_code')
+    
     

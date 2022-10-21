@@ -492,13 +492,14 @@ class UnitTest(unittest.TestCase):
         valid_usernames = ["asdhjk", "userName",
                            "USERNAME", "user name", "123 1112 4902"]
         for i in valid_usernames:
-            assert user.update_username(i)
+            user.update_username(i)
             assert user.database_obj.username == i
 
         invalid_usernames = ["", " ASD", "! ASD",
                              "as", "1246789012317823678123678678904"]
         for i in invalid_usernames:
-            assert user.update_username(i) is False
+            with self.assertRaises(ValueError):
+                user.update_username(i)
 
     def test_r4_1_create_listing(self):
         """Testing R4-1:

@@ -308,29 +308,20 @@ class User():
                     return user
 
         raise ValueError("Incorrect username or password")
-        return None
 
     def update_username(self, username):
         """Updates the user's username and pushes changes to the 
         database (assuming the username isn't already in the database)
 
-        Returns True if sucessful, False otherwise
+        Raises ValueError if the username already exists
         """
-        try:
-            self.username = username
-        except ValueError as e:
-            print(e)
-            return False
-
+        self.username = username
         try:
             with database.app.app_context():
                 self._database_obj.username = username
                 db.session.commit()
-        except exc.IntegrityError as e:
-            print(f"Username already exists: {username}")
-            return False
-
-        return True
+        except exc.InterfaceError:
+            raise ValueError(f"Username already exists: {username}")
 
     def update_email(self, email):
         """Updates the user's email and pushes changes to the 
@@ -338,36 +329,24 @@ class User():
 
         Returns True if sucessful, False otherwise
         """
-        try:
-            self.email = email
-        except ValueError as e:
-            print(e)
-            return False
+        self.email = email
         try:
             with database.app.app_context():
                 self._database_obj.email = email
                 db.session.commit()
-        except exc.IntegrityError as e:
-            print(f"Email already exists: {email}")
-            return False
-        return True
+        except exc.IntegrityError:
+            raise ValueError(f"Email already exists: {email}")
 
     def update_billing_address(self, address):
         """Updates the billing address and pushes changes to the 
         database.
-
-        Returns True if sucessful, False otherwise
         """
-        try:
-            self.billing_address = address
-        except ValueError as e:
-            print(e)
-            return False
+        self.billing_address = address
+        
         with database.app.app_context():
             self._database_obj.billing_address = address
             db.session.commit()
         self._billing_address = address
-        return True
 
     def update_postal_code(self, postal_code):
         """Updates the postal code and pushes changes to the 
@@ -389,5 +368,5 @@ class User():
     def query_user(id):
         database_user = database.User.get(id)
         user = User(database_user.username, database_user.password, database_user.email)
-        
-        
+        user.database_obj = database_user
+        return user
