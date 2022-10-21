@@ -337,7 +337,7 @@ class UnitTest(unittest.TestCase):
         password.
 
         Note:
-        User.login will return 0 if login success
+        User.login will return reference to user if login success
         User.login will return 1 if login failure due to invalid username 
                                                                 or password
         User.login will return 2 if login failure due to incorrect 
@@ -357,10 +357,17 @@ class UnitTest(unittest.TestCase):
         fred.password = "Password321!"
         fred.add_to_database()
 
-        assert User.login("bob@gmail.com", "Password123!") == 0
-        assert User.login("fred@gmail.com", "Password321!") == 0
-        assert User.login("bob@gmail.com", "IncorrectPassword123!") == 2
-        assert User.login("fred@gmail.com", "Password123!") == 2
+        # assert valid logins don't return None
+        assert User.login("bob@gmail.com", "Password123!")
+        assert User.login("fred@gmail.com", "Password321!")
+
+        with self.assertRaisesRegex(ValueError, 
+                                    "Incorrect username or password"):
+            User.login("bob@gmail.com", "IncorrectPassword123!")
+
+        with self.assertRaisesRegex(ValueError, 
+                                    "Incorrect username or password"):
+            User.login("fred@gmail.com", "Password123!")
 
     def test_r2_2(self):
         """Test that the login function should check if the supplied 
@@ -383,11 +390,20 @@ class UnitTest(unittest.TestCase):
         bob.password = "Password123!"
         bob.add_to_database()
 
-        assert User.login("bob@gmail.com", "Password123!") == 0
+        # assert valid login is not None
+        assert User.login("bob@gmail.com", "Password123!")
 
-        assert User.login("b.o.b.@gmail..com", "Password123!") == 1
-        assert User.login("bob@gmail.com", "psw") == 1
-        assert User.login("b.o.b.@gmail..com", "psw") == 1
+        with self.assertRaisesRegex(ValueError, 
+                                    "Invalid username or password"):
+            User.login("b.o.b.@gmail..com", "Password123!")
+
+        with self.assertRaisesRegex(ValueError, 
+                                    "Invalid username or password"):
+            User.login("bob@gmail.com", "psw")
+
+        with self.assertRaisesRegex(ValueError, 
+                                    "Invalid username or password"):
+            User.login("b.o.b.@gmail..com", "psw")
 
     def test_r3_1_update_user(self):
         """ Testing R3-1:

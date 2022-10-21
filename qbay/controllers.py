@@ -38,6 +38,39 @@ def authenticate(inner_function):
     return wrapped_inner
 
 
+@app.route('/login', methods=['GET'])
+def login_get():
+    return render_template('login.html', message='Please login')
+
+
+@app.route('/login', methods=['POST'])
+def login_post():
+    email = request.form.get('email')
+    password = request.form.get('password')
+
+    try:
+        user = User.login(email, password)
+    except ValueError as err:
+        return render_template('login.html', message=err)
+
+    if user:
+        session['logged_in'] = user.email
+        """
+        Session is an object that contains sharing information 
+        between a user's browser and the end server. 
+        Typically it is packed and stored in the browser cookies. 
+        They will be past along between every request the browser made 
+        to this services. Here we store the user object into the 
+        session, so we can tell if the client has already login 
+        in the following sessions.
+        """
+        # success! go back to the home page
+        # code 303 is to force a 'GET' request
+        return redirect('/', code=303)
+    else:
+        return render_template('login.html', message='login failed')
+
+
 @app.route('/')
 @authenticate
 def home(user):
