@@ -30,16 +30,15 @@ class User():
     """
 
     def __init__(self, username: str = "",
-                 email: str = "", password: str = "",
-                 postal_code: str = "", billing_address: str = ""):
+                 email: str = "", password: str = ""):
 
         self._database_obj: database.User = None
         self._id = None  # created upon being added to database
         self._username: str = username
         self._email: str = email
         self._password = password
-        self._postal_code = postal_code
-        self._billing_address = billing_address
+        self._postal_code = ""
+        self._billing_address = ""
         self._wallet: Wallet = None  # user adds wallet after account creation
         self._reviews: 'list[Review]' = []
         self._balance = 0
@@ -383,3 +382,10 @@ class User():
             self._database_obj.postal_code = postal_code
             db.session.commit()
         return True
+
+    @staticmethod
+    def query_user(id):
+        database_user = database.User.get(id)
+        user = User(database_user.username, database_user.password, database_user.email)
+        
+        

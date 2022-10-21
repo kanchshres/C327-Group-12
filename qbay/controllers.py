@@ -127,19 +127,8 @@ def logout():
 
 @app.route('/user_update')
 def update_informations():
-    if not 'logged_in' in session:
-        return redirect('/login')
-    
-    user = database.User.query.get(session['logged_in'])
-    
     email = request.form.get('email')
     username = request.form.get('username')
     billing_address = request.form.get('billing_address')
     postal_code = request.form.get('postal_code')
-    
-    try:
-        a = None #temp
-    except ValueError as e:
-        return render_template('user_update.html', message = e)
-    
     
