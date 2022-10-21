@@ -264,11 +264,9 @@ class User():
             True if registration succeeded, otherwise False
         """
         # Validate parameters
-        if (not User.valid_email(email)):
-            return False
-        if (not User.valid_password(password)):
-            return False
-        if (not User.valid_username(name)):
+        if not (User.valid_email(email) and 
+                User.valid_password(password) and
+                User.valid_username(name)):
             return False
 
         existed = database.User.query.filter_by(email=email).all()
