@@ -64,6 +64,8 @@ def register_post():
 
     if password != password2:
         error_msg = "The passwords do not match, please retry."
+    elif len(database.User.query.filter_by(email=email).all()):
+        error_msg = "Email already exists."
     else:
         # Create using backend api where it'll create only after checking if
         # each parameter is valid
@@ -71,11 +73,11 @@ def register_post():
         if not user:
             error_msg = "Registration failed!"
             if (not User.valid_email(email)):
-                error_msg += " Improper email."
+                error_msg += " Incorrect email."
             if (not User.valid_password(password)):
-                error_msg += " Improper password."
+                error_msg += " Incorrect password."
             if (not User.valid_username(name)):
-                error_msg += " Improper username."
+                error_msg += " Incorrect username."
     # If any error messages are encountered registering new user
     # then go back to the register page.
     if error_msg:
