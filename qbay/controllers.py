@@ -121,3 +121,9 @@ def register_post():
         return render_template('register.html', message=error_msg)
     else:
         return redirect('/login')
+
+@app.route('/logout')
+def logout():
+    if 'logged_in' in session:
+        session.pop('logged_in', None)
+    return redirect('/')
