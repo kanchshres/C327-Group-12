@@ -122,6 +122,7 @@ def register_post():
     else:
         return redirect('/login')
 
+
 @app.route('/logout')
 def logout():
     if 'logged_in' in session:
