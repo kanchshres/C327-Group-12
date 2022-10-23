@@ -74,11 +74,15 @@ def login_post():
 @app.route('/')
 @authenticate
 def home(user):
-    products = [
-        {'name': 'product 1', 'price': 10},
-        {'name': 'product 2', 'price': 20}
+    # Fetch listings from database
+    # Fake listings for now
+    listings = [
+        {'name': 'listing 1', 'price': 10},
+        {'name': 'listing 2', 'price': 20},
+        {'name': 'listing 3', 'price': 30}
     ]
-    return render_template('index.html', user=user, products=products)
+    
+    return render_template('index.html', user=user, listings=listings)
 
 
 @app.route('/register', methods=['GET'])
@@ -117,3 +121,10 @@ def register_post():
         return render_template('register.html', message=error_msg)
     else:
         return redirect('/login')
+
+
+@app.route('/logout')
+def logout():
+    if 'logged_in' in session:
+        session.pop('logged_in', None)
+    return redirect('/')
