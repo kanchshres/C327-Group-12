@@ -374,7 +374,9 @@ class User():
     def query_user(id):
         database_user = database.User.query.get(int(id))
         if database_user:
-            user = User(database_user.username, database_user.email, database_user.password)
+            user = User(database_user.username,
+                        database_user.email,
+                        database_user.password)
             user._database_obj = database_user
             return user
         return None

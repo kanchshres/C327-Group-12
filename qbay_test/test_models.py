@@ -448,14 +448,15 @@ class UnitTest(unittest.TestCase):
         valid_postal_codes = ["A1A1A1",
                               "N1P0A0", "N1T9Z9", "V0C0A0", "V0C9Z9"]
         for i in valid_postal_codes:
-            assert user.update_postal_code(i)
+            user.update_postal_code(i)
             assert user.database_obj.postal_code == i
 
         invalid_postal_codes = ["", "!C1Ajd", "a!a1a1",
                                 "AAAAAA", "123904", "ASD2U1",
                                 "1A2C3D"]
         for i in invalid_postal_codes:
-            assert user.update_postal_code(i) is False
+            with self.assertRaises(ValueError):
+                user.update_postal_code(i)
 
     def test_r3_3_update_user_profile(self):
         """Testing R3-3: 
@@ -470,13 +471,14 @@ class UnitTest(unittest.TestCase):
 
         valid_postal_codes = ["A1A1A1", "N1P0A0", "N1T9Z9"]
         for i in valid_postal_codes:
-            assert user.update_postal_code(i)
+            user.update_postal_code(i)
             assert user.database_obj.postal_code == i
 
         invalid_postal_codes = ["D1C9E7", "F1A1A1", "I1A1A1", "O1A1A1", 
                                 "Q1A1A1", "U1A1A1"]
         for i in invalid_postal_codes:
-            assert user.update_postal_code(i) is False
+            with self.assertRaises(ValueError):
+                user.update_postal_code(i)
 
     def test_r3_4_update_username(self):
         """Testing R3-4: 
