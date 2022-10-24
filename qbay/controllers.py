@@ -1,9 +1,12 @@
+from distutils.log import error
 from email.mime import message
 from re import A
 from flask import render_template, request, session, redirect
 from qbay.user import User
 from qbay import database
 from qbay.database import app
+
+from functools import wraps
 
 
 def authenticate(inner_function):
@@ -19,17 +22,19 @@ def authenticate(inner_function):
         pass
     """
 
+    @wraps(inner_function)
     def wrapped_inner():
 
         # check did we store the key in the session
         if 'logged_in' in session:
             id = session['logged_in']
             try:
-                user = User.query_user(id)
+                user = database.User.query.get(int(id))
                 if user:
                     # if the user exists, call the inner_function
                     # with user as parameter
                     return inner_function(user)
+                return redirect('/login')
             except Exception:
                 pass
         else:
@@ -76,18 +81,15 @@ def login_post():
 @app.route('/')
 @authenticate
 def home(user):
-    # authentication is done in the wrapper function
-    # see above.
-    # by using @authenticate, we don't need to re-write
-    # the login checking code all the time for other
-    # front-end portals
-
-    # some fake product data
-    products = [
-        {'name': 'product 1', 'price': 10},
-        {'name': 'product 2', 'price': 20}
+    # Fetch listings from database
+    # Fake listings for now
+    listings = [
+        {'name': 'listing 1', 'price': 10},
+        {'name': 'listing 2', 'price': 20},
+        {'name': 'listing 3', 'price': 30}
     ]
-    return render_template('index.html', user=user, products=products)
+
+    return render_template('index.html', user=user, listings=listings)
 
 
 @app.route('/register', methods=['GET'])
@@ -125,11 +127,53 @@ def logout():
         session.pop('logged_in', None)
     return redirect('/')
 
-@app.route('/user_update')
-def update_informations(user):
+
+@app.route('/user_update', methods=["GET"])
+@authenticate
+def update_informations_get(user: database.User):
+    return render_template('user_update.html',
+                           user=user,
+                           billing_address=user.billing_address,
+                           postal_code=user.postal_code)
+
+
+@app.route('/user_update', methods=['POST'])
+@authenticate
+def update_informations_post(user: database.User):
     email = request.form.get('email')
     username = request.form.get('username')
     billing_address = request.form.get('billing_address')
     postal_code = request.form.get('postal_code')
+
+    user_local = User.query_user(user.id)
+
+    error_messages = []
+
+    try:
+        user_local.update_username(username)
+        error_messages += [f"Username updated successfully: {username}"]
+    except ValueError as e:
+        error_messages += [str(e)]
+
+    try:
+        user_local.update_email(email)
+        error_messages += [f"Email updated successfully: {email}"]
+    except ValueError as e:
+        error_messages += [str(e)]
+
+    try:
+        user_local.update_billing_address(billing_address)
+        error_messages += [
+            f"Billing address updated successfully: {billing_address}"]
+    except ValueError as e:
+        error_messages += [str(e)]
+
+    try:
+        user_local.update_postal_code(postal_code)
+        error_messages += [f"Postal code updated successfully: {postal_code}"]
+    except ValueError as e:
+        error_messages += [str(e)]
     
-    
+    return render_template('user_update.html',
+                           user=user,
+                           errors=error_messages)

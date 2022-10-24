@@ -76,11 +76,15 @@ class User():
     @property
     def id(self):
         """Fetches the user's id"""
+        if self.database_obj:
+            self._id = self.database_obj.id
         return self._id
 
     @property
     def username(self) -> str:
         """Fetches the user's username"""
+        if self.database_obj:
+            self._username = self.database_obj.username
         return self._username
 
     @username.setter
@@ -93,6 +97,8 @@ class User():
     @property
     def email(self) -> str:
         """Fetches the user's email"""
+        if self.database_obj:
+            self._email = self.database_obj.email
         return self._email
 
     @email.setter
@@ -105,6 +111,8 @@ class User():
     @property
     def password(self) -> str:
         """Fetches the user's password"""
+        if self.database_obj:
+            self._password = self.database_obj.password
         return self._password
 
     @password.setter
@@ -117,6 +125,8 @@ class User():
     @property
     def wallet(self) -> 'Wallet':
         """Fetches the user's wallet"""
+        if self.database_obj:
+            self._wallet = self.database_obj.wallet
         return self._wallet
 
     @wallet.setter
@@ -144,6 +154,8 @@ class User():
     @property
     def reviews(self):
         """Fetches the list of reviews"""
+        if self.database_obj:
+            self._reviews = self.database_obj.reviews
         return self._reviews
 
     @reviews.setter
@@ -158,6 +170,8 @@ class User():
     @property
     def postal_code(self):
         """Fetches the user's postal code"""
+        if self.database_obj:
+            self._postal_code = self.database_obj.postal_code
         return self._postal_code
 
     @postal_code.setter
@@ -172,6 +186,8 @@ class User():
     @property
     def billing_address(self):
         """Fetches the billing address"""
+        if self.database_obj:
+            self._billing_address = self.database_obj.billing_address
         return self._billing_address
 
     @billing_address.setter
@@ -297,7 +313,6 @@ class User():
         """
         if not (User.valid_email(email) and User.valid_password(password)):
             raise ValueError("Invalid username or password")
-            return None
 
         with database.app.app_context():
             user = database.User.query.filter_by(email=email).first()
@@ -326,8 +341,6 @@ class User():
     def update_email(self, email):
         """Updates the user's email and pushes changes to the 
         database (if the email isn't already in the database)
-
-        Returns True if sucessful, False otherwise
         """
         self.email = email
         try:
@@ -346,27 +359,22 @@ class User():
         with database.app.app_context():
             self._database_obj.billing_address = address
             db.session.commit()
-        self._billing_address = address
 
     def update_postal_code(self, postal_code):
         """Updates the postal code and pushes changes to the 
         database.
-
-        Returns True if sucessful, False otherwise
         """
-        try:
-            self.postal_code = postal_code
-        except ValueError as e:
-            print(e)
-            return False
+        self.postal_code = postal_code
+        
         with database.app.app_context():
             self._database_obj.postal_code = postal_code
             db.session.commit()
-        return True
 
     @staticmethod
     def query_user(id):
-        database_user = database.User.get(id)
-        user = User(database_user.username, database_user.password, database_user.email)
-        user.database_obj = database_user
-        return user
+        database_user = database.User.query.get(int(id))
+        if database_user:
+            user = User(database_user.username, database_user.email, database_user.password)
+            user._database_obj = database_user
+            return user
+        return None

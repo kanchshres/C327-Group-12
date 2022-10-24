@@ -7,13 +7,16 @@
 {% block content %}
 <h2 id="welcome-header">Welcome {{ user.name }} !</h2>
 
+<a href='' class="btn btn-primary" id="btn-submit" >Create Listing</a>
+<a href='' class="btn btn-primary" id="btn-submit" >Update Listing</a>
+<br> <br>
 
-<h2>Here are all available products</h2>
+<h2>Current Listings</h2>
 
-<div id="products">
-    {% for product in products %}
+<div id="listings">
+    {% for listing in listings %}
     <div>
-        <h4>name: {{ product.name }} price: {{ product.price }} <a href=''>update</a></h4>
+        <h4>{{ listing.name }} price: {{ listing.price }} | <a href=''>edit</a></h4>
     </div>
     {% endfor %}
 </div>
