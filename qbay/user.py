@@ -306,18 +306,16 @@ class User():
         Returns 2 for login failure due to incorrect username or 
                                                 password (non-matching)
         """
-        if not (User.valid_email(email) and User.valid_password(password)):
-            raise ValueError("Invalid username or password")
+        if (User.valid_email(email) and User.valid_password(password)):
+            with database.app.app_context():
+                user = database.User.query.filter_by(email=email).first()
 
-        with database.app.app_context():
-            user = database.User.query.filter_by(email=email).first()
+                if user:
+                    if user.password == password:
+                        # login
+                        return user
 
-            if user:
-                if user.password == password:
-                    # login
-                    return user
-
-        raise ValueError("Incorrect username or password")
+        raise ValueError("Incorrect email or password")
 
     def update_username(self, username):
         """Updates the user's username and pushes changes to the 
