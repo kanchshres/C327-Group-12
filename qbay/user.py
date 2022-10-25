@@ -65,7 +65,6 @@ class User():
                 self._id = user.id
             return True
         except exc.IntegrityError:
-            db.session.rollback()
             return False
 
     @property

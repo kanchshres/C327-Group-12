@@ -19,7 +19,6 @@ app.config['SECRET_KEY'] = '69cae04b04756f65eabcd2c5a11c8c24'
 
 db = SQLAlchemy(app)
 
-db.session.refresh
 
 class User(db.Model):
     __tablename__ = 'users'

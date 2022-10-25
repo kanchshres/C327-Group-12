@@ -9,6 +9,7 @@ import sys
 
 from functools import wraps
 
+
 def authenticate(inner_function):
     """
     :param inner_function: any python function that accepts a user object
@@ -132,7 +133,10 @@ def logout():
 def update_informations_get(user):
     users = database.User.query.all()
     print(users, file=sys.stderr)
-    return render_template('/user_update.html', user=user, errors='')
+    return render_template('/user_update.html',
+                           user=user,
+                           errors='')
+
 
 @app.route('/user_update', methods=['POST'])
 @authenticate
@@ -169,5 +173,7 @@ def update_informations_post(user: User):
     except ValueError as e:
         error_messages += [str(e)]
     database.db.session.commit()
-    
-    return render_template('/user_update.html', user=user, errors=error_messages)
+
+    return render_template('/user_update.html',
+                           user=user,
+                           errors=error_messages)
