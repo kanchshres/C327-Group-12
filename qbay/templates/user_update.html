@@ -12,14 +12,14 @@
 </h4>
 <form method="post">
   <div class="form-group">
-    <label for="name">Username</label>
-    <input class="form-control" name="username" id="name" value={{user.username}} required>
+    <label for="username">Username</label>
+    <input class="form-control" name="username" id="username" value={{user.database_obj.username}} required>
     <label for="email">Email</label>
-    <input class="form-control" name="email" id="email" value={{user.email}} required>
+    <input class="form-control" name="email" id="email" value={{user.database_obj.email}} required>
     <label for="billing_address">Billing Address</label>
-    <input class="form-control" name="billing_address" id="billing_address" value={{user.billing_adress}}>
+    <input class="form-control" name="billing_address" id="billing_address" value={{user.database_obj.billing_address}}>
     <label for="postal_code">Postal Code</label>
-    <input class="form-control" name="postal_code" id="postal_code" value={{user.postal_code}}>
+    <input class="form-control" name="postal_code" id="postal_code" value={{user.database_obj.postal_code}}>
     <input class="btn btn-primary" type="submit" value="Save changes">
   <a href='/' class="btn btn-primary" id="btn-submit" >Back to home</a>
   </div>

@@ -64,12 +64,12 @@ class User():
                 self._database_obj = user
                 self._id = user.id
             return True
-        except exc.IntegrityError as e:
-            print(e)
+        except exc.IntegrityError:
+            db.session.rollback()
             return False
 
     @property
-    def database_obj(self):
+    def database_obj(self) -> database.User:
         """Returns a reference to the database"""
         return self._database_obj
 
@@ -83,8 +83,6 @@ class User():
     @property
     def username(self) -> str:
         """Fetches the user's username"""
-        if self.database_obj:
-            self._username = self.database_obj.username
         return self._username
 
     @username.setter
@@ -97,8 +95,6 @@ class User():
     @property
     def email(self) -> str:
         """Fetches the user's email"""
-        if self.database_obj:
-            self._email = self.database_obj.email
         return self._email
 
     @email.setter
@@ -111,8 +107,6 @@ class User():
     @property
     def password(self) -> str:
         """Fetches the user's password"""
-        if self.database_obj:
-            self._password = self.database_obj.password
         return self._password
 
     @password.setter
@@ -125,8 +119,6 @@ class User():
     @property
     def wallet(self) -> 'Wallet':
         """Fetches the user's wallet"""
-        if self.database_obj:
-            self._wallet = self.database_obj.wallet
         return self._wallet
 
     @wallet.setter
@@ -154,8 +146,6 @@ class User():
     @property
     def reviews(self):
         """Fetches the list of reviews"""
-        if self.database_obj:
-            self._reviews = self.database_obj.reviews
         return self._reviews
 
     @reviews.setter
@@ -170,8 +160,6 @@ class User():
     @property
     def postal_code(self):
         """Fetches the user's postal code"""
-        if self.database_obj:
-            self._postal_code = self.database_obj.postal_code
         return self._postal_code
 
     @postal_code.setter
@@ -186,8 +174,6 @@ class User():
     @property
     def billing_address(self):
         """Fetches the billing address"""
-        if self.database_obj:
-            self._billing_address = self.database_obj.billing_address
         return self._billing_address
 
     @billing_address.setter
@@ -333,9 +319,10 @@ class User():
         self.username = username
         try:
             with database.app.app_context():
-                self._database_obj.username = username
+                self.database_obj.username = self.username
                 db.session.commit()
-        except exc.InterfaceError:
+        except exc.IntegrityError:
+            db.session.rollback()
             raise ValueError(f"Username already exists: {username}")
 
     def update_email(self, email):
@@ -345,9 +332,10 @@ class User():
         self.email = email
         try:
             with database.app.app_context():
-                self._database_obj.email = email
+                self.database_obj.email = self.email
                 db.session.commit()
         except exc.IntegrityError:
+            db.session.rollback()
             raise ValueError(f"Email already exists: {email}")
 
     def update_billing_address(self, address):
@@ -357,7 +345,7 @@ class User():
         self.billing_address = address
         
         with database.app.app_context():
-            self._database_obj.billing_address = address
+            self.database_obj.billing_address = self.billing_address
             db.session.commit()
 
     def update_postal_code(self, postal_code):
@@ -367,7 +355,7 @@ class User():
         self.postal_code = postal_code
         
         with database.app.app_context():
-            self._database_obj.postal_code = postal_code
+            self.database_obj.postal_code = self.postal_code
             db.session.commit()
 
     @staticmethod

@@ -19,6 +19,7 @@ app.config['SECRET_KEY'] = '69cae04b04756f65eabcd2c5a11c8c24'
 
 db = SQLAlchemy(app)
 
+db.session.refresh
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -35,7 +36,7 @@ class User(db.Model):
     bookings = relationship('Booking', back_populates='user')
 
     def __repr__(self) -> str:
-        return f'<User {self.username}>'
+        return f'<User {self.username} : {self.id}>'
 
 
 class Listing(db.Model):

@@ -5,9 +5,9 @@ from flask import render_template, request, session, redirect
 from qbay.user import User
 from qbay import database
 from qbay.database import app
+import sys
 
 from functools import wraps
-
 
 def authenticate(inner_function):
     """
@@ -24,12 +24,11 @@ def authenticate(inner_function):
 
     @wraps(inner_function)
     def wrapped_inner():
-
         # check did we store the key in the session
         if 'logged_in' in session:
             id = session['logged_in']
             try:
-                user = database.User.query.get(int(id))
+                user = User.query_user(id)
                 if user:
                     # if the user exists, call the inner_function
                     # with user as parameter
@@ -128,52 +127,47 @@ def logout():
     return redirect('/')
 
 
-@app.route('/user_update', methods=["GET"])
+@app.route('/user_update', methods=['GET'])
 @authenticate
-def update_informations_get(user: database.User):
-    return render_template('user_update.html',
-                           user=user,
-                           billing_address=user.billing_address,
-                           postal_code=user.postal_code)
-
+def update_informations_get(user):
+    users = database.User.query.all()
+    print(users, file=sys.stderr)
+    return render_template('/user_update.html', user=user, errors='')
 
 @app.route('/user_update', methods=['POST'])
 @authenticate
-def update_informations_post(user: database.User):
-    email = request.form.get('email')
+def update_informations_post(user: User):
     username = request.form.get('username')
+    email = request.form.get('email')
     billing_address = request.form.get('billing_address')
     postal_code = request.form.get('postal_code')
-
-    user_local = User.query_user(user.id)
 
     error_messages = []
 
     try:
-        user_local.update_username(username)
+        user.update_username(username)
         error_messages += [f"Username updated successfully: {username}"]
     except ValueError as e:
         error_messages += [str(e)]
 
     try:
-        user_local.update_email(email)
+        user.update_email(email)
         error_messages += [f"Email updated successfully: {email}"]
     except ValueError as e:
         error_messages += [str(e)]
 
     try:
-        user_local.update_billing_address(billing_address)
+        user.update_billing_address(billing_address)
         error_messages += [
             f"Billing address updated successfully: {billing_address}"]
     except ValueError as e:
         error_messages += [str(e)]
 
     try:
-        user_local.update_postal_code(postal_code)
+        user.update_postal_code(postal_code)
         error_messages += [f"Postal code updated successfully: {postal_code}"]
     except ValueError as e:
         error_messages += [str(e)]
+    database.db.session.commit()
     
-    return render_template('user_update.html',
-                           user=user,
-                           errors=error_messages)
+    return render_template('/user_update.html', user=user, errors=error_messages)

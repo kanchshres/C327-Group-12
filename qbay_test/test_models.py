@@ -870,6 +870,30 @@ class UnitTest(unittest.TestCase):
         l3.title = "4 bed 2 baths"
         assert l3.title == "4 bed 2 baths"
 
+    def test_query_and_update(self):
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
+
+        user = User("testUser", "user@example.ca", "password123")
+        user.add_to_database()
+        
+        queried_user = User.query_user(1)
+        assert queried_user.username == "testUser"
+        assert queried_user.email == "user@example.ca"
+        assert queried_user.password == "password123"
+        
+        queried_user.update_billing_address("updating street")
+        assert queried_user.billing_address == "updating street"
+        assert queried_user.database_obj.billing_address == "updating street"
+        
+        queried_again = User.query_user(1)
+        assert queried_again.database_obj.billing_address == "updating street"
+        queried_again.update_username("ganya")
+        assert queried_again.username == "ganya"
+        assert queried_again.database_obj.username == "ganya"
+        
+        assert queried_user.database_obj.username == "ganya"
 
 if __name__ == "__main__":
     unittest.main()
