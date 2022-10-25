@@ -35,7 +35,7 @@ class User(db.Model):
     bookings = relationship('Booking', back_populates='user')
 
     def __repr__(self) -> str:
-        return f'<User {self.username}>'
+        return f'<User {self.username} : {self.id}>'
 
 
 class Listing(db.Model):

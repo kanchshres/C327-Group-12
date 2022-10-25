@@ -30,16 +30,15 @@ class User():
     """
 
     def __init__(self, username: str = "",
-                 email: str = "", password: str = "",
-                 postal_code: str = "", billing_address: str = ""):
+                 email: str = "", password: str = ""):
 
         self._database_obj: database.User = None
         self._id = None  # created upon being added to database
         self._username: str = username
         self._email: str = email
         self._password = password
-        self._postal_code = postal_code
-        self._billing_address = billing_address
+        self._postal_code = ""
+        self._billing_address = ""
         self._wallet: Wallet = None  # user adds wallet after account creation
         self._reviews: 'list[Review]' = []
         self._balance = 0
@@ -65,23 +64,26 @@ class User():
                 self._database_obj = user
                 self._id = user.id
             return True
-        except exc.IntegrityError as e:
-            print(e)
+        except exc.IntegrityError:
             return False
 
     @property
-    def database_obj(self):
+    def database_obj(self) -> database.User:
         """Returns a reference to the database"""
         return self._database_obj
 
     @property
     def id(self):
         """Fetches the user's id"""
+        if self.database_obj:
+            self._id = self.database_obj.id
         return self._id
 
     @property
     def username(self) -> str:
         """Fetches the user's username"""
+        if self.database_obj:
+            self._username = self.database_obj.username
         return self._username
 
     @username.setter
@@ -94,6 +96,8 @@ class User():
     @property
     def email(self) -> str:
         """Fetches the user's email"""
+        if self.database_obj:
+            self._email = self.database_obj.email
         return self._email
 
     @email.setter
@@ -106,6 +110,8 @@ class User():
     @property
     def password(self) -> str:
         """Fetches the user's password"""
+        if self.database_obj:
+            self._password = self.database_obj.password
         return self._password
 
     @password.setter
@@ -134,7 +140,7 @@ class User():
     @property
     def balance(self):
         """Fetches the user's balance
-        
+
         Returns the user's wallet if the wallet exists, 0 otherwise
         """
         if self.wallet:
@@ -159,6 +165,8 @@ class User():
     @property
     def postal_code(self):
         """Fetches the user's postal code"""
+        if self.database_obj:
+            self._postal_code = self.database_obj.postal_code
         return self._postal_code
 
     @postal_code.setter
@@ -173,6 +181,8 @@ class User():
     @property
     def billing_address(self):
         """Fetches the billing address"""
+        if self.database_obj:
+            self._billing_address = self.database_obj.billing_address
         return self._billing_address
 
     @billing_address.setter
@@ -264,7 +274,7 @@ class User():
             True if registration succeeded, otherwise False
         """
         # Validate parameters
-        if not (User.valid_email(email) and 
+        if not (User.valid_email(email) and
                 User.valid_password(password) and
                 User.valid_username(name)):
             return False
@@ -297,8 +307,7 @@ class User():
                                                 password (non-matching)
         """
         if not (User.valid_email(email) and User.valid_password(password)):
-            raise ValueError("Invalid username or password")
-            return None
+            raise ValueError("Invalid email or password")
 
         with database.app.app_context():
             user = database.User.query.filter_by(email=email).first()
@@ -308,80 +317,73 @@ class User():
                     # login
                     return user
 
-        raise ValueError("Incorrect username or password")
-        return None
+        raise ValueError("Incorrect email or password")
 
     def update_username(self, username):
         """Updates the user's username and pushes changes to the 
         database (assuming the username isn't already in the database)
 
-        Returns True if sucessful, False otherwise
+        Raises ValueError if the username already exists
         """
-        try:
-            self.username = username
-        except ValueError as e:
-            print(e)
-            return False
-
+        self.username = username
         try:
             with database.app.app_context():
-                self._database_obj.username = username
+                self.database_obj.username = username
                 db.session.commit()
-        except exc.IntegrityError as e:
-            print(f"Username already exists: {username}")
-            return False
-
-        return True
+        except exc.IntegrityError:
+            db.session.rollback()
+            raise ValueError(f"Username already exists: {username}")
 
     def update_email(self, email):
         """Updates the user's email and pushes changes to the 
         database (if the email isn't already in the database)
-
-        Returns True if sucessful, False otherwise
         """
-        try:
-            self.email = email
-        except ValueError as e:
-            print(e)
-            return False
+        self.email = email
         try:
             with database.app.app_context():
-                self._database_obj.email = email
+                self.database_obj.email = email
                 db.session.commit()
-        except exc.IntegrityError as e:
-            print(f"Email already exists: {email}")
-            return False
-        return True
+        except exc.IntegrityError:
+            db.session.rollback()
+            raise ValueError(f"Email already exists: {email}")
 
     def update_billing_address(self, address):
         """Updates the billing address and pushes changes to the 
         database.
-
-        Returns True if sucessful, False otherwise
         """
-        try:
-            self.billing_address = address
-        except ValueError as e:
-            print(e)
-            return False
+        self.billing_address = address
+
         with database.app.app_context():
-            self._database_obj.billing_address = address
+            self.database_obj.billing_address = address
             db.session.commit()
-        self._billing_address = address
-        return True
 
     def update_postal_code(self, postal_code):
         """Updates the postal code and pushes changes to the 
         database.
-
-        Returns True if sucessful, False otherwise
         """
-        try:
-            self.postal_code = postal_code
-        except ValueError as e:
-            print(e)
-            return False
+        self.postal_code = postal_code
+
         with database.app.app_context():
-            self._database_obj.postal_code = postal_code
+            self.database_obj.postal_code = postal_code
             db.session.commit()
-        return True
+
+    @staticmethod
+    def query_user(id):
+        """Returns an User object for interacting with the database
+        in a safe manner. It will innitialize a new User object that
+        is tethered to the corresponding database object
+
+        Args:
+            id (int): integer denoting the unique identifier of the object
+            to be queried for
+
+        Returns:
+            User: an user object that is tethered to the corresponding
+            database object with the given id
+        """
+        database_user = database.User.query.get(int(id))
+        if database_user:
+            user = User()
+            user._database_obj = database_user
+            return user
+        return None

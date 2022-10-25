@@ -2,6 +2,9 @@ from flask import render_template, request, session, redirect
 from qbay.user import User
 from qbay import database
 from qbay.database import app
+import sys
+
+from functools import wraps
 
 
 def authenticate(inner_function):
@@ -17,17 +20,22 @@ def authenticate(inner_function):
         pass
     """
 
+    @wraps(inner_function)
     def wrapped_inner():
-
         # check did we store the key in the session
         if 'logged_in' in session:
-            email = session['logged_in']
+            id = session['logged_in']
             try:
-                user = database.User.query.filter_by(email=email).one_or_none()
+                # This generates a new User object that can interact with
+                # the database via some tethering.
+                # You want to use this object to pass around the program as it
+                # has the needed functions for actually managing the database
+                user = User.query_user(id)
                 if user:
                     # if the user exists, call the inner_function
                     # with user as parameter
                     return inner_function(user)
+                return redirect('/login')
             except Exception:
                 pass
         else:
@@ -54,7 +62,7 @@ def login_post():
         return render_template('login.html', message=err)
 
     if user:
-        session['logged_in'] = user.email
+        session['logged_in'] = user.id
         """
         Session is an object that contains sharing information 
         between a user's browser and the end server. 
@@ -81,7 +89,7 @@ def home(user):
         {'name': 'listing 2', 'price': 20},
         {'name': 'listing 3', 'price': 30}
     ]
-    
+
     return render_template('index.html', user=user, listings=listings)
 
 
@@ -94,31 +102,22 @@ def register_get():
 @app.route('/register', methods=['POST'])
 def register_post():
     email = request.form.get('email')
-    name = request.form.get('name')
+    username = request.form.get('username')
     password = request.form.get('password')
     password2 = request.form.get('password2')
-    error_msg = None
+    error_message = None
 
     if password != password2:
-        error_msg = "The passwords do not match, please retry."
-    elif len(database.User.query.filter_by(email=email).all()):
-        error_msg = "Email already exists."
+        error_message = "The passwords do not match"
     else:
-        # Create using backend api where it'll create only after checking if
-        # each parameter is valid
-        user = User.register(name, email, password)
-        if not user:
-            error_msg = "Registration failed!"
-            if (not User.valid_email(email)):
-                error_msg += " Incorrect email."
-            if (not User.valid_password(password)):
-                error_msg += " Incorrect password."
-            if (not User.valid_username(name)):
-                error_msg += " Incorrect username."
-    # If any error messages are encountered registering new user
-    # then go back to the register page.
-    if error_msg:
-        return render_template('register.html', message=error_msg)
+        # use backend api to register the user
+        success = User.register(username, email, password)
+        if not success:
+            error_message = "Registration failed."
+    # if there is any error messages when registering new user
+    # at the backend, go back to the register page.
+    if error_message:
+        return render_template('register.html', message=error_message)
     else:
         return redirect('/login')
 
@@ -128,3 +127,55 @@ def logout():
     if 'logged_in' in session:
         session.pop('logged_in', None)
     return redirect('/')
+
+
+@app.route('/user_update', methods=['GET'])
+@authenticate
+def update_informations_get(user):
+    return render_template('/user_update.html',
+                           user=user,
+                           errors='')
+
+
+@app.route('/user_update', methods=['POST'])
+@authenticate
+def update_informations_post(user: User):
+    """Update the user information from the HTML page
+    and push it onto the database
+    """
+    username = request.form.get('username')
+    email = request.form.get('email')
+    billing_address = request.form.get('billing_address')
+    postal_code = request.form.get('postal_code')
+
+    error_messages = []
+
+    try:
+        user.update_username(username)
+        error_messages += [f"Username updated successfully: {username}"]
+    except ValueError as e:
+        error_messages += [str(e)]
+
+    try:
+        user.update_email(email)
+        error_messages += [f"Email updated successfully: {email}"]
+    except ValueError as e:
+        error_messages += [str(e)]
+
+    try:
+        user.update_billing_address(billing_address)
+        error_messages += [
+            f"Billing address updated successfully: {billing_address}"]
+    except ValueError as e:
+        error_messages += [str(e)]
+
+    try:
+        user.update_postal_code(postal_code)
+        error_messages += [f"Postal code updated successfully: {postal_code}"]
+    except ValueError as e:
+        error_messages += [str(e)]
+    database.db.session.commit()
+
+    return render_template('/user_update.html',
+                           user=user,
+                           errors=error_messages)

@@ -133,7 +133,7 @@ class UnitTest(unittest.TestCase):
 
         with self.assertRaises(TypeError):
             transact.status = User()
-    
+
     def test_listing(self):
         """Sprint 1 Testing"""
         # Testing Initialization
@@ -178,6 +178,7 @@ class UnitTest(unittest.TestCase):
         assert user3.add_to_database() is False
 
     def test_user_query(self):
+        db.session.rollback()
         with app.app_context():
             db.drop_all()
             db.create_all()
@@ -193,6 +194,7 @@ class UnitTest(unittest.TestCase):
         """ Testing R1-1:
         Email and password cannot be empty.
         """
+        db.session.rollback()
         with app.app_context():
             db.drop_all()
             db.create_all()
@@ -206,6 +208,7 @@ class UnitTest(unittest.TestCase):
         """ Testing R1-2:
         User is uniquely identified by their user id.
         """
+        db.session.rollback()
         with app.app_context():
             db.drop_all()
             db.create_all()
@@ -224,6 +227,7 @@ class UnitTest(unittest.TestCase):
         """ Testing R1-3:
         Email has to follow addr-spec defined in RFC 5322.
         """
+        db.session.rollback()
         with app.app_context():
             db.drop_all()
             db.create_all()
@@ -239,10 +243,10 @@ class UnitTest(unittest.TestCase):
         """ Testing R1-4:
         Password meets required complexity.
         """
+        db.session.rollback()
         with app.app_context():
             db.drop_all()
             db.create_all()
-
         assert User.register("u04", "test4@test.com", "One23!") is True
         assert User.register("u05", "test5@test.com", "One2!") is False
         assert User.register("u05", "test5@test.com", "onetwo!") is False
@@ -256,6 +260,7 @@ class UnitTest(unittest.TestCase):
         User name is non-empty, alphanumeric-only, and spaces are allowed
         only if it is not as the prefix or suffix.
         """
+        db.session.rollback()
         with app.app_context():
             db.drop_all()
             db.create_all()
@@ -271,6 +276,7 @@ class UnitTest(unittest.TestCase):
         """ Testing R1-6:
         User name length is longer 2 and less than 20 characters.
         """
+        db.session.rollback()
         with app.app_context():
             db.drop_all()
             db.create_all()
@@ -286,6 +292,7 @@ class UnitTest(unittest.TestCase):
         """ Testing R1-7:
         If email has been used, operation failed.
         """
+        db.session.rollback()
         with app.app_context():
             db.drop_all()
             db.create_all()
@@ -297,6 +304,7 @@ class UnitTest(unittest.TestCase):
         """ Testing R1-8:
         Billing Address is empty at time of registration.
         """
+        db.session.rollback()
         with app.app_context():
             db.drop_all()
             db.create_all()
@@ -310,6 +318,7 @@ class UnitTest(unittest.TestCase):
         """ Testing R1-9:
         Postal Code is empty at time of registration.
         """
+        db.session.rollback()
         with app.app_context():
             db.drop_all()
             db.create_all()
@@ -323,6 +332,7 @@ class UnitTest(unittest.TestCase):
         """ Testing R1-10:
         Balance should be initialized as 100 at time of registration.
         """
+        db.session.rollback()
         with app.app_context():
             db.drop_all()
             db.create_all()
@@ -331,7 +341,7 @@ class UnitTest(unittest.TestCase):
         user = database.User.query.get(1)
         assert user is not None
         assert user.postal_code == ""
-    
+
     def test_r2_1(self):
         """Test if user can log in using her/his email address and the 
         password.
@@ -361,12 +371,9 @@ class UnitTest(unittest.TestCase):
         assert User.login("bob@gmail.com", "Password123!")
         assert User.login("fred@gmail.com", "Password321!")
 
-        with self.assertRaisesRegex(ValueError, 
-                                    "Incorrect username or password"):
+        with self.assertRaisesRegex(ValueError,
+                                    "Incorrect email or password"):
             User.login("bob@gmail.com", "IncorrectPassword123!")
-
-        with self.assertRaisesRegex(ValueError, 
-                                    "Incorrect username or password"):
             User.login("fred@gmail.com", "Password123!")
 
     def test_r2_2(self):
@@ -393,16 +400,10 @@ class UnitTest(unittest.TestCase):
         # assert valid login is not None
         assert User.login("bob@gmail.com", "Password123!")
 
-        with self.assertRaisesRegex(ValueError, 
-                                    "Invalid username or password"):
+        with self.assertRaisesRegex(ValueError,
+                                    "Invalid email or password"):
             User.login("b.o.b.@gmail..com", "Password123!")
-
-        with self.assertRaisesRegex(ValueError, 
-                                    "Invalid username or password"):
             User.login("bob@gmail.com", "psw")
-
-        with self.assertRaisesRegex(ValueError, 
-                                    "Invalid username or password"):
             User.login("b.o.b.@gmail..com", "psw")
 
     def test_r3_1_update_user(self):
@@ -448,14 +449,15 @@ class UnitTest(unittest.TestCase):
         valid_postal_codes = ["A1A1A1",
                               "N1P0A0", "N1T9Z9", "V0C0A0", "V0C9Z9"]
         for i in valid_postal_codes:
-            assert user.update_postal_code(i)
+            user.update_postal_code(i)
             assert user.database_obj.postal_code == i
 
         invalid_postal_codes = ["", "!C1Ajd", "a!a1a1",
                                 "AAAAAA", "123904", "ASD2U1",
                                 "1A2C3D"]
         for i in invalid_postal_codes:
-            assert user.update_postal_code(i) is False
+            with self.assertRaises(ValueError):
+                user.update_postal_code(i)
 
     def test_r3_3_update_user_profile(self):
         """Testing R3-3: 
@@ -470,13 +472,14 @@ class UnitTest(unittest.TestCase):
 
         valid_postal_codes = ["A1A1A1", "N1P0A0", "N1T9Z9"]
         for i in valid_postal_codes:
-            assert user.update_postal_code(i)
+            user.update_postal_code(i)
             assert user.database_obj.postal_code == i
 
-        invalid_postal_codes = ["D1C9E7", "F1A1A1", "I1A1A1", "O1A1A1", 
+        invalid_postal_codes = ["D1C9E7", "F1A1A1", "I1A1A1", "O1A1A1",
                                 "Q1A1A1", "U1A1A1"]
         for i in invalid_postal_codes:
-            assert user.update_postal_code(i) is False
+            with self.assertRaises(ValueError):
+                user.update_postal_code(i)
 
     def test_r3_4_update_username(self):
         """Testing R3-4: 
@@ -492,13 +495,14 @@ class UnitTest(unittest.TestCase):
         valid_usernames = ["asdhjk", "userName",
                            "USERNAME", "user name", "123 1112 4902"]
         for i in valid_usernames:
-            assert user.update_username(i)
+            user.update_username(i)
             assert user.database_obj.username == i
 
         invalid_usernames = ["", " ASD", "! ASD",
                              "as", "1246789012317823678123678678904"]
         for i in invalid_usernames:
-            assert user.update_username(i) is False
+            with self.assertRaises(ValueError):
+                user.update_username(i)
 
     def test_r4_1_create_listing(self):
         """Testing R4-1:
@@ -520,7 +524,7 @@ class UnitTest(unittest.TestCase):
         assert (Listing.valid_title(t4)) is True
         assert (Listing.valid_title(t5)) is False
         # True, False, False, False, False
-    
+
     def test_r4_2_create_listing(self):
         """Testing R4-2:
         The title of the product is no longer than 80
@@ -530,7 +534,7 @@ class UnitTest(unittest.TestCase):
         t2 = t1 + "a"
         assert (Listing.valid_title(t1)) is True
         assert (Listing.valid_title(t2)) is False
-    
+
     def test_r4_3_create_listing(self):
         """Testing R4-3:
         The description of the product can be arbitrary 
@@ -568,7 +572,7 @@ class UnitTest(unittest.TestCase):
         assert (l1.valid_price(p2)) is True
         assert (l1.valid_price(p3)) is True
         assert (l1.valid_price(p4)) is False
-    
+
     def test_r4_6_create_listing(self):
         """Testing R4-6:
         last_modified_date must be after 
@@ -849,7 +853,7 @@ class UnitTest(unittest.TestCase):
             listing.price = p4
             listing.price = p1
 
-        # test new title can't be same as existing listing title in 
+        # test new title can't be same as existing listing title in
         # database when updating title
         des1 = "Hello, this lovely home has 0 bathrooms"
         p1 = 100.50
@@ -866,6 +870,31 @@ class UnitTest(unittest.TestCase):
         l3 = Listing("4 bed 2 baths(2)", des2, p1)
         l3.title = "4 bed 2 baths"
         assert l3.title == "4 bed 2 baths"
+
+    def test_query_and_update(self):
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
+
+        user = User("testUser", "user@example.ca", "password123")
+        user.add_to_database()
+
+        queried_user = User.query_user(1)
+        assert queried_user.username == "testUser"
+        assert queried_user.email == "user@example.ca"
+        assert queried_user.password == "password123"
+
+        queried_user.update_billing_address("updating street")
+        assert queried_user.billing_address == "updating street"
+        assert queried_user.database_obj.billing_address == "updating street"
+
+        queried_again = User.query_user(1)
+        assert queried_again.database_obj.billing_address == "updating street"
+        queried_again.update_username("ganya")
+        assert queried_again.username == "ganya"
+        assert queried_again.database_obj.username == "ganya"
+
+        assert queried_user.database_obj.username == "ganya"
 
 
 if __name__ == "__main__":

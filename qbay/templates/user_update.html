@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Update Information{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<h4>
+  {% for err in errors %} 
+  {{ err }}<br>
+  {% endfor %}
+</h4>
+<form method="post">
+  <div class="form-group">
+    <label for="username">Username</label>
+    <input class="form-control" name="username" id="username" value="{{user.username}}"{{user.username}} required>
+    <label for="email">Email</label>
+    <input class="form-control" name="email" id="email" value={{user.email}} required>
+    <label for="billing_address">Billing Address</label>
+    <input class="form-control" name="billing_address" id="billing_address" value="{{user.billing_address}}"{{user.billing_address}}>
+    <label for="postal_code">Postal Code</label>
+    <input class="form-control" name="postal_code" id="postal_code" value={{user.postal_code}}>
+    <input class="btn btn-primary" type="submit" value="Save changes">
+  <a href='/' class="btn btn-primary" id="btn-submit" >Back to home</a>
+  </div>
+</form>
+{% endblock %}
