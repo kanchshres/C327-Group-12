@@ -82,6 +82,8 @@ class User():
     @property
     def username(self) -> str:
         """Fetches the user's username"""
+        if self.database_obj:
+            self._username = self.database_obj.username
         return self._username
 
     @username.setter
@@ -94,6 +96,8 @@ class User():
     @property
     def email(self) -> str:
         """Fetches the user's email"""
+        if self.database_obj:
+            self._email = self.database_obj.email
         return self._email
 
     @email.setter
@@ -106,6 +110,8 @@ class User():
     @property
     def password(self) -> str:
         """Fetches the user's password"""
+        if self.database_obj:
+            self._password = self.database_obj.password
         return self._password
 
     @password.setter
@@ -134,7 +140,7 @@ class User():
     @property
     def balance(self):
         """Fetches the user's balance
-        
+
         Returns the user's wallet if the wallet exists, 0 otherwise
         """
         if self.wallet:
@@ -159,6 +165,8 @@ class User():
     @property
     def postal_code(self):
         """Fetches the user's postal code"""
+        if self.database_obj:
+            self._postal_code = self.database_obj.postal_code
         return self._postal_code
 
     @postal_code.setter
@@ -173,6 +181,8 @@ class User():
     @property
     def billing_address(self):
         """Fetches the billing address"""
+        if self.database_obj:
+            self._billing_address = self.database_obj.billing_address
         return self._billing_address
 
     @billing_address.setter
@@ -264,7 +274,7 @@ class User():
             True if registration succeeded, otherwise False
         """
         # Validate parameters
-        if not (User.valid_email(email) and 
+        if not (User.valid_email(email) and
                 User.valid_password(password) and
                 User.valid_username(name)):
             return False
@@ -318,7 +328,7 @@ class User():
         self.username = username
         try:
             with database.app.app_context():
-                self.database_obj.username = self.username
+                self.database_obj.username = username
                 db.session.commit()
         except exc.IntegrityError:
             db.session.rollback()
@@ -331,7 +341,7 @@ class User():
         self.email = email
         try:
             with database.app.app_context():
-                self.database_obj.email = self.email
+                self.database_obj.email = email
                 db.session.commit()
         except exc.IntegrityError:
             db.session.rollback()
@@ -342,9 +352,9 @@ class User():
         database.
         """
         self.billing_address = address
-        
+
         with database.app.app_context():
-            self.database_obj.billing_address = self.billing_address
+            self.database_obj.billing_address = address
             db.session.commit()
 
     def update_postal_code(self, postal_code):
@@ -352,18 +362,28 @@ class User():
         database.
         """
         self.postal_code = postal_code
-        
+
         with database.app.app_context():
-            self.database_obj.postal_code = self.postal_code
+            self.database_obj.postal_code = postal_code
             db.session.commit()
 
     @staticmethod
     def query_user(id):
+        """Returns an User object for interacting with the database
+        in a safe manner. It will innitialize a new User object that
+        is tethered to the corresponding database object
+
+        Args:
+            id (int): integer denoting the unique identifier of the object
+            to be queried for
+
+        Returns:
+            User: an user object that is tethered to the corresponding
+            database object with the given id
+        """
         database_user = database.User.query.get(int(id))
         if database_user:
-            user = User(database_user.username,
-                        database_user.email,
-                        database_user.password)
+            user = User()
             user._database_obj = database_user
             return user
         return None

@@ -29,6 +29,14 @@ def authenticate(inner_function):
         if 'logged_in' in session:
             id = session['logged_in']
             try:
+                # This generates a new User object that can interact with
+                # the database via some tethering.
+                # The object will only have its username, email, and password
+                # initialized, and you will have to update other fields
+                # as needed or access it via User.database_obj
+                # and pull from the database object itself.
+                # You want to use this object to pass around the program as it
+                # has the needed functions for actually managing the database
                 user = User.query_user(id)
                 if user:
                     # if the user exists, call the inner_function
@@ -131,8 +139,6 @@ def logout():
 @app.route('/user_update', methods=['GET'])
 @authenticate
 def update_informations_get(user):
-    users = database.User.query.all()
-    print(users, file=sys.stderr)
     return render_template('/user_update.html',
                            user=user,
                            errors='')
@@ -141,6 +147,9 @@ def update_informations_get(user):
 @app.route('/user_update', methods=['POST'])
 @authenticate
 def update_informations_post(user: User):
+    """Update the user information from the HTML page
+    and push it onto the database
+    """
     username = request.form.get('username')
     email = request.form.get('email')
     billing_address = request.form.get('billing_address')
