@@ -31,10 +31,6 @@ def authenticate(inner_function):
             try:
                 # This generates a new User object that can interact with
                 # the database via some tethering.
-                # The object will only have its username, email, and password
-                # initialized, and you will have to update other fields
-                # as needed or access it via User.database_obj
-                # and pull from the database object itself.
                 # You want to use this object to pass around the program as it
                 # has the needed functions for actually managing the database
                 user = User.query_user(id)
