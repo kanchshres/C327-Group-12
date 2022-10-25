@@ -102,7 +102,7 @@ def register_get():
 @app.route('/register', methods=['POST'])
 def register_post():
     email = request.form.get('email')
-    name = request.form.get('name')
+    username = request.form.get('username')
     password = request.form.get('password')
     password2 = request.form.get('password2')
     error_message = None
@@ -111,7 +111,7 @@ def register_post():
         error_message = "The passwords do not match"
     else:
         # use backend api to register the user
-        success = User.register(name, email, password)
+        success = User.register(username, email, password)
         if not success:
             error_message = "Registration failed."
     # if there is any error messages when registering new user
