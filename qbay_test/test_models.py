@@ -371,7 +371,8 @@ class UnitTest(unittest.TestCase):
         assert User.login("bob@gmail.com", "Password123!")
         assert User.login("fred@gmail.com", "Password321!")
 
-        with self.assertRaises(ValueError):
+        with self.assertRaisesRegex(ValueError,
+                                    "Incorrect email or password"):
             User.login("bob@gmail.com", "IncorrectPassword123!")
             User.login("fred@gmail.com", "Password123!")
 
@@ -399,7 +400,8 @@ class UnitTest(unittest.TestCase):
         # assert valid login is not None
         assert User.login("bob@gmail.com", "Password123!")
 
-        with self.assertRaises(ValueError):
+        with self.assertRaisesRegex(ValueError,
+                                    "Invalid email or password"):
             User.login("b.o.b.@gmail..com", "Password123!")
             User.login("bob@gmail.com", "psw")
             User.login("b.o.b.@gmail..com", "psw")

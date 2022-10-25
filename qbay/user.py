@@ -306,14 +306,16 @@ class User():
         Returns 2 for login failure due to incorrect username or 
                                                 password (non-matching)
         """
-        if (User.valid_email(email) and User.valid_password(password)):
-            with database.app.app_context():
-                user = database.User.query.filter_by(email=email).first()
+        if not (User.valid_email(email) and User.valid_password(password)):
+            raise ValueError("Invalid email or password")
 
-                if user:
-                    if user.password == password:
-                        # login
-                        return user
+        with database.app.app_context():
+            user = database.User.query.filter_by(email=email).first()
+
+            if user:
+                if user.password == password:
+                    # login
+                    return user
 
         raise ValueError("Incorrect email or password")
 
