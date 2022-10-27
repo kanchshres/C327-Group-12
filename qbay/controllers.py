@@ -1,5 +1,7 @@
+from distutils.log import error
 from flask import render_template, request, session, redirect
 from qbay.user import User
+from qbay.listing import Listing
 from qbay import database
 from qbay.database import app
 import sys
@@ -82,15 +84,42 @@ def login_post():
 @app.route('/')
 @authenticate
 def home(user):
-    # Fetch listings from database
-    # Fake listings for now
-    listings = [
-        {'name': 'listing 1', 'price': 10},
-        {'name': 'listing 2', 'price': 20},
-        {'name': 'listing 3', 'price': 30}
-    ]
+    listings = database.Listing
+
+
 
     return render_template('index.html', user=user, listings=listings)
+
+
+@app.route('/create_listing', methods=['GET'])
+def create_listing_get():
+    return render_template('create_listing.html', message='')
+
+
+@app.route('/create_listing', methods=['POST'])
+@authenticate
+def create_listing_post(user):
+    title = request.form.get('title')
+    description = request.form.get('description')
+    price = float(request.form.get('price'))
+    print(price)
+
+    try:
+        print(type(price))
+        Listing.valid_price(price)
+        print("3")
+        Listing.valid_seller(user)
+        print("4")
+        Listing.create_listing(title, description, int(price), user)
+        database.db.session.commit()
+    except ValueError as e:
+        print("no")
+        return render_template('create_listing.html', message=str(e))
+    except TypeError as e:
+        print("nope")
+        return render_template('create_listing.html', message=str(e))
+
+    return redirect('/')
 
 
 @app.route('/register', methods=['GET'])
@@ -131,7 +160,7 @@ def logout():
 
 @app.route('/user_update', methods=['GET'])
 @authenticate
-def update_informations_get(user):
+def update_informations_get(user : User):
     return render_template('/user_update.html',
                            user=user,
                            errors='')
@@ -178,4 +207,46 @@ def update_informations_post(user: User):
 
     return render_template('/user_update.html',
                            user=user,
+                           errors=error_messages)
+
+
+@app.route('/listing_update', methods=['GET'])
+def update_listing_get(listing : Listing):
+    return render_template('/listing_update.html',
+                        listing=listing,
+                        errors='')
+
+
+@app.route('/listing_update', methods=['POST'])
+def update_listing_post(user : User, listing : Listing):
+    
+    title = request.form.get('title')
+    description = request.form.get('description')
+    price = request.form.get('price')
+
+    error_messages = []
+
+    try:
+        listing.update_title(title)
+        error_messages += [f"Title updated successfully: {title}"]
+    except ValueError as e:
+        error_messages += [str(e)]
+
+    try:
+        listing.update_description(description)
+        error_messages += [f"Description updated successfully: {description}"]
+    except ValueError as e:
+        error_messages += [str(e)]
+
+    try:
+        listing.update_price(price)
+        error_messages += [
+            f"Price updated successfully: {price}"]
+    except ValueError as e:
+        error_messages += [str(e)]
+
+    database.db.session.commit()
+
+    return render_template('/listing_update.html',
+                           listing=listing,
                            errors=error_messages)

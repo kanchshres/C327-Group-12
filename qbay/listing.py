@@ -31,7 +31,7 @@ class Listing:
     def __init__(self, title: str = "", description: str = "",
                  price: float = 0.0, owner: User = User(), address: str = ""):
         # Required
-        self._dbobj: database.Listing = None
+        self._database_obj: database.Listing = None
         self._title = title
         self._description = description
         self._price = price
@@ -79,7 +79,7 @@ class Listing:
     """Sets price for digital Listing if valid"""
     @price.setter
     def price(self, price):
-        if not (self.valid_price(price)):
+        if not (self.valid_price(price) and self.price < price):
             raise ValueError(f"Invalid Price: {price}")
         self._price = price
         self._modified_date = datetime.now()
@@ -145,7 +145,7 @@ class Listing:
         with database.app.app_context():
             db.session.add(listing)
             db.session.commit()
-            self._dbobj = listing
+            self._database_obj = listing
             self._modified_date = listing.last_modified_date
 
     @staticmethod
@@ -161,6 +161,7 @@ class Listing:
         - owner: The User associated with the listing (User)
 
         """
+        print("In")
         if (Listing.valid_title(title) and Listing.valid_seller(owner) and
                 Listing.valid_price(price) and
                 Listing.valid_description(description, title)):
@@ -185,8 +186,8 @@ class Listing:
                 and (len(title) < len(description)))
 
     """Determine if a given price is valid"""
-    def valid_price(self, price):
-        return (10.00 <= price <= 10000.00) and (self.price < price)
+    def valid_price(price):
+        return (10.00 <= price <= 10000.00)
 
     """Determine if a given last modification date is valid"""
     @staticmethod
@@ -203,3 +204,33 @@ class Listing:
                 user = database.User.query.get(owner.id)
                 return ((user is not None) and (user.email != ""))
         return False
+    
+    def update_title(self, title):
+        """Updates the listing title and pushes changes to the 
+        database.
+        """
+        self.title = title
+
+        with database.app.app_context():
+            self.database_obj.title = title
+            db.session.commit()
+
+    def update_description(self, description):
+        """Updates the listing description and pushes changes to the 
+        database.
+        """
+        self.description = description
+
+        with database.app.app_context():
+            self.database_obj.description = description
+            db.session.commit()
+
+    def update_price(self, price):
+        """Updates the listing price and pushes changes to the 
+        database.
+        """
+        self.price = price
+
+        with database.app.app_context():
+            self.database_obj.price = price
+            db.session.commit()

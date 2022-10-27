@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Update Listing{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<h4>
+  {% for err in errors %} 
+  {{ err }}<br>
+  {% endfor %}
+</h4>
+<form method="post">
+  <div class="form-group">
+    <label for="title">Title</label>
+    <input class="form-control" name="title" id="title" value="{{listing.title}}"{{listing.title}} required>
+    <label for="description">Description</label>
+    <input class="form-control" name="description" id="description" value="{{listing.description}}"{{listing.description}} required>
+    <label for="price">Price</label>
+    <input class="form-control" name="price" id="price" value="{{listing.price}}"{{listing.price}} required>
+    <input class="btn btn-primary" type="submit" value="Save changes">
+  <a href='/' class="btn btn-primary" id="btn-submit" >Back to home</a>
+  </div>
+</form>
+{% endblock %}
