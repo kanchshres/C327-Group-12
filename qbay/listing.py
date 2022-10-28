@@ -92,13 +92,13 @@ class Listing:
     @property
     def price(self):
         if self.database_obj:
-            self._price = self.database_obj.price
+            self._price = self.database_obj.price / 100
         return self._price
 
     """Sets price for digital Listing if valid"""
     @price.setter
     def price(self, price):
-        if not (Listing.valid_price(price) and self.price < price * 100):
+        if not (Listing.valid_price(price) and self.price < price):
             raise ValueError(f"Invalid Price: {price}")
         self._price = price
         self._modified_date = datetime.now()

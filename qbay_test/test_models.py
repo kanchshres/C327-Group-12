@@ -647,7 +647,7 @@ class UnitTest(unittest.TestCase):
 
         # test if changing the price works
         obj.update_price(8100)
-        assert obj.database_obj.price == 8100
+        assert obj.database_obj.price / 100 == 8100
 
         # test if changing the description works
         obj.update_description("different description 12345678")
@@ -682,10 +682,9 @@ class UnitTest(unittest.TestCase):
         obj = Listing(title, description, price, seller, address)
 
         # test that price does not change, as change is invalid
-        obj.price = 8100
         with self.assertRaises(ValueError):
-            obj.price = 1500
-        assert obj.price == 8100
+            obj.update_price(1500)
+        assert obj.price == 8000.57
 
         # test that price does change, as change is valid
         obj.price = 8200
