@@ -4,7 +4,6 @@ from qbay.user import User
 from qbay.listing import Listing
 from qbay import database
 from qbay.database import app
-import sys
 
 from functools import wraps
 
@@ -48,6 +47,13 @@ def authenticate(inner_function):
     return wrapped_inner
 
 
+@app.route('/')
+@authenticate
+def home(user):
+    listings = database.Listing.query.all()
+    return render_template('index.html', user=user, listings=listings)
+
+
 @app.route('/login', methods=['GET'])
 def login_get():
     return render_template('login.html', message='Please login')
@@ -81,44 +87,10 @@ def login_post():
         return render_template('login.html', message='login failed')
 
 
-@app.route('/')
-@authenticate
-def home(user):
-    listings = database.Listing
-
-
-
-    return render_template('index.html', user=user, listings=listings)
-
-
-@app.route('/create_listing', methods=['GET'])
-def create_listing_get():
-    return render_template('create_listing.html', message='')
-
-
-@app.route('/create_listing', methods=['POST'])
-@authenticate
-def create_listing_post(user):
-    title = request.form.get('title')
-    description = request.form.get('description')
-    price = float(request.form.get('price'))
-    print(price)
-
-    try:
-        print(type(price))
-        Listing.valid_price(price)
-        print("3")
-        Listing.valid_seller(user)
-        print("4")
-        Listing.create_listing(title, description, int(price), user)
-        database.db.session.commit()
-    except ValueError as e:
-        print("no")
-        return render_template('create_listing.html', message=str(e))
-    except TypeError as e:
-        print("nope")
-        return render_template('create_listing.html', message=str(e))
-
+@app.route('/logout')
+def logout():
+    if 'logged_in' in session:
+        session.pop('logged_in', None)
     return redirect('/')
 
 
@@ -151,16 +123,9 @@ def register_post():
         return redirect('/login')
 
 
-@app.route('/logout')
-def logout():
-    if 'logged_in' in session:
-        session.pop('logged_in', None)
-    return redirect('/')
-
-
 @app.route('/user_update', methods=['GET'])
 @authenticate
-def update_informations_get(user : User):
+def update_informations_get(user: User):
     return render_template('/user_update.html',
                            user=user,
                            errors='')
@@ -210,43 +175,90 @@ def update_informations_post(user: User):
                            errors=error_messages)
 
 
-@app.route('/listing_update', methods=['GET'])
-def update_listing_get(listing : Listing):
-    return render_template('/listing_update.html',
-                        listing=listing,
-                        errors='')
+@app.route('/create_listing', methods=['GET'])
+def create_listing_get():
+    return render_template('create_listing.html', message='')
 
 
-@app.route('/listing_update', methods=['POST'])
-def update_listing_post(user : User, listing : Listing):
-    
+@app.route('/create_listing', methods=['POST'])
+@authenticate
+def create_listing_post(user):
     title = request.form.get('title')
     description = request.form.get('description')
-    price = request.form.get('price')
-
-    error_messages = []
+    price = float(request.form.get('price'))
 
     try:
-        listing.update_title(title)
-        error_messages += [f"Title updated successfully: {title}"]
+        Listing.create_listing(title, description, price, user)
+        database.db.session.commit()
     except ValueError as e:
-        error_messages += [str(e)]
+        return render_template('create_listing.html', message=str(e))
+    except TypeError as e:
+        return render_template('create_listing.html', message=str(e))
 
-    try:
-        listing.update_description(description)
-        error_messages += [f"Description updated successfully: {description}"]
-    except ValueError as e:
-        error_messages += [str(e)]
+    return redirect('/')
 
-    try:
-        listing.update_price(price)
-        error_messages += [
-            f"Price updated successfully: {price}"]
-    except ValueError as e:
-        error_messages += [str(e)]
+
+@app.route('/user_listings', methods=['GET'])
+@authenticate
+def view_user_listings_get(user):
+    id = user.id
+    listings = database.Listing.query.filter_by(owner_id=id).all()
+    return render_template('user_listings.html', user=user, listings=listings)
+
+
+@app.route('/user_listings', methods=['POST'])
+def view_user_listings_post():
+    listing_id = request.form.get('id')
+    if listing_id:
+        session['update_listing'] = listing_id
+    return redirect('/update_listing')
+
+
+@app.route('/update_listing', methods=['GET'])
+@authenticate
+def update_listing_get(user: User):
+    id = session['update_listing']
+    listing = database.Listing.query.get(id)
+    return render_template('/update_listing.html',
+                           user=user, listing=listing,
+                           errors='')
+
+
+@app.route('/update_listing', methods=['POST'])
+def update_listing_post():
+    id = session['update_listing']
+    listing = Listing.query_listing(id)
+    title = request.form.get('title')
+    description = request.form.get('description')
+    price = float(request.form.get('price')) * 100
+
+    print(listing.price, price)
+
+    messages = []
+    if title != listing.title:
+        try:
+            listing.update_title(title)
+            messages += [f"Title updated successfully: {title}"]
+        except ValueError as e:
+            messages += [str(e)]
+
+    if description != listing.description:
+        try:
+            listing.update_description(description)
+            messages += [f"Description updated successfully: {description}"]
+        except ValueError as e:
+            messages += [str(e)]
+
+    if price != listing.price:
+        try:
+            listing.update_price(price / 100)
+            messages += [
+                f"Price updated successfully: {price / 100:.2f}"]
+        except ValueError as e:
+            messages += [str(e)]
 
     database.db.session.commit()
 
-    return render_template('/listing_update.html',
+    return render_template('/update_listing.html',
                            listing=listing,
-                           errors=error_messages)
+                           errors=messages)

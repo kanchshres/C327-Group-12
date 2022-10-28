@@ -5,6 +5,9 @@
 {% endblock %}
 
 {% block content %}
+
+<h2 id="welcome-header">Update your listing below!</h2>
+
 <h4>
   {% for err in errors %} 
   {{ err }}<br>
@@ -17,9 +20,9 @@
     <label for="description">Description</label>
     <input class="form-control" name="description" id="description" value="{{listing.description}}"{{listing.description}} required>
     <label for="price">Price</label>
-    <input class="form-control" name="price" id="price" value="{{listing.price}}"{{listing.price}} required>
+    <input class="form-control" name="price" id="price" value="{{listing.price / 100.00}}"%.02{{listing.price}} required>
     <input class="btn btn-primary" type="submit" value="Save changes">
-  <a href='/' class="btn btn-primary" id="btn-submit" >Back to home</a>
+    <a href='/' class="btn btn-primary" id="btn-submit" >Back to home</a>
   </div>
 </form>
 {% endblock %}

@@ -370,7 +370,7 @@ class User():
     @staticmethod
     def query_user(id):
         """Returns an User object for interacting with the database
-        in a safe manner. It will innitialize a new User object that
+        in a safe manner. It will initialize a new User object that
         is tethered to the corresponding database object
 
         Args:
