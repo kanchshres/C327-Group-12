@@ -142,37 +142,41 @@ def update_informations_post(user: User):
     billing_address = request.form.get('billing_address')
     postal_code = request.form.get('postal_code')
 
-    error_messages = []
+    messages = []
 
-    try:
-        user.update_username(username)
-        error_messages += [f"Username updated successfully: {username}"]
-    except ValueError as e:
-        error_messages += [str(e)]
+    if user.username != username:
+        try:
+            user.update_username(username)
+            messages += [f"Username updated successfully: {username}"]
+        except ValueError as e:
+            messages += [str(e)]
 
-    try:
-        user.update_email(email)
-        error_messages += [f"Email updated successfully: {email}"]
-    except ValueError as e:
-        error_messages += [str(e)]
+    if user.email != email:
+        try:
+            user.update_email(email)
+            messages += [f"Email updated successfully: {email}"]
+        except ValueError as e:
+            messages += [str(e)]
 
-    try:
-        user.update_billing_address(billing_address)
-        error_messages += [
-            f"Billing address updated successfully: {billing_address}"]
-    except ValueError as e:
-        error_messages += [str(e)]
+    if user.billing_address != billing_address:
+        try:
+            user.update_billing_address(billing_address)
+            messages += [
+                f"Billing address updated successfully: {billing_address}"]
+        except ValueError as e:
+            messages += [str(e)]
 
-    try:
-        user.update_postal_code(postal_code)
-        error_messages += [f"Postal code updated successfully: {postal_code}"]
-    except ValueError as e:
-        error_messages += [str(e)]
-    database.db.session.commit()
+    if user.postal_code != postal_code:
+        try:
+            user.update_postal_code(postal_code)
+            messages += [f"Postal code updated successfully: {postal_code}"]
+        except ValueError as e:
+            messages += [str(e)]
+        database.db.session.commit()
 
     return render_template('/user_update.html',
                            user=user,
-                           errors=error_messages)
+                           errors=messages)
 
 
 @app.route('/create_listing', methods=['GET'])
@@ -218,21 +222,19 @@ def view_user_listings_post():
 @authenticate
 def update_listing_get(user: User):
     id = session['update_listing']
-    listing = database.Listing.query.get(id)
+    listing_db = database.Listing.query.get(id)
     return render_template('/update_listing.html',
-                           user=user, listing=listing,
+                           user=user, listing=listing_db,
                            errors='')
 
 
 @app.route('/update_listing', methods=['POST'])
 def update_listing_post():
     id = session['update_listing']
-    listing = Listing.query_listing(id)
+    listing = Listing.query_listing(id)  # the Listing obj linked to db obj
     title = request.form.get('title')
     description = request.form.get('description')
     price = float(request.form.get('price')) * 100
-
-    print(listing.price, price)
 
     messages = []
     if title != listing.title:
@@ -249,7 +251,7 @@ def update_listing_post():
         except ValueError as e:
             messages += [str(e)]
 
-    if price != listing.price:
+    if price != listing.database_obj.price:
         try:
             listing.update_price(price / 100)
             messages += [
@@ -260,5 +262,5 @@ def update_listing_post():
     database.db.session.commit()
 
     return render_template('/update_listing.html',
-                           listing=listing,
+                           listing=listing.database_obj,
                            errors=messages)
