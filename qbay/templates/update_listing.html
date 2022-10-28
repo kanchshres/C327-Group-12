@@ -20,7 +20,7 @@
     <label for="description">Description</label>
     <input class="form-control" name="description" id="description" value="{{listing.description}}"{{listing.description}} required>
     <label for="price">Price</label>
-    <input class="form-control" name="price" id="price" value="{{listing.price / 100.00}}"%.02{{listing.price}} required>
+    <input class="form-control" type="number" step="0.01" min="{{listing.price / 100}}"{{listing.price}} max="10000" name="price" id="price" value="{{listing.price / 100}}"{{listing.price}} required>
     <input class="btn btn-primary" type="submit" value="Save changes">
     <a href='/' class="btn btn-primary" id="btn-submit" >Back to home</a>
   </div>
