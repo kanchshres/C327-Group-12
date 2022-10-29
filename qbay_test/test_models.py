@@ -516,14 +516,11 @@ class UnitTest(unittest.TestCase):
         t1 = "4 bed 2 bath"
         t2 = " 4 bed 2 bath"
         t3 = "4 bed 2 bath "
-        t4 = "A" * 80
-        t5 = "4 bed 2 bath?"
+        t4 = "4 bed 2 bath?"
         assert (Listing.valid_title(t1)) is True
         assert (Listing.valid_title(t2)) is False
         assert (Listing.valid_title(t3)) is False
-        assert (Listing.valid_title(t4)) is True
-        assert (Listing.valid_title(t5)) is False
-        # True, False, False, False, False
+        assert (Listing.valid_title(t4)) is False
 
     def test_r4_2_create_listing(self):
         """Testing R4-2:
@@ -564,13 +561,13 @@ class UnitTest(unittest.TestCase):
     def test_r4_5_create_listing(self):
         """Testing R4-5: Price has to be of range [10, 10000]."""
         l1 = Listing()
-        p1 = 9.999999
-        p2 = 10
-        p3 = 10000
+        p1 = 10
+        p2 = 10000
+        p3 = 9.999999
         p4 = 10000.001
-        assert (l1.valid_price(p1)) is False
+        assert (l1.valid_price(p1)) is True
         assert (l1.valid_price(p2)) is True
-        assert (l1.valid_price(p3)) is True
+        assert (l1.valid_price(p3)) is False
         assert (l1.valid_price(p4)) is False
 
     def test_r4_6_create_listing(self):
@@ -628,28 +625,33 @@ class UnitTest(unittest.TestCase):
         title = "4 Bed 2 Bath"
         address = "Queen's University"
         price = 8000.57
-        description = "Shittiest school to ever exist"
+        description = "Best school to ever exist"
         seller = User()
         obj = Listing(title, description, price, seller, address)
 
         r1 = Review()
         obj.add_review(r1)
 
-        # test if changing the title works
-        obj.title = "different title"
-        assert obj.title == "different title"
+        obj.add_to_database()
 
-        # test if chaning the address works
+        # test if changing the title works
+        obj.update_title("different title")
+        assert obj.database_obj.title == "different title"
+
+        with self.assertRaises(ValueError):
+            obj.update_title(" this won't work")
+
+        # test if changing the address works
         obj.address = "different address"
         assert obj.address == "different address"
 
-        # test if changing the price works (not testing R5-3 yet)
-        obj.price = 8100
-        assert obj.price == 8100
+        # test if changing the price works
+        obj.update_price(8100)
+        assert obj.database_obj.price / 100 == 8100
 
         # test if changing the description works
-        obj.description = "different description 1234567890"
-        assert obj.description == "different description 1234567890"
+        obj.update_description("different description 12345678")
+        assert obj.database_obj.description == "different description 12345678"
 
         # test that adding review works
         old_reviews = obj.reviews
@@ -680,10 +682,9 @@ class UnitTest(unittest.TestCase):
         obj = Listing(title, description, price, seller, address)
 
         # test that price does not change, as change is invalid
-        obj.price = 8100
         with self.assertRaises(ValueError):
-            obj.price = 1500
-        assert obj.price == 8100
+            obj.update_price(1500)
+        assert obj.price == 8000.57
 
         # test that price does change, as change is valid
         obj.price = 8200

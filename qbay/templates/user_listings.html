@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Your Listings{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<h2 id="welcome-header">Below are your listings, select the one to update</h2>
+
+<form method="post">
+    <div id="listings">
+        {% for listing in listings %}
+        <div>
+            <input type="radio" id={{listing.id}} name="id" value={{listing.id}}>
+            <label for="listing">{{listing.title}}</label><br>
+        </div>
+        {% endfor %}
+    </div>
+    <input class="btn btn-primary" type="submit" value="Submit">
+</form>
+
+<div>
+    <a href='/' class="btn btn-primary" id="btn-submit" >Back to home</a>
+
+</div>
+<a href='/logout'>logout</a>
+{% endblock %}

@@ -31,7 +31,8 @@ class Listing:
     def __init__(self, title: str = "", description: str = "",
                  price: float = 0.0, owner: User = User(), address: str = ""):
         # Required
-        self._dbobj: database.Listing = None
+        self._database_obj: database.Listing = None
+        self._id = None
         self._title = title
         self._description = description
         self._price = price
@@ -44,9 +45,23 @@ class Listing:
         self._reviews: list[Review] = []
 
     # Required
+    @property
+    def database_obj(self) -> database.Listing:
+        """Returns a reference to the database"""
+        return self._database_obj
+
+    @property
+    def id(self):
+        """Fetches the user's id"""
+        if self.database_obj:
+            self._id = self.database_obj.id
+        return self._id
+
     """Fetches title of digital Listing"""
     @property
     def title(self):
+        if self.database_obj:
+            self._title = self.database_obj.title
         return self._title
 
     """Sets title for digital Listing if valid"""
@@ -60,6 +75,8 @@ class Listing:
     """Fetches description of digital Listing"""
     @property
     def description(self):
+        if self.database_obj:
+            self._description = self.database_obj.description
         return self._description
 
     """Sets title for digital Listing if valid"""
@@ -74,12 +91,14 @@ class Listing:
     """Fetches price of digital Listing"""
     @property
     def price(self):
+        if self.database_obj:
+            self._price = self.database_obj.price / 100
         return self._price
 
     """Sets price for digital Listing if valid"""
     @price.setter
     def price(self, price):
-        if not (self.valid_price(price)):
+        if not (Listing.valid_price(price) and self.price < price):
             raise ValueError(f"Invalid Price: {price}")
         self._price = price
         self._modified_date = datetime.now()
@@ -87,11 +106,15 @@ class Listing:
     """Fetches last modification date of digital listing"""
     @property
     def created_date(self):
+        if self.database_obj:
+            self.created_date = self.database_obj.time_created
         return self._created_date
 
-    """Fetches last date modifed"""
+    """Fetches last date modified"""
     @property
     def updated_date(self):
+        if self.database_obj:
+            self._modified_date = self.database_obj.last_modified_date
         return self._modified_date
 
     """Fetches owner of digital Listing"""
@@ -140,13 +163,14 @@ class Listing:
     def add_to_database(self):
         listing = database.Listing(title=self.title,
                                    description=self.description,
-                                   price=self.price,
+                                   price=self.price * 100,
                                    owner_id=self.seller.id)
         with database.app.app_context():
             db.session.add(listing)
             db.session.commit()
-            self._dbobj = listing
+            self._database_obj = listing
             self._modified_date = listing.last_modified_date
+            self._id = listing.id
 
     @staticmethod
     def create_listing(title, description, price, owner):
@@ -161,11 +185,17 @@ class Listing:
         - owner: The User associated with the listing (User)
 
         """
-        if (Listing.valid_title(title) and Listing.valid_seller(owner) and
-                Listing.valid_price(price) and
-                Listing.valid_description(description, title)):
-            listing = Listing(title, description, price, owner)
-            listing.add_to_database()
+        if not (Listing.valid_title(title)):
+            raise ValueError(f"Invalid Title: {title}")
+        if not (Listing.valid_seller(owner)):
+            raise ValueError(f"Invalid Seller: {owner}")
+        if not (Listing.valid_price(price)):
+            raise ValueError(f"Invalid Price: {price}")
+        if not (Listing.valid_description(description, title)):
+            raise ValueError(f"Invalid Description: {description}")
+            
+        listing = Listing(title, description, price, owner)
+        listing.add_to_database()
         return listing
 
     """Determine if a given title is valid """
@@ -185,8 +215,9 @@ class Listing:
                 and (len(title) < len(description)))
 
     """Determine if a given price is valid"""
-    def valid_price(self, price):
-        return (10.00 <= price <= 10000.00) and (self.price < price)
+    @staticmethod
+    def valid_price(price):
+        return (10.00 <= price <= 10000.00)
 
     """Determine if a given last modification date is valid"""
     @staticmethod
@@ -203,3 +234,54 @@ class Listing:
                 user = database.User.query.get(owner.id)
                 return ((user is not None) and (user.email != ""))
         return False
+    
+    def update_title(self, title):
+        """Updates the listing title and pushes changes to the 
+        database.
+        """
+        self.title = title
+
+        with database.app.app_context():
+            self.database_obj.title = title
+            db.session.commit()
+
+    def update_description(self, description):
+        """Updates the listing description and pushes changes to the 
+        database.
+        """
+        self.description = description
+
+        with database.app.app_context():
+            self.database_obj.description = description
+            db.session.commit()
+
+    def update_price(self, price):
+        """Updates the listing price and pushes changes to the 
+        database.
+        """
+        self.price = price
+
+        with database.app.app_context():
+            self.database_obj.price = price * 100
+            db.session.commit()
+
+    @staticmethod
+    def query_listing(id):
+        """Returns a Listing object for interacting with the database
+        in a safe manner. It will initialize a new User object that
+        is tethered to the corresponding database object
+
+        Args:
+            id (int): integer denoting the unique identifier of the object
+            to be queried for
+
+        Returns:
+            Listing: a listing object that is tethered to the corresponding
+            database object with the given id
+        """
+        database_listing = database.Listing.query.get(int(id))
+        if database_listing:
+            listing = Listing()
+            listing._database_obj = database_listing
+            return listing
+        return None

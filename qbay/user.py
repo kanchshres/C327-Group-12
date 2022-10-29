@@ -278,7 +278,7 @@ class User():
                 User.valid_password(password) and
                 User.valid_username(name)):
             return False
-
+        
         existed = database.User.query.filter_by(email=email).all()
         if len(existed):
             return False
@@ -338,6 +338,9 @@ class User():
         """Updates the user's email and pushes changes to the 
         database (if the email isn't already in the database)
         """
+        existed = database.User.query.filter_by(email=email).all()
+        if len(existed):
+            raise ValueError(f"Email already exists: {email}")
         self.email = email
         try:
             with database.app.app_context():
@@ -345,7 +348,6 @@ class User():
                 db.session.commit()
         except exc.IntegrityError:
             db.session.rollback()
-            raise ValueError(f"Email already exists: {email}")
 
     def update_billing_address(self, address):
         """Updates the billing address and pushes changes to the 
@@ -370,7 +372,7 @@ class User():
     @staticmethod
     def query_user(id):
         """Returns an User object for interacting with the database
-        in a safe manner. It will innitialize a new User object that
+        in a safe manner. It will initialize a new User object that
         is tethered to the corresponding database object
 
         Args:

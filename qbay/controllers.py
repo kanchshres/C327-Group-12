@@ -1,8 +1,9 @@
+from distutils.log import error
 from flask import render_template, request, session, redirect
 from qbay.user import User
+from qbay.listing import Listing
 from qbay import database
 from qbay.database import app
-import sys
 
 from functools import wraps
 
@@ -46,6 +47,13 @@ def authenticate(inner_function):
     return wrapped_inner
 
 
+@app.route('/')
+@authenticate
+def home(user):
+    listings = database.Listing.query.all()
+    return render_template('index.html', user=user, listings=listings)
+
+
 @app.route('/login', methods=['GET'])
 def login_get():
     return render_template('login.html', message='Please login')
@@ -79,18 +87,11 @@ def login_post():
         return render_template('login.html', message='login failed')
 
 
-@app.route('/')
-@authenticate
-def home(user):
-    # Fetch listings from database
-    # Fake listings for now
-    listings = [
-        {'name': 'listing 1', 'price': 10},
-        {'name': 'listing 2', 'price': 20},
-        {'name': 'listing 3', 'price': 30}
-    ]
-
-    return render_template('index.html', user=user, listings=listings)
+@app.route('/logout')
+def logout():
+    if 'logged_in' in session:
+        session.pop('logged_in', None)
+    return redirect('/')
 
 
 @app.route('/register', methods=['GET'])
@@ -122,16 +123,9 @@ def register_post():
         return redirect('/login')
 
 
-@app.route('/logout')
-def logout():
-    if 'logged_in' in session:
-        session.pop('logged_in', None)
-    return redirect('/')
-
-
 @app.route('/user_update', methods=['GET'])
 @authenticate
-def update_informations_get(user):
+def update_informations_get(user: User):
     return render_template('/user_update.html',
                            user=user,
                            errors='')
@@ -148,34 +142,125 @@ def update_informations_post(user: User):
     billing_address = request.form.get('billing_address')
     postal_code = request.form.get('postal_code')
 
-    error_messages = []
+    messages = []
 
-    try:
-        user.update_username(username)
-        error_messages += [f"Username updated successfully: {username}"]
-    except ValueError as e:
-        error_messages += [str(e)]
+    if user.username != username:
+        try:
+            user.update_username(username)
+            messages += [f"Username updated successfully: {username}"]
+        except ValueError as e:
+            messages += [str(e)]
 
-    try:
-        user.update_email(email)
-        error_messages += [f"Email updated successfully: {email}"]
-    except ValueError as e:
-        error_messages += [str(e)]
+    if user.email != email:
+        try:
+            user.update_email(email)
+            messages += [f"Email updated successfully: {email}"]
+        except ValueError as e:
+            messages += [str(e)]
 
-    try:
-        user.update_billing_address(billing_address)
-        error_messages += [
-            f"Billing address updated successfully: {billing_address}"]
-    except ValueError as e:
-        error_messages += [str(e)]
+    if user.billing_address != billing_address:
+        try:
+            user.update_billing_address(billing_address)
+            messages += [
+                f"Billing address updated successfully: {billing_address}"]
+        except ValueError as e:
+            messages += [str(e)]
 
-    try:
-        user.update_postal_code(postal_code)
-        error_messages += [f"Postal code updated successfully: {postal_code}"]
-    except ValueError as e:
-        error_messages += [str(e)]
-    database.db.session.commit()
+    if user.postal_code != postal_code:
+        try:
+            user.update_postal_code(postal_code)
+            messages += [f"Postal code updated successfully: {postal_code}"]
+        except ValueError as e:
+            messages += [str(e)]
+        database.db.session.commit()
 
     return render_template('/user_update.html',
                            user=user,
-                           errors=error_messages)
+                           errors=messages)
+
+
+@app.route('/create_listing', methods=['GET'])
+def create_listing_get():
+    return render_template('create_listing.html', message='')
+
+
+@app.route('/create_listing', methods=['POST'])
+@authenticate
+def create_listing_post(user):
+    title = request.form.get('title')
+    description = request.form.get('description')
+    price = float(request.form.get('price'))
+
+    try:
+        Listing.create_listing(title, description, price, user)
+        database.db.session.commit()
+    except ValueError as e:
+        return render_template('create_listing.html', message=str(e))
+    except TypeError as e:
+        return render_template('create_listing.html', message=str(e))
+
+    return redirect('/')
+
+
+@app.route('/user_listings', methods=['GET'])
+@authenticate
+def view_user_listings_get(user):
+    id = user.id
+    listings = database.Listing.query.filter_by(owner_id=id).all()
+    return render_template('user_listings.html', user=user, listings=listings)
+
+
+@app.route('/user_listings', methods=['POST'])
+def view_user_listings_post():
+    listing_id = request.form.get('id')
+    if listing_id:
+        session['update_listing'] = listing_id
+    return redirect('/update_listing')
+
+
+@app.route('/update_listing', methods=['GET'])
+@authenticate
+def update_listing_get(user: User):
+    id = session['update_listing']
+    listing_db = database.Listing.query.get(id)
+    return render_template('/update_listing.html',
+                           user=user, listing=listing_db,
+                           errors='')
+
+
+@app.route('/update_listing', methods=['POST'])
+def update_listing_post():
+    id = session['update_listing']
+    listing = Listing.query_listing(id)  # the Listing obj linked to db obj
+    title = request.form.get('title')
+    description = request.form.get('description')
+    price = float(request.form.get('price')) * 100
+
+    messages = []
+    if title != listing.title:
+        try:
+            listing.update_title(title)
+            messages += [f"Title updated successfully: {title}"]
+        except ValueError as e:
+            messages += [str(e)]
+
+    if description != listing.description:
+        try:
+            listing.update_description(description)
+            messages += [f"Description updated successfully: {description}"]
+        except ValueError as e:
+            messages += [str(e)]
+
+    if price != listing.database_obj.price:
+        try:
+            listing.update_price(price / 100)
+            messages += [
+                f"Price updated successfully: {price / 100:.2f}"]
+        except ValueError as e:
+            messages += [str(e)]
+
+    database.db.session.commit()
+
+    return render_template('/update_listing.html',
+                           listing=listing.database_obj,
+                           errors=messages)

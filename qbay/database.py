@@ -43,7 +43,7 @@ class Listing(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(255), unique=True, nullable=False)
     description = db.Column(db.String(5000), nullable=False)
-    price = db.Column(db.Float(precision=2, asdecimal=True), nullable=False)
+    price = db.Column(db.Integer, nullable=False)
     time_created = db.Column(db.DateTime(timezone=False),
                              server_default=func.now())
     last_modified_date = db.Column(db.DateTime(timezone=False),
