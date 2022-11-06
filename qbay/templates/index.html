@@ -6,6 +6,7 @@
 
 {% block content %}
 <h2 id="welcome-header">Welcome {{ user.username }}!</h2>
+<h2 id="balance">Your current balance is {{ user.balance }}!</h2>
 
 <a href='/create_listing' class="btn btn-primary" id="btn-submit" >Create Listing</a>
 <a href='/user_listings' class="btn btn-primary" id="btn-submit" >Update Your Listings</a>

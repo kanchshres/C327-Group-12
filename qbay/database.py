@@ -28,6 +28,7 @@ class User(db.Model):
     password = db.Column(db.String(255), nullable=False)
     postal_code = db.Column(db.String(7), nullable=True)
     billing_address = db.Column(db.String(46), nullable=True)
+    balance = db.Column(db.Integer, nullable=False)
 
     wallet = relationship('Wallet', back_populates='user', uselist=False)
     listings = relationship('Listing', back_populates='owner')

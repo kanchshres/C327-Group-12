@@ -20,9 +20,8 @@ class Wallet:
         self._bankingAccount: 'BankingAccount' = None
         self._transactions: 'list[Transaction]' = []
 
-    @property
     def __str__(self):
-        return str(self._id, self._balance)
+        return '{self.id}, {self.balance}'.format(self=self)
 
     @property
     def id(self) -> int:
@@ -53,7 +52,7 @@ class Wallet:
 
     def transfer_balance(self, amount: int):
         if amount < 0:
-            raise ValueError("Transfered amount cannot be negative")
+            raise ValueError("Transferred amount cannot be negative")
 
         self._balance += self.bankingAccount.transfer_balance(amount)
 

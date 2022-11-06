@@ -39,14 +39,13 @@ class User():
         self._password = password
         self._postal_code = ""
         self._billing_address = ""
-        self._wallet: Wallet = None  # user adds wallet after account creation
+        self._wallet: Wallet = Wallet()
         self._reviews: 'list[Review]' = []
-        self._balance = 0
 
     def __repr__(self):
         return f'<User {self.username}>'
 
-    # Will throw an exception if unique fields not satified
+    # Will throw an exception if unique fields not satisfied
     def add_to_database(self):
         """add the user object to the database
         return: True if successful, False otherwise
@@ -55,7 +54,8 @@ class User():
                              email=self.email,
                              password=self.password,
                              postal_code=self.postal_code,
-                             billing_address=self.billing_address)
+                             billing_address=self.billing_address,
+                             balance=self.wallet.balance)
 
         try:
             with database.app.app_context():
@@ -131,22 +131,15 @@ class User():
         """Sets a new wallet for the user"""
         self._wallet = wallet
 
-    def create_wallet(self) -> 'Wallet':
-        """Creates a wallet object"""
-        from qbay.wallet import Wallet
-        self._wallet = Wallet()
-        return self._wallet
-
     @property
     def balance(self):
         """Fetches the user's balance
 
         Returns the user's wallet if the wallet exists, 0 otherwise
         """
-        if self.wallet:
-            return self.wallet.balance
-        else:
-            return 0
+        if self.database_obj:
+            self._wallet.balance = self.database_obj.wallet.balance
+        return self._wallet.balance
 
     @property
     def reviews(self):
@@ -230,9 +223,7 @@ class User():
 
         regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+'
                            '@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
-        if not (re.fullmatch(regex, email)):
-            return False
-        return True
+        return re.fullmatch(regex, email)
 
     @staticmethod
     def valid_password(password):
@@ -284,9 +275,6 @@ class User():
             return False
 
         user = User(username=name, email=email, password=password)
-        wallet = Wallet()
-        wallet.bankingAccount = BankingAccount()
-        user.wallet = wallet.id
 
         # add it to current database session
         user.add_to_database()
@@ -314,7 +302,6 @@ class User():
 
             if user:
                 if user.password == password:
-                    # login
                     return user
 
         raise ValueError("Incorrect email or password")

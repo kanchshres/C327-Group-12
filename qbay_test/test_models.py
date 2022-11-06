@@ -70,7 +70,6 @@ class UnitTest(unittest.TestCase):
     def test_wallet_balance_transfer(self):
         bank_account = BankingAccount()
         user = User()
-        wallet = user.create_wallet()
         user.wallet.bankingAccount = bank_account
 
         assert user.wallet.bankingAccount.balance == 0
@@ -83,7 +82,7 @@ class UnitTest(unittest.TestCase):
         user._wallet.transfer_balance(4000)
         assert user.wallet.bankingAccount.balance == 6000
         assert user.balance == 4100
-        assert wallet.balance == 4100
+        assert user.wallet.balance == 4100
 
         with self.assertRaises(ValueError):
             user.wallet.transfer_balance(-2000)
@@ -340,9 +339,9 @@ class UnitTest(unittest.TestCase):
         User.register("u10", "test10@test.com", "Onetwo!")
         user = database.User.query.get(1)
         assert user is not None
-        assert user.postal_code == ""
+        assert user.balance == 100
 
-    def test_r2_1(self):
+    def test_r2_1_login(self):
         """Test if user can log in using her/his email address and the 
         password.
 
@@ -376,7 +375,7 @@ class UnitTest(unittest.TestCase):
             User.login("bob@gmail.com", "IncorrectPassword123!")
             User.login("fred@gmail.com", "Password123!")
 
-    def test_r2_2(self):
+    def test_r2_2_login(self):
         """Test that the login function should check if the supplied 
         inputs meet the same email/password requirements as above, before 
         checking the database.
