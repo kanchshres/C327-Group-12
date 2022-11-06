@@ -4,11 +4,11 @@ from unittest.mock import patch
 from qbay.user import User
 
 """
-This file defines all integration tests for the frontend homepage.
+This file defines all integration tests for the frontend registration page.
 """
 
 
-class FrontEndRegisterPageTest(BaseCase):
+class FrontEndTests(BaseCase):
 
     def test_register_success(self, *_):
         # Output coverage testing
