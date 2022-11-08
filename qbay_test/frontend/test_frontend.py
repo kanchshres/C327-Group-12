@@ -33,21 +33,43 @@ class FrontEndTests(BaseCase):
         Email and password cannot be empty.
         """
         # Functionality Testing by Requirement Partitioning
-        # Email cannot be empty
+        # R1T1: Both empty
         self.open(base_url + '/register')
         self.type("#username", "Test Two")
+        self.type("#email", "")
+        self.type("#password", "")
+        self.type("#password2", "")
+        self.click('input[type="submit"]')
+        self.assert_element("#message")
+        self.assert_text("Registration failed.", "#message")
+
+        # R1T2: Email empty, password not
+        self.open(base_url + '/register')
+        self.type("#username", "Test Three")
+        self.type("#email", "")
         self.type("#password", "Onetwo!")
         self.type("#password2", "Onetwo!")
         self.click('input[type="submit"]')
         self.assert_element("#message")
         self.assert_text("Registration failed.", "#message")
 
-        # Password cannot be empty
-        self.type("#username", "Test Three")
-        self.type("#email", "test01@test.com")
+        # R1T3: Email not empty, password empty
+        self.type("#username", "Test Four")
+        self.type("#email", "test04@test.com")
+        self.type("#password", "")
+        self.type("#password2", "")
         self.click('input[type="submit"]')
         self.assert_element("#message")
         self.assert_text("Registration failed.", "#message")
+
+        # R1T4: Email not empty, password not empty
+        self.type("#username", "Test Five")
+        self.type("#email", "test05@test.com")
+        self.type("#password", "Onetwo!")
+        self.type("#password2", "Onetwo!")
+        self.click('input[type="submit"]')
+        self.assert_element("#welcome-header")
+        self.assert_text("Please login below", "#welcome-header")
 
     def test_register_input(self, *_):
         """
@@ -58,40 +80,40 @@ class FrontEndTests(BaseCase):
         # n = length of username
         # P1: n < 2
         self.open(base_url + '/register')
-        self.type("#username", "4")
-        self.type("#email", "test04@test.com")
-        self.type("#password", "Onetwo!")
-        self.type("#password2", "Onetwo!")
-        self.click('input[type="submit"]')
-        self.assert_element("#message")
-        self.assert_text("Registration failed.", "#message")
-        # P2: n > 20
-        self.type("#username", "TestFiveUserNameIsTooLong")
-        self.type("#email", "test05@test.com")
-        self.type("#password", "Onetwo!")
-        self.type("#password2", "Onetwo!")
-        self.click('input[type="submit"]')
-        self.assert_element("#message")
-        self.assert_text("Registration failed.", "#message")
-        # P3: n = 2
-        self.type("#username", "u6")
+        self.type("#username", "6")
         self.type("#email", "test06@test.com")
         self.type("#password", "Onetwo!")
         self.type("#password2", "Onetwo!")
         self.click('input[type="submit"]')
         self.assert_element("#message")
         self.assert_text("Registration failed.", "#message")
-        # P4: n = 20
-        self.type("#username", "Test Seven failure!!")
+        # P2: n > 20
+        self.type("#username", "TestSevenUserNameIsTooLong")
         self.type("#email", "test07@test.com")
         self.type("#password", "Onetwo!")
         self.type("#password2", "Onetwo!")
         self.click('input[type="submit"]')
         self.assert_element("#message")
         self.assert_text("Registration failed.", "#message")
-        # P5: 2 < n < 20
-        self.type("#username", "Test Eight")
+        # P3: n = 2
+        self.type("#username", "u8")
         self.type("#email", "test08@test.com")
+        self.type("#password", "Onetwo!")
+        self.type("#password2", "Onetwo!")
+        self.click('input[type="submit"]')
+        self.assert_element("#message")
+        self.assert_text("Registration failed.", "#message")
+        # P4: n = 20
+        self.type("#username", "Test Nine failure!!")
+        self.type("#email", "test09@test.com")
+        self.type("#password", "Onetwo!")
+        self.type("#password2", "Onetwo!")
+        self.click('input[type="submit"]')
+        self.assert_element("#message")
+        self.assert_text("Registration failed.", "#message")
+        # P5: 2 < n < 20
+        self.type("#username", "Test Ten")
+        self.type("#email", "test10@test.com")
         self.type("#password", "Onetwo!")
         self.type("#password2", "Onetwo!")
         self.click('input[type="submit"]')
