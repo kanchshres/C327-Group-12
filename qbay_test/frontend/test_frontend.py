@@ -97,4 +97,124 @@ class FrontEndTests(BaseCase):
         self.assert_element("#welcome-header")
         self.assert_text("Please login below", "#welcome-header")
 
-    
+    def test_login_output_coverage(self, *_):
+        """ Test login page using output coverage (exhaustive) testing 
+        method.
+        """
+        # Output: User successfullly logs in in with correct login info
+        self.open(base_url + '/register')
+        self.type("#email", "bob@gmail.com")
+        self.type("#username", "Bob")
+        self.type("#password", "Password123!")
+        self.type("#password2", "Password123!")
+        self.click('input[type="submit"]')
+
+        self.type("#email", "bob@gmail.com")
+        self.type("#password", "Password123!")
+        self.click('input[type="submit"]')
+
+        self.assert_element("#welcome-header")
+        self.assert_text("Welcome Bob!", "#welcome-header")
+
+        # Output: User inputs invalid email or password such that they 
+        # do not meet the requirements of a valid email and/or a valid 
+        # password (Won't even check database).
+        self.open(base_url + '/login')
+
+        self.type("#email", "b.o.b.@gmail..com")
+        self.type("#password", "Password123!")
+        self.click('input[type="submit"]')
+
+        self.assert_element("#message")
+        self.assert_text("Invalid email or password", "#message")
+
+        # Output: Email and/or password is incorrect, that is, the 
+        # email and password do not match any entry in the database.
+        self.type("#email", "notindatabase@gmail.com")
+        self.type("#password", "Password123!")
+        self.click('input[type="submit"]')
+
+        self.assert_element("#message")
+        self.assert_text("Incorrect email or password", "#message")
+
+    def test_login_input_coverage(self, *_):
+        """ Test login page using input coverage (input partitioning) 
+        testing method.
+        """
+        # Partition 1: Correct input
+        self.open(base_url + '/register')
+        self.type("#email", "bob@gmail.com")
+        self.type("#username", "Bob")
+        self.type("#password", "Password123!")
+        self.type("#password2", "Password123!")
+        self.click('input[type="submit"]')
+
+        self.type("#email", "bob@gmail.com")
+        self.type("#password", "Password123!")
+        self.click('input[type="submit"]')
+
+        self.assert_element("#welcome-header")
+        self.assert_text("Welcome Bob!", "#welcome-header")
+
+        # Partition 2: incorrect input (no matching entries in 
+        # database)
+        self.open(base_url + '/login')
+        self.type("#email", "notindatabase@gmail.com")
+        self.type("#password", "Password123!")
+        self.click('input[type="submit"]')
+
+        self.assert_element("#message")
+        self.assert_text("Incorrect email or password", "#message")
+
+        # Partition 3: Invalid email
+        self.type("#email", "")
+        self.type("#password", "Password123!")
+        self.click('input[type="submit"]')
+
+        self.assert_element("#message")
+        self.assert_text("Invalid email or password", "#message")
+
+        # Partition 4: Invalid password
+        self.type("#email", "bob@gmail.com")
+        self.type("#password", "psw")
+        self.click('input[type="submit"]')
+
+        self.assert_element("#message")
+        self.assert_text("Invalid email or password", "#message")
+
+        # Partition 5: Invalid email and password
+        self.type("#email", "bob@gmail.com")
+        self.type("#password", "psw")
+        self.click('input[type="submit"]')
+
+        self.assert_element("#message")
+        self.assert_text("Invalid email or password", "#message")
+
+    def test_login_req_coverage(self, *_):
+        """Test login page using the requirement partitioning testing 
+        method
+        """
+        # R2-2: Invalid email
+        self.type("#email", "")
+        self.type("#password", "Password123!")
+        self.click('input[type="submit"]')
+
+        self.assert_element("#message")
+        self.assert_text("Invalid email or password", "#message")
+
+        # R2-2: Invalid password
+        self.type("#email", "bob@gmail.com")
+        self.type("#password", "psw")
+        self.click('input[type="submit"]')
+
+        self.assert_element("#message")
+        self.assert_text("Invalid email or password", "#message")
+
+        # Partition 5: Invalid email and password
+        self.type("#email", "bob@gmail.com")
+        self.type("#password", "psw")
+        self.click('input[type="submit"]')
+
+        self.assert_element("#message")
+        self.assert_text("Invalid email or password", "#message")
+
