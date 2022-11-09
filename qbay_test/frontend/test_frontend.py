@@ -2,6 +2,7 @@ from seleniumbase import BaseCase
 from qbay_test.conftest import base_url
 from unittest.mock import patch
 from qbay.user import User
+from qbay.database import app, db
 
 """
 This file defines all integration tests for the frontend registration page.
@@ -101,6 +102,11 @@ class FrontEndTests(BaseCase):
         """ Test login page using output coverage (exhaustive) testing 
         method.
         """
+        # clear database
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
+
         # Output: User successfullly logs in in with correct login info
         self.open(base_url + '/register')
         self.type("#email", "bob@gmail.com")
@@ -167,7 +173,7 @@ class FrontEndTests(BaseCase):
         self.assert_text("Incorrect email or password", "#message")
 
         # Partition 3: Invalid email
-        self.type("#email", "")
+        # purposely missing email
         self.type("#password", "Password123!")
         self.click('input[type="submit"]')
 
@@ -195,7 +201,7 @@ class FrontEndTests(BaseCase):
         method
         """
         # R2-2: Invalid email
-        self.type("#email", "")
+        # purposely missing email
         self.type("#password", "Password123!")
         self.click('input[type="submit"]')
 
