@@ -11,6 +11,11 @@
 
 ### Kanchan
 
+1. test_registration, test_update_listing
+2. test_registration has been completed. For test_update-listing, I have completed 2/3 of the required test cases, leaving 1 for Kaz to complete.
+3. I had to change how some html files worked so test cases could detect if it was on a specific page, and also add more ids to headers.
+4. Touch up on existing code and see if I can refactor it.
+
 ### Shuvi
 
 ### Andrew
