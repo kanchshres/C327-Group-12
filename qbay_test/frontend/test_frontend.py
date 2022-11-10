@@ -162,35 +162,26 @@ class FrontEndTests(BaseCase):
         self.assert_element("#welcome-header")
         self.assert_text("Welcome Bob!", "#welcome-header")
 
-        # Partition 2: incorrect input (no matching entries in 
-        # database)
+        # Partition 2: Invalid email
         self.open(base_url + '/login')
-        self.type("#email", "notindatabase@gmail.com")
-        self.type("#password", "Password123!")
-        self.click('input[type="submit"]')
-
-        self.assert_element("#message")
-        self.assert_text("Incorrect email or password", "#message")
-
-        # Partition 3: Invalid email
-        # purposely missing email
+        self.type("#email", "")
         self.type("#password", "Password123!")
         self.click('input[type="submit"]')
 
         self.assert_element("#message")
         self.assert_text("Invalid email or password", "#message")
 
-        # Partition 4: Invalid password
+        # Partition 3: Invalid password
         self.type("#email", "bob@gmail.com")
-        self.type("#password", "psw")
+        self.type("#password", "")
         self.click('input[type="submit"]')
 
         self.assert_element("#message")
         self.assert_text("Invalid email or password", "#message")
 
-        # Partition 5: Invalid email and password
-        self.type("#email", "bob@gmail.com")
-        self.type("#password", "psw")
+        # Partition 4: Invalid email and password
+        self.type("#email", "")
+        self.type("#password", "")
         self.click('input[type="submit"]')
 
         self.assert_element("#message")
@@ -200,24 +191,31 @@ class FrontEndTests(BaseCase):
         """Test login page using the requirement partitioning testing 
         method
         """
-        # R2-2: Invalid email
-        # purposely missing email
+        # clear database
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
+
+        # R2-1: A user can log in using her/his email address and the 
+        # password.
+        self.open(base_url + '/register')
+        self.type("#email", "bob@gmail.com")
+        self.type("#username", "Bob")
+        self.type("#password", "Password123!")
+        self.type("#password2", "Password123!")
+        self.click('input[type="submit"]')
+
+        self.type("#email", "bob@gmail.com")
         self.type("#password", "Password123!")
         self.click('input[type="submit"]')
 
-        self.assert_element("#message")
-        self.assert_text("Invalid email or password", "#message")
+        self.assert_element("#welcome-header")
+        self.assert_text("Welcome Bob!", "#welcome-header")
 
-        # R2-2: Invalid password
-        self.type("#email", "bob@gmail.com")
-        self.type("#password", "psw")
-        self.click('input[type="submit"]')
-
-        self.assert_element("#message")
-        self.assert_text("Invalid email or password", "#message")
-
-        # Partition 5: Invalid email and password
-        self.type("#email", "bob@gmail.com")
+        # R2-2: Shouldn't even check database if email or password is 
+        # not valid.
+        self.open(base_url + '/login')
+        self.type("#email", "b.o.b.@gmail.com")
         self.type("#password", "psw")
         self.click('input[type="submit"]')
 
