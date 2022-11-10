@@ -280,7 +280,7 @@ class FrontEndTests(BaseCase):
     def test_listing_update_requirement(self, *_):
         """ Requirement Partitioning """
         # Register & Log-in
-        email, username = "createlisting03@test.com", "Create Listing 03"
+        email, username = "updatelisting03@test.com", "Update Listing 03"
         password = "Onetwo!"
         self.register_helper(email, username, password)
         self.login_helper(email, password)
