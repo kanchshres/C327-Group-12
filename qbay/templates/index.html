@@ -18,7 +18,19 @@
 <div id="listings">
     {% for listing in listings %}
     <div>
-        <h4>{{ listing.title }} | ${{ listing.price / 100 }} | Seller: {{ listing.owner.username }}
+        <h4>
+            <div id="title">
+                {{ listing.title }} | 
+            </div>
+            <div id="price">
+                ${{ listing.price / 100 }} | 
+            </div>
+            <div id="seller">
+                Seller: {{ listing.owner.username }} | 
+            </div>
+            <div id="mod_date">
+                Last Modified: {{ listing.last_modified_date }}
+            </div>
         </h4>
             <h5>{{ listing.description }}</h5>
     </div>

@@ -717,71 +717,77 @@ class UnitTest(unittest.TestCase):
 
         # test that initializing the listing creates an accurate
         # last_modified_date (aka creation date)
-        now = datetime.now()
-        assert now - margin <= obj.updated_date <= now + margin
+        lower = (datetime.now() - margin).date().isoformat()
+        upper = (datetime.now() + margin).date().isoformat()
+        assert lower <= obj.modified_date <= upper
 
         # test that update_title also updates last_modified_date
-        old_last_modified_date = obj.updated_date
+        old_last_modified_date = obj.modified_date
         obj.title = "new title"
         # test that updated last_modified_date is later than
         # last_modified_date before title was updated
-        assert obj.updated_date >= old_last_modified_date
+        assert obj.modified_date >= old_last_modified_date
         # test that new last_modified_date is close enough to the current
         # time (margin accounts for execution time)
-        now = datetime.now()
-        assert now - margin <= obj.updated_date <= now + margin
+        lower = (datetime.now() - margin).date().isoformat()
+        upper = (datetime.now() + margin).date().isoformat()
+        assert lower <= obj.modified_date <= upper
 
         # test that update_address also updates last_modified_date
-        old_last_modified_date = obj.updated_date
+        old_last_modified_date = obj.modified_date
         obj.address = "new address"
         # test that updated last_modified_date is later than
         # last_modified_date before address was updated
-        assert obj.updated_date >= old_last_modified_date
+        assert obj.modified_date >= old_last_modified_date
         # test that new last_modified_date is close enough to the current
         # time (margin accounts for execution time)
-        now = datetime.now()
-        assert now - margin <= obj.updated_date <= now + margin
+        lower = (datetime.now() - margin).date().isoformat()
+        upper = (datetime.now() + margin).date().isoformat()
+        assert lower <= obj.modified_date <= upper
 
         # test that update_price also updates last_modified_date
-        old_last_modified_date = obj.updated_date
+        old_last_modified_date = obj.modified_date
         obj.price = 8500
         # test that updated last_modified_date is later than
         # last_modified_date before price was updated
-        assert obj.updated_date >= old_last_modified_date
+        assert obj.modified_date >= old_last_modified_date
         # test that new last_modified_date is close enough to the current
         # time (margin accounts for execution time)
-        now = datetime.now()
-        assert now - margin <= obj.updated_date <= now + margin
+        lower = (datetime.now() - margin).date().isoformat()
+        upper = (datetime.now() + margin).date().isoformat()
+        assert lower <= obj.modified_date <= upper
 
         # test that if update_price failes, last_modified_date is not
         # updated
-        old_last_modified_date = obj.updated_date
+        old_last_modified_date = obj.modified_date
         with self.assertRaises(ValueError):
             obj.price = 8500
         # test that last_modified_date didn't changeW
-        assert obj.updated_date == old_last_modified_date
+        assert obj.modified_date == old_last_modified_date
 
         # test that update_description also updates last_modified_date
-        old_last_modified_date = obj.updated_date
+        old_last_modified_date = obj.modified_date
         obj.description = "new description 123678121212367812637812"
         # test that updated last_modified_date is later than
         # last_modified_date before description was updated
-        assert obj.updated_date >= old_last_modified_date
+        assert obj.modified_date >= old_last_modified_date
         # test that new last_modified_date is close enough to the current
         # time (margin accounts for execution time)
-        now = datetime.now()
-        assert now - margin <= obj.updated_date <= now + margin
+        lower = (datetime.now() - margin).date().isoformat()
+        upper = (datetime.now() + margin).date().isoformat()
+        assert lower <= obj.modified_date <= upper
 
         # test that add_review also updates last_modified_date
-        old_last_modified_date = obj.updated_date
+        old_last_modified_date = obj.modified_date
         obj.add_review(Review())
         # test that updated last_modified_date is later than
         # last_modified_date before price was updated
-        assert obj.updated_date >= old_last_modified_date
+        assert obj.modified_date >= old_last_modified_date
         # test that new last_modified_date is close enough to the current
         # time (margin accounts for execution time)
-        now = datetime.now()
-        assert now - margin <= obj.updated_date <= now + margin
+        lower = (datetime.now() - margin).date().isoformat()
+        upper = (datetime.now() + margin).date().isoformat()
+        assert lower <= obj.modified_date <= upper
 
     def test_r5_4_update_listing(self):
         """ Testing R5-4:

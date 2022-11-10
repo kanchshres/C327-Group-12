@@ -47,8 +47,7 @@ class Listing(db.Model):
     price = db.Column(db.Integer, nullable=False)
     time_created = db.Column(db.DateTime(timezone=False),
                              server_default=func.now())
-    last_modified_date = db.Column(db.DateTime(timezone=False),
-                                   onupdate=func.now())
+    last_modified_date = db.Column(db.String(10), nullable=False)
 
     owner_id = db.Column(db.Integer, db.ForeignKey(User.id))
     owner = relationship('User', back_populates='listings')
