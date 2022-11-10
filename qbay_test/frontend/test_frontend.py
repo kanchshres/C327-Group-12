@@ -9,7 +9,6 @@ This file defines all integration tests for the frontend registration page.
 
 
 class FrontEndTests(BaseCase):
-
     def test_register_success(self, *_):
         # Output coverage testing
         # Output: User is registered and in the database
@@ -121,10 +120,6 @@ class FrontEndTests(BaseCase):
         self.assert_text("Please login below", "#welcome-header")
 
     def test_listing_update_fail(self, *_):
-        """
-        Testing R5-2:
-        Price can only be increased.
-        """
         # Input coverage testing by Input Partitioning
 
         # Price decreased.
@@ -193,3 +188,77 @@ class FrontEndTests(BaseCase):
         self.assert_text("Description updated successfully: " +
                          "This is a comfy place with 5 beds 3 bath", 
                          "#messages")
+
+    def test_listing_update_requirement(self, *_):
+        """ Requirement Partitioning """
+        # Register & Log-in
+        email, username = "createlisting03@test.com", "Create Listing 03"
+        password = "Onetwo!"
+        self.register_helper(email, username, password)
+        self.login_helper(email, password)
+
+        # Create listing
+        t, d, p = "6 Bed 3 Bath", "This is a lovely place", 10
+        self.create_listing_helper(t, d, p)
+
+        # R5-2 : Price can only be increased but cannot be decreased
+        # R5-2P: price1 < price2
+        t, d, p = t, d, 11.00
+        self.update_listing_helper(t, d, p)
+        self.assert_element("#messages")
+        self.assert_text("Price updated successfully: 11.00", "#messages")
+        self.open(base_url)
+
+        # R5-2N: price2 < price 1
+        t, d, p = t, d, 10
+        self.update_listing_helper(t, d, p)
+        self.assert_element("#messages")
+        self.assert_text("Invalid Price: 10.0", "#messages")
+        self.open(base_url)
+
+        # R5-3 : last_modified_date should be updated when the update operation
+        #        is successful
+        # R5-3P: 
+
+        # R5-3N: 
+
+        # R5-4 : When updating an attribute, it must follow the same 
+        #        requirements as when it were created
+        # R5-4P: 20 <= price1 < price2 <= 10000
+        t, d, p = t, d, 12.00
+        self.update_listing_helper(t, d, p)
+        self.assert_element("#messages")
+        self.assert_text("Price updated successfully: 12.00", "#messages")
+        self.open(base_url)
+
+        # R5-4N: 20 <= price1 <= 10000 < price2
+        t, d, p = t, d, 69420
+        self.update_listing_helper(t, d, p)
+        self.assert_element("#messages")
+        self.assert_text("Invalid Price: 69420.0", "#messages")
+        
+    def resgister_helper(self, email, username, password):
+        # Register user given email, username, password
+        self.open(base_url + '/register')
+        self.type("#email", email)
+        self.type("#username", username)
+        self.type("#password", password)
+        self.type("#password2", password)
+        self.click('input[type="submit"]')
+
+    def login_helper(self, email, password):
+        # Log-in given email, password
+        self.open(base_url + '/login')
+        self.type("#email", email)
+        self.type("#password", password)
+        self.click('input[type="submit"]')
+
+    def update_listing_helper(self, title, description, price):
+        # Update listing given title, description, price
+        self.click_link("Update Your Listings")
+        self.click('input[type="radio"]')
+        self.click('input[type="submit"]')
+        self.type("#title", title)
+        self.type("#description", description)
+        self.type("#price", price)
+        self.click('input[type="submit"]')
