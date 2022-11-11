@@ -19,5 +19,16 @@
 ### Shuvi
 
 ### Andrew
+Nov 9, 2022:
+1. Worked on test_login branch
+2. I've written all test cases for output coverage, and some of the test cases for input partitioning and requirement partitioning. 
+3. In previous days, I had issues getting seleniumbase to work properly, but it's working now.
+4. Finsih the test cases for input partitioning and requirement partitioning.
+
+Nov 10, 2022:
+1. Worked on test_login branch
+2. I've finished test cases for login page, and fixed failing test cases from yesterday.
+3. None
+4. I've completed my section.
 
 ### Kaz
