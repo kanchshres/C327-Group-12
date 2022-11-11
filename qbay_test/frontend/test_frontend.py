@@ -11,7 +11,7 @@ This file defines all integration tests for the frontend registration page.
 
 
 class FrontEndTests(BaseCase):
-    def initialize(self):
+    def initialize_database(self):
         # Clear database
         with app.app_context():
             db.drop_all()
@@ -61,7 +61,7 @@ class FrontEndTests(BaseCase):
     def test_create_listing_requirement(self, *_):
         """ Requirement Partitioning """
         # Initialize database
-        self.initialize()
+        self.initialize_database()
         
         # Register & Log-in
         email, username = "createlisting01@test.com", "Create Listing 01"
@@ -152,7 +152,7 @@ class FrontEndTests(BaseCase):
     def test_create_listing_input(self, *_):
         """ Input Paritioning """
         # Initialize database
-        self.initialize()
+        self.initialize_database()
         
         # Register & Log-in
         email, username = "createlisting02@test.com", "Create Listing 02"
@@ -211,7 +211,7 @@ class FrontEndTests(BaseCase):
     def test_create_listing_output(self, *_):
         """ Output Coverage """
         # Initialize database
-        self.initialize()
+        self.initialize_database()
 
         # Register & Log-in
         email, password = "createlisting03@test.com", "Onetwo!"
