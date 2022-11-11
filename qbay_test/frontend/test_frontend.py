@@ -47,23 +47,23 @@ class FrontEndTests(BaseCase):
         self.is_text_visible("Please fill out this field.")
 
         # Input partitioning + shotgun: bad cases
-        bad_usernames = [" asdasd",                 #Leading white space
-                         "asdasd ",                 #Trailing white space
-                         "aa",                      #Boundary: length 2
-                         "12345678901234567890",    #Boundary: length 20
-                         "!aa",                     #Special characters
-                         "#$!&*123"]                #Special characters
+        bad_usernames = [" asdasd",  # Leading white space
+                         "asdasd ",  # Trailing white space
+                         "aa",  # Boundary: length 2
+                         "12345678901234567890",  # Boundary: length 20
+                         "!aa",  # Special characters
+                         "#$!&*123"]  # Special characters
         for name in bad_usernames:
             change_name(name)
             # If new name is invalid then it remains unchanged
             self.assert_text("Bob", "#username")
 
         # Input partitioning + shotgun: good cases
-        good_usernames = ["ASD",                    #Doundary: Length 3
-                          "123 ASD",                #Space
-                          "AaDF1231231",            #Mixed
-                          "1234567890123456789",    #Boundary: length 19
-                          "aa AA  123"]             #Multiple Spaces
+        good_usernames = ["ASD",  # Doundary: Length 3
+                          "123 ASD",  # Space
+                          "AaDF1231231",  # Mixed
+                          "1234567890123456789",  # Boundary: length 19
+                          "aa AA  123"]  # Multiple Spaces
         for name in good_usernames:
             change_name(name)
             self.assert_text(name, "#username")
@@ -86,11 +86,12 @@ class FrontEndTests(BaseCase):
         # Input partitioning + shotgun: bad cases
         bad_emails = ["Abc.example.com",                        # No @
                       "A@b@c@example.com",                      # > 1 @
-                      'a"b(c)d,e:f;g<h>i[j\k]l@example.com',    # No special characters
-                      'just"not"right@example.com',             # No qouted strings
-                      'this is"not\allowed@example.com',        # No escape sequences
-                      'i_like_underscore@but_its_not_allowed'   # No underscore in domain
-                      '_in_this_part.example.com',
+                      # No special characters
+                      'a"b(c)d,e:f;g<h>i[j\k]l@example.com',
+                      'just"not"right@example.com',  # No qouted strings
+                      'this is"not\allowed@example.com',  # No escape sequences
+                      'i_like_underscore@but_its'  # No underscore domain
+                      '_not_allowed_in_this_part.example.com',
                       'QA[icon]CHOCOLATE[icon]@test.com']       # No icon
 
         for email in bad_emails:
@@ -106,7 +107,7 @@ class FrontEndTests(BaseCase):
                        "fully-qualified-domain@example.com",
                        "user.name+tag+sorting@example.com",
                        "x@example.com",
-                       "example-indeed@strange-example.com",]
+                       "example-indeed@strange-example.com", ]
 
         for email in good_emails:
             change_email(email)
@@ -143,7 +144,7 @@ class FrontEndTests(BaseCase):
                                 "1A2C3D",   # Wrong format
                                 "Z2T1B8",   # Leading Z
                                 "H2T1O3",   # Contains O
-                                "A1A1A1A1", # Too long
+                                "A1A1A1A1",  # Too long
                                 "A1A1"]     # Too short
         for postal_code in invalid_postal_codes:
             change_postal_code(postal_code)
