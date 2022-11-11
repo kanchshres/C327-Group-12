@@ -1,8 +1,9 @@
+import selenium
 from seleniumbase import BaseCase
-from qbay_test.conftest import base_url
-from unittest.mock import patch
-from qbay.user import User
+
 from qbay.database import app, db
+from qbay.user import User
+from qbay_test.conftest import base_url
 
 """
 This file defines all integration tests for the frontend registration page.
@@ -11,97 +12,7 @@ This file defines all integration tests for the frontend registration page.
 
 class FrontEndTests(BaseCase):
 
-    def test_register_success(self, *_):
-        # Output coverage testing
-        # Output: User is registered and in the database
-        self.open(base_url + '/register')
-        self.type("#email", "test01@test.com")
-        self.type("#username", "Test One")
-        self.type("#password", "Onetwo!")
-        self.type("#password2", "Onetwo!")
-        self.click('input[type="submit"]')
-
-        self.type("#email", "test01@test.com")
-        self.type("#password", "Onetwo!")
-        self.click('input[type="submit"]')
-
-        self.assert_element("#welcome-header")
-        self.assert_text("Welcome Test One!", "#welcome-header")
-
-    def test_register_fail(self, *_):
-        """
-        Testing R1-1:
-        Email and password cannot be empty.
-        """
-        # Functionality Testing by Requirement Partitioning
-        # Email cannot be empty
-        self.open(base_url + '/register')
-        self.type("#username", "Test Two")
-        self.type("#password", "Onetwo!")
-        self.type("#password2", "Onetwo!")
-        self.click('input[type="submit"]')
-        self.assert_element("#message")
-        self.assert_text("Registration failed.", "#message")
-
-        self.type("#username", "Test Three")
-        self.type("#email", "test01@test.com")
-        self.click('input[type="submit"]')
-        self.assert_element("#message")
-        self.assert_text("Registration failed.", "#message")
-
-    def test_register_input(self, *_):
-        """
-        Testing R1-6:
-        User name length is longer 2 and less than 20 characters.
-        """
-        # Input coverage testing by input partitioning
-        # n = length of username
-        # P1: n < 2
-        self.open(base_url + '/register')
-        self.type("#username", "4")
-        self.type("#email", "test04@test.com")
-        self.type("#password", "Onetwo!")
-        self.type("#password2", "Onetwo!")
-        self.click('input[type="submit"]')
-        self.assert_element("#message")
-        self.assert_text("Registration failed.", "#message")
-        # P2: n > 20
-        self.type("#username", "TestFiveUserNameIsTooLong")
-        self.type("#email", "test05@test.com")
-        self.type("#password", "Onetwo!")
-        self.type("#password2", "Onetwo!")
-        self.click('input[type="submit"]')
-        self.assert_element("#message")
-        self.assert_text("Registration failed.", "#message")
-        # P3: n = 2
-        self.type("#username", "u6")
-        self.type("#email", "test06@test.com")
-        self.type("#password", "Onetwo!")
-        self.type("#password2", "Onetwo!")
-        self.click('input[type="submit"]')
-        self.assert_element("#message")
-        self.assert_text("Registration failed.", "#message")
-        # P4: n = 20
-        self.type("#username", "Test Seven failure!!")
-        self.type("#email", "test07@test.com")
-        self.type("#password", "Onetwo!")
-        self.type("#password2", "Onetwo!")
-        self.click('input[type="submit"]')
-        self.assert_element("#message")
-        self.assert_text("Registration failed.", "#message")
-        # P5: 2 < n < 20
-        self.type("#username", "Test Eight")
-        self.type("#email", "test08@test.com")
-        self.type("#password", "Onetwo!")
-        self.type("#password2", "Onetwo!")
-        self.click('input[type="submit"]')
-        self.assert_element("#welcome-header")
-        self.assert_text("Please login below", "#welcome-header")
-
-    def test_login_output_coverage(self, *_):
-        """ Test login page using output coverage (exhaustive) testing 
-        method.
-        """
+    def initialize(self):
         # clear database
         with app.app_context():
             db.drop_all()
@@ -119,106 +30,96 @@ class FrontEndTests(BaseCase):
         self.type("#password", "Password123!")
         self.click('input[type="submit"]')
 
-        self.assert_element("#welcome-header")
-        self.assert_text("Welcome Bob!", "#welcome-header")
-
-        # Output: User inputs invalid email or password such that they 
-        # do not meet the requirements of a valid email and/or a valid 
-        # password (Won't even check database).
-        self.open(base_url + '/login')
-
-        self.type("#email", "b.o.b.@gmail..com")
-        self.type("#password", "Password123!")
-        self.click('input[type="submit"]')
-
-        self.assert_element("#message")
-        self.assert_text("Invalid email or password", "#message")
-
-        # Output: Email and/or password is incorrect, that is, the 
-        # email and password do not match any entry in the database.
-        self.type("#email", "notindatabase@gmail.com")
-        self.type("#password", "Password123!")
-        self.click('input[type="submit"]')
-
-        self.assert_element("#message")
-        self.assert_text("Incorrect email or password", "#message")
-
-    def test_login_input_coverage(self, *_):
-        """ Test login page using input coverage (input partitioning) 
-        testing method.
+    def test_update_username(self, *_):
         """
-        # Partition 1: Correct input
-        self.open(base_url + '/register')
-        self.type("#email", "bob@gmail.com")
-        self.type("#username", "Bob")
-        self.type("#password", "Password123!")
-        self.type("#password2", "Password123!")
-        self.click('input[type="submit"]')
-
-        self.type("#email", "bob@gmail.com")
-        self.type("#password", "Password123!")
-        self.click('input[type="submit"]')
-
-        self.assert_element("#welcome-header")
-        self.assert_text("Welcome Bob!", "#welcome-header")
-
-        # Partition 2: Invalid email
-        self.open(base_url + '/login')
-        self.type("#email", "")
-        self.type("#password", "Password123!")
-        self.click('input[type="submit"]')
-
-        self.assert_element("#message")
-        self.assert_text("Invalid email or password", "#message")
-
-        # Partition 3: Invalid password
-        self.type("#email", "bob@gmail.com")
-        self.type("#password", "")
-        self.click('input[type="submit"]')
-
-        self.assert_element("#message")
-        self.assert_text("Invalid email or password", "#message")
-
-        # Partition 4: Invalid email and password
-        self.type("#email", "")
-        self.type("#password", "")
-        self.click('input[type="submit"]')
-
-        self.assert_element("#message")
-        self.assert_text("Invalid email or password", "#message")
-
-    def test_login_req_coverage(self, *_):
-        """Test login page using the requirement partitioning testing 
-        method
+        R1-5: Username has to be non-empty, alphanumeric-only, and space allowed only if it is not as the prefix or suffix.
+        R1-6: Username has to be longer than 2 characters and less than 20 characters.
         """
-        # clear database
-        with app.app_context():
-            db.drop_all()
-            db.create_all()
+        self.initialize()
 
-        # R2-1: A user can log in using her/his email address and the 
-        # password.
-        self.open(base_url + '/register')
-        self.type("#email", "bob@gmail.com")
-        self.type("#username", "Bob")
-        self.type("#password", "Password123!")
-        self.type("#password2", "Password123!")
-        self.click('input[type="submit"]')
+        def change_name(name):
+            self.type("#username", name)
+            self.click('input[type="submit"]')
 
-        self.type("#email", "bob@gmail.com")
-        self.type("#password", "Password123!")
-        self.click('input[type="submit"]')
+        self.open(base_url + '/user_update')
 
-        self.assert_element("#welcome-header")
-        self.assert_text("Welcome Bob!", "#welcome-header")
+        change_name("")
+        self.is_text_visible("Please fill out this field.")
 
-        # R2-2: Shouldn't even check database if email or password is 
-        # not valid.
-        self.open(base_url + '/login')
-        self.type("#email", "b.o.b.@gmail.com")
-        self.type("#password", "psw")
-        self.click('input[type="submit"]')
+        bad_usernames = [" asdasd", "asdasd ", "a",
+                         "1245678901234567890a", "!aa", "#$!&*123"]
+        for name in bad_usernames:
+            change_name(name)
+            # If new name is invalid then it remains unchanged
+            self.assert_text("Bob", "#username")
 
-        self.assert_element("#message")
-        self.assert_text("Invalid email or password", "#message")
+        good_usernames = ["ASD", "123 ASD", "ASD1231231",
+                          "1234567890123456789", "aa AA 123"]
+        for name in good_usernames:
+            change_name(name)
+            self.assert_text(name, "#username")
 
+    def test_update_email(self, *_):
+        """
+        R1-3: The email has to follow addr-spec defined in RFC 5322
+        (see https://en.wikipedia.org/wiki/Email_address for a human-friendly explanation).
+        You can use external libraries/imports.
+        """
+        self.initialize()
+
+        def change_email(email):
+            self.type("#email", email)
+            self.click('input[type="submit"]')
+
+        self.open(base_url + '/user_update')
+
+        change_email("")
+        self.is_text_visible("Please fill out this field.")
+
+        bad_emails = ["Abc.example.com", "A@b@c@example.com", 'a"b(c)d,e:f;g<h>i[j\k]l@example.com', 'just"not"right@example.com'
+                      'this is"not\allowed@example.com', 'this\ still\"not\\allowed@example.com', '1234567890123456789012345678901234567890123456789012345678901234+x@example.com'
+                      'i_like_underscore@but_its_not_allowed_in_this_part.example.com', 'QA[icon]CHOCOLATE[icon]@test.com']
+
+        for email in bad_emails:
+            change_email(email)
+            self.assert_text("bob@gmail.com", "#email")
+
+        good_emails = ["simple@example.com", "very.common@example.com", "disposable.style.email.with+symbol@example.com", "other.email-with-hyphen@example.com", "fully-qualified-domain@example.com", "user.name+tag+sorting@example.com",
+                       "x@example.com", "example-indeed@strange-example.com"]
+
+        for email in good_emails:
+            change_email(email)
+            self.assert_text(email, "#email")
+
+    def test_update_address(self, *_):
+        """
+        No requirements...
+        """
+        print("Yay!")
+
+    def test_update_postal_code(self, *_):
+        """
+        R3-2: postal code should be non-empty, alphanumeric-only, and no special characters such as !.
+        R3-3: Postal code has to be a valid Canadian postal code.
+        """
+        self.initialize()
+
+        def change_postal_code(code):
+            self.type("#postal_code", code)
+            self.click('input[type="submit"]')
+        
+        self.open(base_url + '/user_update')
+
+        invalid_postal_codes = ["", "!C1Ajd", "a!a1a1",
+                                "AAAAAA", "123904", "ASD2U1",
+                                "1A2C3D"]
+        for postal_code in invalid_postal_codes:
+            change_postal_code(postal_code)
+            self.assert_text("", "#postal_code")
+                
+
+        valid_postal_codes = ["A1A1A1",
+                              "N1P0A0", "N1T9Z9", "V0C0A0", "V0C9Z9"]
+        for postal_code in valid_postal_codes:
+            change_postal_code(postal_code)
+            self.assert_text(postal_code, "#postal_code")
