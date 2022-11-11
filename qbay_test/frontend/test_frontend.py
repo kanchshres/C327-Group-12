@@ -172,7 +172,7 @@ class FrontEndTests(BaseCase):
         self.click('input[type="submit"]')
         self.assert_element("#welcome-header")
         self.assert_text("Please login below", "#welcome-header")
-    
+
     def register_helper(self, email, username, password):
         # Register user given email, username, password
         self.open(base_url + '/register')
@@ -188,7 +188,7 @@ class FrontEndTests(BaseCase):
         self.type("#email", email)
         self.type("#password", password)
         self.click('input[type="submit"]')
-    
+
     def create_listing_helper(self, title, description, price):
         # Create listing given title, description, price
         self.click_link("Create Listing")
@@ -247,7 +247,7 @@ class FrontEndTests(BaseCase):
         element, text = "#listing", datetime.now().date().isoformat()
         self.assert_helper(element, text, None)
 
-        # R5-4 : When updating an attribute, it must follow the same 
+        # R5-4 : When updating an attribute, it must follow the same
         #        requirements as when it were created
         # R5-4P: 20 <= price1 < price2 <= 10000
         t, d, p = t, d, 12.00
@@ -304,7 +304,7 @@ class FrontEndTests(BaseCase):
         self.create_listing_helper(t, d, p)
 
         # Outputs newly updated listing
-        # Sucessful Update 
+        # Sucessful Update
         t, d, p = t, "This is a very lovely place", p
         element = "#messages"
         text = "Description updated successfully: This is a very lovely place"
@@ -350,21 +350,21 @@ class FrontEndTests(BaseCase):
         self.click('input[type="submit"]')
 
     def initialize(self):
-            # clear database
-            with app.app_context():
-                db.drop_all()
-                db.create_all()
+        # clear database
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
 
-            self.open(base_url + '/register')
-            self.type("#email", "bob@gmail.com")
-            self.type("#username", "Bob")
-            self.type("#password", "Password123!")
-            self.type("#password2", "Password123!")
-            self.click('input[type="submit"]')
+        self.open(base_url + '/register')
+        self.type("#email", "bob@gmail.com")
+        self.type("#username", "Bob")
+        self.type("#password", "Password123!")
+        self.type("#password2", "Password123!")
+        self.click('input[type="submit"]')
 
-            self.type("#email", "bob@gmail.com")
-            self.type("#password", "Password123!")
-            self.click('input[type="submit"]')
+        self.type("#email", "bob@gmail.com")
+        self.type("#password", "Password123!")
+        self.click('input[type="submit"]')
 
     def test_update_username(self, *_):
         """
@@ -425,7 +425,7 @@ class FrontEndTests(BaseCase):
         bad_emails = ["Abc.example.com",            # No @
                       "A@b@c@example.com",          # > 1 @
                       'a"b(c)d,e:f;g<h>'            # No special characters
-                      'i[j\k]l@example.com',    
+                      'i[j\k]l@example.com',
                       'just"not"right@example.com',  # No qouted strings
                       'this is"not\allowed@example.com',  # No escape sequences
                       'i_like_underscore@but_its'  # No underscore domain
