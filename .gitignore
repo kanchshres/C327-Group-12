@@ -134,3 +134,6 @@ dmypy.json
 
 # Database
 qbay/qbay_database.db
+
+# Pytest stuff
+assets/

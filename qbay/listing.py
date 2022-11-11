@@ -112,10 +112,10 @@ class Listing:
 
     """Fetches last date modified"""
     @property
-    def updated_date(self):
+    def modified_date(self):
         if self.database_obj:
             self._modified_date = self.database_obj.last_modified_date
-        return self._modified_date
+        return self._modified_date.date().isoformat()
 
     """Fetches owner of digital Listing"""
     @property
@@ -164,7 +164,8 @@ class Listing:
         listing = database.Listing(title=self.title,
                                    description=self.description,
                                    price=self.price * 100,
-                                   owner_id=self.seller.id)
+                                   owner_id=self.seller.id,
+                                   last_modified_date=self.modified_date)
         with database.app.app_context():
             db.session.add(listing)
             db.session.commit()
