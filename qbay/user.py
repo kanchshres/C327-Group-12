@@ -221,7 +221,8 @@ class User():
         if not email:
             return False
 
-        regex = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
+        regex = re.compile(r"(^[a-zA-Z0-9_.+-]"
+                           "+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
         return re.fullmatch(regex, email)
 
     @staticmethod
@@ -268,7 +269,7 @@ class User():
                 User.valid_password(password) and
                 User.valid_username(name)):
             return False
-        
+
         existed = database.User.query.filter_by(email=email).all()
         if len(existed):
             return False

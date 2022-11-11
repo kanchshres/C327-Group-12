@@ -32,8 +32,10 @@ class FrontEndTests(BaseCase):
 
     def test_update_username(self, *_):
         """
-        R1-5: Username has to be non-empty, alphanumeric-only, and space allowed only if it is not as the prefix or suffix.
-        R1-6: Username has to be longer than 2 characters and less than 20 characters.
+        R1-5: Username has to be non-empty, alphanumeric-only,
+        and space allowed only if it is not as the prefix or suffix.
+        R1-6: Username has to be longer than 2 characters
+        and less than 20 characters.
         """
         self.initialize()
 
@@ -62,8 +64,6 @@ class FrontEndTests(BaseCase):
     def test_update_email(self, *_):
         """
         R1-3: The email has to follow addr-spec defined in RFC 5322
-        (see https://en.wikipedia.org/wiki/Email_address for a human-friendly explanation).
-        You can use external libraries/imports.
         """
         self.initialize()
 
@@ -76,16 +76,29 @@ class FrontEndTests(BaseCase):
         change_email("")
         self.is_text_visible("Please fill out this field.")
 
-        bad_emails = ["Abc.example.com", "A@b@c@example.com", 'a"b(c)d,e:f;g<h>i[j\k]l@example.com', 'just"not"right@example.com'
-                      'this is"not\allowed@example.com', 'this\ still\"not\\allowed@example.com', '1234567890123456789012345678901234567890123456789012345678901234+x@example.com'
-                      'i_like_underscore@but_its_not_allowed_in_this_part.example.com', 'QA[icon]CHOCOLATE[icon]@test.com']
+        bad_emails = ["Abc.example.com", "A@b@c@example.com",
+                      'a"b(c)d,e:f;g<h>i[j\k]l@example.com',
+                      'just"not"right@example.com',
+                      'this is"not\allowed@example.com',
+                      'this\ still\"not\\allowed@example.com',
+                      '12345678901234567890123456789012345678901'
+                      '23456789012345678901234+x@example.com',
+                      'i_like_underscore@but_its_not_allowed'
+                      '_in_this_part.example.com',
+                      'QA[icon]CHOCOLATE[icon]@test.com']
 
         for email in bad_emails:
             change_email(email)
             self.assert_text("bob@gmail.com", "#email")
 
-        good_emails = ["simple@example.com", "very.common@example.com", "disposable.style.email.with+symbol@example.com", "other.email-with-hyphen@example.com", "fully-qualified-domain@example.com", "user.name+tag+sorting@example.com",
-                       "x@example.com", "example-indeed@strange-example.com"]
+        good_emails = ["simple@example.com",
+                       "very.common@example.com",
+                       "disposable.style.email.with+symbol@example.com",
+                       "other.email-with-hyphen@example.com",
+                       "fully-qualified-domain@example.com",
+                       "user.name+tag+sorting@example.com",
+                       "x@example.com",
+                       "example-indeed@strange-example.com"]
 
         for email in good_emails:
             change_email(email)
@@ -99,7 +112,8 @@ class FrontEndTests(BaseCase):
 
     def test_update_postal_code(self, *_):
         """
-        R3-2: postal code should be non-empty, alphanumeric-only, and no special characters such as !.
+        R3-2: postal code should be non-empty, alphanumeric-only,
+        and no special characters such as !.
         R3-3: Postal code has to be a valid Canadian postal code.
         """
         self.initialize()
@@ -107,7 +121,7 @@ class FrontEndTests(BaseCase):
         def change_postal_code(code):
             self.type("#postal_code", code)
             self.click('input[type="submit"]')
-        
+
         self.open(base_url + '/user_update')
 
         invalid_postal_codes = ["", "!C1Ajd", "a!a1a1",
@@ -116,7 +130,6 @@ class FrontEndTests(BaseCase):
         for postal_code in invalid_postal_codes:
             change_postal_code(postal_code)
             self.assert_text("", "#postal_code")
-                
 
         valid_postal_codes = ["A1A1A1",
                               "N1P0A0", "N1T9Z9", "V0C0A0", "V0C9Z9"]
