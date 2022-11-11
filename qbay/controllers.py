@@ -263,4 +263,4 @@ def update_listing_post():
 
     return render_template('/update_listing.html',
                            listing=listing.database_obj,
-                           errors=messages)
+                           messages=messages)
