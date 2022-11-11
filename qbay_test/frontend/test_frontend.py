@@ -201,6 +201,196 @@ class FrontEndTests(BaseCase):
         self.assert_element("#welcome-header")
         self.assert_text("Please login below", "#welcome-header")
 
+    def test_create_listing_requirement(self, *_):
+        """ Requirement Partitioning """
+        # Register & Log-in
+        email, username = "createlisting01@test.com", "Create Listing 01"
+        password = "Onetwo!"
+        self.register_helper(email, username, password)
+        self.login_helper(email, password)
+
+        # R4-1 : The title of the product has to be alphanumeric-only, and
+        #        space allowed only if it is not as prefix and suffix
+        # R4-1P: 1 Bed 1 Bath
+        t, d, p = "1 Bed 1 Bath", "This is a lovely place", 100
+        self.create_listing_helper(t, d, p)
+        self.assert_element("#welcome-header")
+        self.assert_text("Welcome Create Listing 01!", "#welcome-header")
+
+        # R4-1N: 1 Bath 1 Bath!
+        t, d, p = "1 Bed 1 Bath!", "This is a lovely place", 100
+        self.create_listing_helper(t, d, p)
+        self.assert_element("#message")
+        self.assert_text("Invalid Title: 1 Bed 1 Bath!", "#message")
+        self.open(base_url)
+
+        # R4-2 : The title of the product is no longer than 80 characters
+        # R4-2P: len(title) <= 80
+        t, d, p = "2 Bed 1 Bath", "This is a lovely place", 100
+        self.create_listing_helper(t, d, p)
+        self.assert_element("#welcome-header")
+        self.assert_text("Welcome Create Listing 01!", "#welcome-header")
+
+        # R4-2N: 80 < len(title)
+        t, d, p = "a" * 81, "This is a lovely place", 100
+        self.create_listing_helper(t, d, p)
+        self.assert_element("#message")
+        self.assert_text("Invalid Title: " + t, "#message")
+        self.open(base_url)
+
+        # R4-3 : The description of the product can be arbitrary characters, 
+        #        with a minimum character length of 20 and a maximum of 2000
+        # R4-3P: 20 <= len(description) <= 2000
+        t, d, p = "3 Bed 1 Bath", "This is a lovely place", 100
+        self.create_listing_helper(t, d, p)
+        self.assert_element("#welcome-header")
+        self.assert_text("Welcome Create Listing 01!", "#welcome-header")
+
+        # R4-3N: len(description) < 20 < 2000
+        t, d, p = "3 Bed 1 Baths", "lol", "100"
+        self.create_listing_helper(t, d, p)
+        self.assert_element("#message")
+        self.assert_text("Invalid Description: lol", "#message")
+        self.open(base_url)
+        
+        # R4-4 : Description has to be longer than product's title
+        # R4-4P: len(title) < len(description)
+        t, d, p = "4 Bed 1 Baths", "This is a lovely place", 100
+        self.create_listing_helper(t, d, p)
+        self.assert_element("#welcome-header")
+        self.assert_text("Welcome Create Listing 01!", "#welcome-header")
+
+        # R4-4N: len(description) < len(title)
+        t, d, p = "This is the listing A", "This is a lovely see", 100
+        self.create_listing_helper(t, d, p)
+        self.assert_element("#message")
+        self.assert_text("Invalid Description: " + d, "#message")
+        self.open(base_url)
+
+        # R4-5 : Price has to be of range [10, 10000]
+        # R4-5P: 10 <= price <= 10000
+        t, d, p = "5 Bed 1 Bath", "This is a lovely place", 100
+        self.create_listing_helper(t, d, p)
+        self.assert_element("#welcome-header")
+        self.assert_text("Welcome Create Listing 01!", "#welcome-header")
+
+        # R4-5N: 10 < 10000 < price
+        t, d, p = "5 Bed 1 Baths", "This is a lovely place", 69420
+        self.create_listing_helper(t, d, p)
+        self.assert_element("#message")
+        self.assert_text("Invalid Price: 69420.0", "#message")
+        self.open(base_url)
+        
+        # R4-8 : A user cannot create products that have the same title
+        # R4-8P: title1 != title2
+        t, d, p = "6 Bed 1 Bath", "This is a lovely place", 100
+        self.create_listing_helper(t, d, p)
+        self.assert_element("#welcome-header")
+        self.assert_text("Welcome Create Listing 01!", "#welcome-header")
+        
+        # R4-8N: title1 == title2
+        t, d, p = "1 Bed 1 Bath", "This is a lovely place", 100
+        self.create_listing_helper(t, d, p)
+        self.assert_element("#message")
+        self.assert_text("Invalid Title: 1 Bed 1 Bath", "#message")
+
+    def test_create_listing_input(self, *_):
+        """ Input Paritioning """
+        # Register & Log-in
+        email, username = "createlisting02@test.com", "Create Listing 02"
+        password = "Onetwo!"
+        self.register_helper(email, username, password)
+        self.login_helper(email, password)
+
+        # Title: Valid   | Description: Valid   | Price: Valid
+        t, d, p = "1 Bed 4 Bath", "This is a lovely place", 100
+        self.create_listing_helper(t, d, p)
+        self.assert_element("#welcome-header")
+        self.assert_text("Welcome Create Listing 02!", "#welcome-header")
+
+        # Title: Valid   | Description: Valid   | Price: Invalid
+        t, d, p = "1 Bed 4 Baths", "This is a lovely place", 1
+        self.create_listing_helper(t, d, p)
+        self.assert_element("#message")
+        self.assert_text("Invalid Price: 1.0", "#message")
+        self.open(base_url)
+
+        # Title: Valid   | Description: Invalid | Price: Valid
+        t, d, p = "1 Bed 4 Baths", "lol", 100
+        self.create_listing_helper(t, d, p)
+        self.assert_element("#message")
+        self.assert_text("Invalid Description: lol", "#message")
+        self.open(base_url)
+
+        # Title: Invalid | Description: Valid   | Price: Valid
+        t, d, p = "1 Bed 4 Bath!", "This is a lovely place", 100
+        self.create_listing_helper(t, d, p)
+        self.assert_element("#message")
+        self.assert_text("Invalid Title: 1 Bed 4 Bath!", "#message")
+        self.open(base_url)
+
+        # Title: Valid   | Description: Invalid | Price: Invalid
+        t, d, p = "1 Bed 4 Baths", "lol", 1
+        self.create_listing_helper(t, d, p)
+        self.assert_element("#message")
+        self.assert_text("Invalid Price: 1.0", "#message")
+        self.open(base_url)
+        
+        # Title: Invalid   | Description: Invalid | Price: Valid
+        t, d, p = "1 Bed 4 Bath!", "lol", 100
+        self.create_listing_helper(t, d, p)
+        self.assert_element("#message")
+        self.assert_text("Invalid Title: 1 Bed 4 Bath!", "#message")
+        self.open(base_url)
+        
+        # Title: Invalid | Description: Valid   | Price: Invalid
+        t, d, p = "1 Bed 4 Bath!", "This is a lovely place", 1
+        self.create_listing_helper(t, d, p)
+        self.assert_element("#message")
+        self.assert_text("Invalid Title: 1 Bed 4 Bath!", "#message")
+        self.open(base_url) 
+
+        # Title: Invalid | Description: Invalid | Price: Invalid
+        t, d, p = "1 Bed 4 Bath!", "lol", 1
+        self.create_listing_helper(t, d, p)
+        self.assert_element("#message")
+        self.assert_text("Invalid Title: 1 Bed 4 Bath!", "#message")
+        self.open(base_url)   
+
+    def test_create_listing_output(self, *_):
+        """ Output Coverage """
+        # Register & Log-in
+        email, password = "createlisting03@test.com", "Onetwo!"
+        username = "Create Listing 03"
+        self.register_helper(email, username, password)
+        self.login_helper(email, password)
+
+        # Successful Creation
+        t, d, p = "5 Bed 3 Bath", "This is a lovely place", 100
+        self.create_listing_helper(t, d, p)
+        self.assert_element("#welcome-header")
+        self.assert_text("Welcome Create Listing 03!", "#welcome-header")
+
+        # Invalid Title
+        t, d, p = "5 Bed 3 Bath!", "This is a lovely place", 100
+        self.create_listing_helper(t, d, p)
+        self.assert_element("#message")
+        self.assert_text("Invalid Title: 5 Bed 3 Bath!", "#message")
+        self.open(base_url)
+
+        # Invalid Description
+        t, d, p = "5 Bed 3 Baths", "lol", 100
+        self.create_listing_helper(t, d, p)
+        self.assert_element("#message")
+        self.assert_text("Invalid Description: lol", "#message")
+        self.open(base_url)
+
+        # Invalid Price
+        t, d, p = "5 Bed 3 Baths", "This is a lovely place", 1
+        self.create_listing_helper(t, d, p)
+        self.assert_element("#message")
+        self.assert_text("Invalid Price: 1.0", "#message")
+
     def test_listing_update_input_coverage(self, *_):
         # Input coverage testing by Input Partitioning
 
@@ -310,7 +500,6 @@ class FrontEndTests(BaseCase):
         self.assert_element("#mod_date")
         today_date = datetime.now().date().isoformat()
         self.assert_text(today_date, "#mod_date")
-
 
         # R5-4 : When updating an attribute, it must follow the same 
         #        requirements as when it were created
