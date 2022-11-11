@@ -84,10 +84,10 @@ class FrontEndTests(BaseCase):
         self.is_text_visible("Please fill out this field.")
 
         # Input partitioning + shotgun: bad cases
-        bad_emails = ["Abc.example.com",                        # No @
-                      "A@b@c@example.com",                      # > 1 @
-                      # No special characters
-                      'a"b(c)d,e:f;g<h>i[j\k]l@example.com',
+        bad_emails = ["Abc.example.com",            # No @
+                      "A@b@c@example.com",          # > 1 @
+                      'a"b(c)d,e:f;g<h>'            # No special characters
+                      'i[j\k]l@example.com',    
                       'just"not"right@example.com',  # No qouted strings
                       'this is"not\allowed@example.com',  # No escape sequences
                       'i_like_underscore@but_its'  # No underscore domain
@@ -152,7 +152,6 @@ class FrontEndTests(BaseCase):
 
         # Input partitioning + shotgun: good cases
         valid_postal_codes = ["A1A1A1",
-                              "A1A 1A1",
                               "N1P0A0",
                               "N1T9Z9",
                               "V0C0A0",
