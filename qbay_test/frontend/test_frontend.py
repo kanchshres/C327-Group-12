@@ -81,8 +81,6 @@ class FrontEndTests(BaseCase):
                       'just"not"right@example.com',
                       'this is"not\allowed@example.com',
                       'this\ still\"not\\allowed@example.com',
-                      '12345678901234567890123456789012345678901'
-                      '23456789012345678901234+x@example.com',
                       'i_like_underscore@but_its_not_allowed'
                       '_in_this_part.example.com',
                       'QA[icon]CHOCOLATE[icon]@test.com']
