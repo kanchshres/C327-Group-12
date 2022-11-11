@@ -1,4 +1,3 @@
-import selenium
 from seleniumbase import BaseCase
 
 from qbay.database import app, db
@@ -18,7 +17,6 @@ class FrontEndTests(BaseCase):
             db.drop_all()
             db.create_all()
 
-        # Output: User successfullly logs in in with correct login info
         self.open(base_url + '/register')
         self.type("#email", "bob@gmail.com")
         self.type("#username", "Bob")
@@ -48,15 +46,24 @@ class FrontEndTests(BaseCase):
         change_name("")
         self.is_text_visible("Please fill out this field.")
 
-        bad_usernames = [" asdasd", "asdasd ", "a",
-                         "1245678901234567890a", "!aa", "#$!&*123"]
+        # Input partitioning + shotgun: bad cases
+        bad_usernames = [" asdasd",                 #Leading white space
+                         "asdasd ",                 #Trailing white space
+                         "aa",                      #Boundary: length 2
+                         "12345678901234567890",    #Boundary: length 20
+                         "!aa",                     #Special characters
+                         "#$!&*123"]                #Special characters
         for name in bad_usernames:
             change_name(name)
             # If new name is invalid then it remains unchanged
             self.assert_text("Bob", "#username")
 
-        good_usernames = ["ASD", "123 ASD", "ASD1231231",
-                          "1234567890123456789", "aa AA 123"]
+        # Input partitioning + shotgun: good cases
+        good_usernames = ["ASD",                    #Doundary: Length 3
+                          "123 ASD",                #Space
+                          "AaDF1231231",            #Mixed
+                          "1234567890123456789",    #Boundary: length 19
+                          "aa AA  123"]             #Multiple Spaces
         for name in good_usernames:
             change_name(name)
             self.assert_text(name, "#username")
@@ -76,27 +83,30 @@ class FrontEndTests(BaseCase):
         change_email("")
         self.is_text_visible("Please fill out this field.")
 
-        bad_emails = ["Abc.example.com", "A@b@c@example.com",
-                      'a"b(c)d,e:f;g<h>i[j\k]l@example.com',
-                      'just"not"right@example.com',
-                      'this is"not\allowed@example.com',
-                      'this\ still\"not\\allowed@example.com',
-                      'i_like_underscore@but_its_not_allowed'
+        # Input partitioning + shotgun: bad cases
+        bad_emails = ["Abc.example.com",                        # No @
+                      "A@b@c@example.com",                      # > 1 @
+                      'a"b(c)d,e:f;g<h>i[j\k]l@example.com',    # No special characters
+                      'just"not"right@example.com',             # No qouted strings
+                      'this is"not\allowed@example.com',        # No escape sequences
+                      'i_like_underscore@but_its_not_allowed'   # No underscore in domain
                       '_in_this_part.example.com',
-                      'QA[icon]CHOCOLATE[icon]@test.com']
+                      'QA[icon]CHOCOLATE[icon]@test.com']       # No icon
 
         for email in bad_emails:
             change_email(email)
             self.assert_text("bob@gmail.com", "#email")
 
+        # Input partitioning + shotgun: good cases
         good_emails = ["simple@example.com",
                        "very.common@example.com",
                        "disposable.style.email.with+symbol@example.com",
+                       "disposable_style_email_with_underscores@example.com",
                        "other.email-with-hyphen@example.com",
                        "fully-qualified-domain@example.com",
                        "user.name+tag+sorting@example.com",
                        "x@example.com",
-                       "example-indeed@strange-example.com"]
+                       "example-indeed@strange-example.com",]
 
         for email in good_emails:
             change_email(email)
@@ -122,15 +132,30 @@ class FrontEndTests(BaseCase):
 
         self.open(base_url + '/user_update')
 
-        invalid_postal_codes = ["", "!C1Ajd", "a!a1a1",
-                                "AAAAAA", "123904", "ASD2U1",
-                                "1A2C3D"]
+        # Input partitioning + shotgun: bad cases
+        invalid_postal_codes = ["",         # Empty
+                                "!C1Ajd",   # Special characters
+                                "a!a1a1",   # Special characters
+                                "a!a1a1",
+                                "AAAAAA",   # No number
+                                "123904",   # No letter
+                                "ASD2U1",   # Wrong format
+                                "1A2C3D",   # Wrong format
+                                "Z2T1B8",   # Leading Z
+                                "H2T1O3",   # Contains O
+                                "A1A1A1A1", # Too long
+                                "A1A1"]     # Too short
         for postal_code in invalid_postal_codes:
             change_postal_code(postal_code)
             self.assert_text("", "#postal_code")
 
+        # Input partitioning + shotgun: good cases
         valid_postal_codes = ["A1A1A1",
-                              "N1P0A0", "N1T9Z9", "V0C0A0", "V0C9Z9"]
+                              "A1A 1A1",
+                              "N1P0A0",
+                              "N1T9Z9",
+                              "V0C0A0",
+                              "V0C9Z9"]
         for postal_code in valid_postal_codes:
             change_postal_code(postal_code)
             self.assert_text(postal_code, "#postal_code")
