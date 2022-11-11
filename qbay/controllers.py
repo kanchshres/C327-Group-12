@@ -172,7 +172,8 @@ def update_informations_post(user: User):
             messages += [f"Postal code updated successfully: {postal_code}"]
         except ValueError as e:
             messages += [str(e)]
-        database.db.session.commit()
+    
+    database.db.session.commit()
 
     return render_template('/user_update.html',
                            user=user,
