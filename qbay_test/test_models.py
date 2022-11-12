@@ -401,9 +401,9 @@ class UnitTest(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError,
                                     "Invalid email or password"):
-            User.login("b.o.b.@gmail..com", "Password123!")
+            User.login("A@b@c@example.com", "Password123!")
             User.login("bob@gmail.com", "psw")
-            User.login("b.o.b.@gmail..com", "psw")
+            User.login("A@b@c@example.com", "psw")
 
     def test_r3_1_update_user(self):
         """ Testing R3-1:
