@@ -33,23 +33,13 @@ Nov 10, 2022:
 
 ### Kaz
 Branched worked on
-* test_create_listing
-* test_update_listing
+* security_testing_kaz
 
 Progress so far
-* test_create_listing
-  * Completed all functionality tests using requirement partitioning, input partitioning, output coverage
-  * Created helper functions to avoid semlly code (duplicate/similar code) as well as allow others to refactor theirs
-* test_update_listing
-  * Complete remaining functionality test of requirement partitioning left by Kanchan
-  * Refactored Kanchans previous tests to de-odorize the smell (lol)
-  * Created additional test cases for exhaustive output coverage
+*
 
 Difficulties
-  * Had to change index to give id for the message displayed in create listing page
-  * Had to remove the required range of price when clicking create button for testing purposes
-  * Extreme trouble setting up Selenium on system
+  * 
 
 Next steps
-* Resolve merge conflicts when merging into main
-* Refactor other's code as it needs a shower (smelly)
+* 
