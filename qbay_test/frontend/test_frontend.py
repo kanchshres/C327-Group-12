@@ -223,7 +223,6 @@ class FrontEndTests(BaseCase):
         email, username, password = "bob@gmail.com", "Bob", "Password123!"
         self.register_helper(email, username, password)
 
-
         # Output: User successfullly logs in in with correct login info
         element, text = "#welcome-header", "Welcome Bob!",
         self.login_helper(email, password)
