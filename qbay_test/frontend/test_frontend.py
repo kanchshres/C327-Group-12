@@ -568,20 +568,13 @@ class FrontEndTests(BaseCase):
 
     def initialize(self):
         # clear database
-        with app.app_context():
-            db.drop_all()
-            db.create_all()
+        self.initialize_database()
 
+        # Register & Login with Bob
         self.open(base_url + '/register')
-        self.type("#email", "bob@gmail.com")
-        self.type("#username", "Bob")
-        self.type("#password", "Password123!")
-        self.type("#password2", "Password123!")
-        self.click('input[type="submit"]')
-
-        self.type("#email", "bob@gmail.com")
-        self.type("#password", "Password123!")
-        self.click('input[type="submit"]')
+        email, username, password = "bob@gmail.com", "Bob", "Password123!"
+        self.register_helper(email, username, password)
+        self.login_helper(email, password)
 
     def test_update_username(self, *_):
         """
@@ -672,7 +665,7 @@ class FrontEndTests(BaseCase):
         """
         No requirements...
         """
-        print("Yay!")
+        print("Yay!", end="")
 
     def test_update_postal_code(self, *_):
         """
