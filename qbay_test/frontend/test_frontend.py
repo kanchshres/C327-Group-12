@@ -61,265 +61,210 @@ class FrontEndTests(BaseCase):
     def test_register_input(self, *_):
         # Input coverage testing by input partitioning on username
         # n = length of username
-        # P1: n < 2
         self.open(base_url + '/register')
-        user = "4"
-        email = "test04@test.com"
-        password = "Onetwo!"
+        
+        # P1: n < 2
+        email, user, password = "test04@test.com", "4", "Onetwo!"
+        element, text = "#message", "Registration failed."
         self.register_helper(email, user, password)
-        self.assert_element("#message")
-        self.assert_text("Registration failed.", "#message")
+        self.assert_helper(element, text, None)
+
         # P2: n > 20
-        user = "TestFiveUserNameIsTooLong"
-        email = "test05@test.com"
+        email, user = "test05@test.com", "TestFiveUserNameIsTooLong"
+        element, text = "#message", "Registration failed."
         self.register_helper(email, user, password)
-        self.assert_element("#message")
-        self.assert_text("Registration failed.", "#message")
+        self.assert_helper(element, text, None)
+
         # P3: n = 2
-        user = "u6"
-        email = "test06@test.com"
+        email, user = "test06@test.com", "u6"
+        element, text = "#message", "Registration failed."
         self.register_helper(email, user, password)
-        self.assert_element("#message")
-        self.assert_text("Registration failed.", "#message")
+        self.assert_helper(element, text, None)
+
         # P4: n = 20
-        user = "Test Seven failure!!"
-        email = "test07@test.com"
+        email, user = "test07@test.com", "Test Seven failure!!"
+        element, text = "#message", "Registration failed."
         self.register_helper(email, user, password)
-        self.assert_element("#message")
-        self.assert_text("Registration failed.", "#message")
+        self.assert_helper(element, text, None)
+
         # P5: 2 < n < 20
-        user = "Test Eight"
-        email = "test08@test.com"
+        email, user = "test08@test.com", "Test Eight"
+        element, text = "#welcome-header", "Please login below"
         self.register_helper(email, user, password)
-        self.assert_element("#welcome-header")
-        self.assert_text("Please login below", "#welcome-header")
+        self.assert_helper(element, text, None)
 
     def test_register_output(self, *_):
         # Output coverage testing
-        # Output: Registration fails
         self.open(base_url + '/register')
-        email = "reg01@test.com"
-        user = "Test One"
-        password = "Onetwo!"
+        
+        # Output: Registration fails
+        email, user, password = "reg01@test.com", "Test One", "Onetwo!"
+        element, text = "#message", "Registration failed."
         self.register_helper(email, "", password)
-        self.assert_element("#message")
-        self.assert_text("Registration failed.", "#message")
+        self.assert_helper(element, text, None)
 
         # Output: Registration works
+        element, text = "#welcome-header", "Please login below"
         self.register_helper(email, user, password)
-        self.assert_element("#welcome-header")
-        self.assert_text("Please login below", "#welcome-header")
+        self.assert_helper(element, text, None)
 
     def test_register_functionality(self, *_):
         # Functionality Testing by Requirement Partitioning
+        self.open(base_url + '/register')
+        
         # R1: Email and password cannot be empty.
         # R1-T1: Both empty
-        self.open(base_url + '/register')
         user = "Func One Test One"
+        element, text = "#message", "Registration failed."
         self.register_helper("", user, "")
-        self.assert_element("#message")
-        self.assert_text("Registration failed.", "#message")
+        self.assert_helper(element, text, None)
         # R1-T2: Email empty, password not
-        user = "Func One Test Two"
-        password = "Onetwo!"
+        user, password = "Func One Test Two", "Onetwo!"
         self.register_helper("", user, password)
-        self.assert_element("#message")
-        self.assert_text("Registration failed.", "#message")
+        self.assert_helper(element, text, None)
         # R1-T3: Email not empty, password empty
-        user = "Func One Test Three"
-        email = "func0103@test.com"
+        email, user = "func0103@test.com", "Func One Test Three"
         self.register_helper(email, user, "")
-        self.assert_element("#message")
-        self.assert_text("Registration failed.", "#message")
+        self.assert_helper(element, text, None)
         # R1-T4: Email not empty, password not empty
-        user = "Func One Test Four"
-        email = "func0104@test.com"
+        email, user = "func0104@test.com", "Func One Test Four"
+        element, text = "#welcome-header", "Please login below"
         self.register_helper(email, user, password)
-        self.assert_element("#welcome-header")
-        self.assert_text("Please login below", "#welcome-header")
+        self.assert_helper(element, text, base_url + '/register')
 
         # R2: Email has to follow addr-spec defined in RFC 5322.
-        self.open(base_url + '/register')
         # R2-T1: Email does not follow
-        user = "Func Two Test One"
-        email = "func0201test.com"
+        email, user = "func0201test.com", "Func Two Test One"
+        element, text = "#message", "Registration failed."
         self.register_helper(email, user, password)
-        self.assert_element("#message")
-        self.assert_text("Registration failed.", "#message")
+        self.assert_helper(element, text, None)
         # R2-T2: Email does follow
-        user = "Func Two Test Two"
-        email = "func0202@test.com"
+        email, user = "func0202@test.com", "Func Two Test Two"
+        element, text = "#welcome-header", "Please login below"
         self.register_helper(email, user, password)
-        self.assert_element("#welcome-header")
-        self.assert_text("Please login below", "#welcome-header")
+        self.assert_helper(element, text, base_url + '/register')
 
         # R3: Password meets required complexity.
-        self.open(base_url + '/register')
         # R3-T1: Password does not meet requirements
-        user = "Func Three Test One"
-        email = "func0301@test.com"
+        email, user = "func0301@test.com", "Func Three Test One"
+        element, text = "#message", "Registration failed."
         self.register_helper(email, user, "one2")
-        self.assert_element("#message")
-        self.assert_text("Registration failed.", "#message")
+        self.assert_helper(element, text, None)
         # R3-T2: Password does meet requirements
-        user = "Func Three Test Two"
-        email = "func0302@test.com"
+        email, user = "func0302@test.com", "Func Three Test Two"
+        element, text = "#welcome-header", "Please login below"
         self.register_helper(email, user, password)
-        self.assert_element("#welcome-header")
-        self.assert_text("Please login below", "#welcome-header")
+        self.assert_helper(element, text, base_url + '/register')
 
         # R4: Username meets complexity and criteria
-        self.open(base_url + '/register')
         # R4-T1: Username does not meet requirements
-        user = " This is Func4Test1!!!"
-        email = "func0401@test.com"
+        email, user = "func0401@test.com", " This is Func4Test1!!!"
+        element, text = "#message", "Registration failed."
         self.register_helper(email, user, password)
-        self.assert_element("#message")
-        self.assert_text("Registration failed.", "#message")
+        self.assert_helper(element, text, None)
         # R4-T2: Username does meet requirements
-        user = "Func Four Test Two"
-        email = "func0402@test.com"
+        email, user = "func0402@test.com", "Func Four Test Two"
+        element, text = "#welcome-header", "Please login below"
         self.register_helper(email, user, password)
-        self.assert_element("#welcome-header")
-        self.assert_text("Please login below", "#welcome-header")
+        self.assert_helper(element, text, base_url + '/register')
 
         # R5: If email has been used, operation failed.
-        self.open(base_url + '/register')
         # R5-T1: Email used before
         user = "Func Five Test One"
+        element, text = "#message", "Registration failed."
         self.register_helper(email, user, password)
-        self.assert_element("#message")
-        self.assert_text("Registration failed.", "#message")
+        self.assert_helper(element, text, None)
         # R5-T2: Email not used before
-        user = "Func Five Test Two"
-        email = "func0502@test.com"
+        email, user = "func0502@test.com", "Func Five Test Two"
+        element, text = "#welcome-header", "Please login below"
         self.register_helper(email, user, password)
-        self.assert_element("#welcome-header")
-        self.assert_text("Please login below", "#welcome-header")
+        self.assert_helper(element, text, None)
 
     def test_login_input_coverage(self, *_):
         """ Test login page using input coverage (input partitioning) 
         testing method.
         """
-        # Partition 1: Correct input
         self.open(base_url + '/register')
-        self.type("#email", "bob@gmail.com")
-        self.type("#username", "Bob")
-        self.type("#password", "Password123!")
-        self.type("#password2", "Password123!")
-        self.click('input[type="submit"]')
+        
+        # Register & Login
+        email, user, password = "bob@gmail.com", "Bob", "Password123!"
+        self.register_helper(email, user, password)
 
-        self.type("#email", "bob@gmail.com")
-        self.type("#password", "Password123!")
-        self.click('input[type="submit"]')
-
-        self.assert_element("#welcome-header")
-        self.assert_text("Welcome Bob!", "#welcome-header")
+        # Partition 1: Correct input
+        element, text = "#welcome-header", "Welcome Bob!"
+        self.login_helper(email, password)
+        self.assert_helper(element, text, base_url + '/login')
 
         # Partition 2: Invalid email
-        self.open(base_url + '/login')
-        self.type("#email", "")
-        self.type("#password", "Password123!")
-        self.click('input[type="submit"]')
-
-        self.assert_element("#message")
-        self.assert_text("Invalid email or password", "#message")
+        email, password = "", "Password123!"
+        element, text = "#message", "Invalid email or password"
+        self.login_helper(email, password)
+        self.assert_helper(element, text, None)
 
         # Partition 3: Invalid password
-        self.type("#email", "bob@gmail.com")
-        self.type("#password", "")
-        self.click('input[type="submit"]')
-
-        self.assert_element("#message")
-        self.assert_text("Invalid email or password", "#message")
+        email, password = "bob@gmail.com", ""
+        element, text = "#message", "Invalid email or password"
+        self.login_helper(email, password)
+        self.assert_helper(element, text, None)
 
         # Partition 4: Invalid email and password
-        self.type("#email", "")
-        self.type("#password", "")
-        self.click('input[type="submit"]')
-
-        self.assert_element("#message")
-        self.assert_text("Invalid email or password", "#message")
+        email, password = "", ""
+        element, text = "#message", "Invalid email or password"
+        self.login_helper(email, password)
+        self.assert_helper(element, text, None)
 
     def test_login_output_coverage(self, *_):
         """ Test login page using output coverage (exhaustive) testing 
         method.
         """
-        # clear database
-        with app.app_context():
-            db.drop_all()
-            db.create_all()
+        # Initialize & Set up
+        self.open(base_url + '/register')
+        self.initialize_database()
+        email, username, password = "bob@gmail.com", "Bob", "Password123!"
+        self.register_helper(email, username, password)
+
 
         # Output: User successfullly logs in in with correct login info
-        self.open(base_url + '/register')
-        self.type("#email", "bob@gmail.com")
-        self.type("#username", "Bob")
-        self.type("#password", "Password123!")
-        self.type("#password2", "Password123!")
-        self.click('input[type="submit"]')
-
-        self.type("#email", "bob@gmail.com")
-        self.type("#password", "Password123!")
-        self.click('input[type="submit"]')
-
-        self.assert_element("#welcome-header")
-        self.assert_text("Welcome Bob!", "#welcome-header")
+        element, text = "#welcome-header", "Welcome Bob!",
+        self.login_helper(email, password)
+        self.assert_helper(element, text, base_url + '/login')
 
         # Output: User inputs invalid email or password such that they 
         # do not meet the requirements of a valid email and/or a valid 
         # password (Won't even check database).
-        self.open(base_url + '/login')
-
-        self.type("#email", "b.o.b.@gmail..com")
-        self.type("#password", "Password123!")
-        self.click('input[type="submit"]')
-
-        self.assert_element("#message")
-        self.assert_text("Incorrect email or password", "#message")
+        email, password = "b.o.b.@gmail..com", "Password123!"
+        element, text = "#message", "Incorrect email or password"
+        self.login_helper(email, password)
+        self.assert_helper(element, text, None)
 
         # Output: Email and/or password is incorrect, that is, the 
         # email and password do not match any entry in the database.
-        self.type("#email", "notindatabase@gmail.com")
-        self.type("#password", "Password123!")
-        self.click('input[type="submit"]')
-
-        self.assert_element("#message")
-        self.assert_text("Incorrect email or password", "#message")
+        email, password = "notindatabase@gmail.com", "Password123!"
+        self.login_helper(email, password)
+        self.assert_helper(element, text, None)
 
     def test_login_req_coverage(self, *_):
         """Test login page using the requirement partitioning testing 
         method
         """
-        # clear database
-        with app.app_context():
-            db.drop_all()
-            db.create_all()
+        # Initialize & Set up
+        self.open(base_url + '/register')
+        self.initialize_database()
+        email, username, password = "bob@gmail.com", "Bob", "Password123!"
+        self.register_helper(email, username, password)
 
         # R2-1: A user can log in using her/his email address and the 
         # password.
-        self.open(base_url + '/register')
-        self.type("#email", "bob@gmail.com")
-        self.type("#username", "Bob")
-        self.type("#password", "Password123!")
-        self.type("#password2", "Password123!")
-        self.click('input[type="submit"]')
-
-        self.type("#email", "bob@gmail.com")
-        self.type("#password", "Password123!")
-        self.click('input[type="submit"]')
-
-        self.assert_element("#welcome-header")
-        self.assert_text("Welcome Bob!", "#welcome-header")
+        element, text = "#welcome-header", "Welcome Bob!"
+        self.login_helper(email, password)
+        self.assert_helper(element, text, base_url + '/login')
 
         # R2-2: Shouldn't even check database if email or password is 
         # not valid.
-        self.open(base_url + '/login')
-        self.type("#email", "b.o.b.@gmail.com")
-        self.type("#password", "psw")
-        self.click('input[type="submit"]')
-
-        self.assert_element("#message")
-        self.assert_text("Invalid email or password", "#message")
+        email, password = "b.o.b.@gmail.com", "psw"
+        element, text = "#message", "Invalid email or password"
+        self.login_helper(email, password)
+        self.assert_helper(element, text, None)
 
     def test_create_listing_input(self, *_):
         """ Input Partitioning """
