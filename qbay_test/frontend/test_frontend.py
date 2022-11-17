@@ -62,7 +62,7 @@ class FrontEndTests(BaseCase):
         # Input coverage testing by input partitioning on username
         # n = length of username
         self.open(base_url + '/register')
-        
+
         # P1: n < 2
         email, user, password = "test04@test.com", "4", "Onetwo!"
         element, text = "#message", "Registration failed."
@@ -96,7 +96,7 @@ class FrontEndTests(BaseCase):
     def test_register_output(self, *_):
         # Output coverage testing
         self.open(base_url + '/register')
-        
+
         # Output: Registration fails
         email, user, password = "reg01@test.com", "Test One", "Onetwo!"
         element, text = "#message", "Registration failed."
@@ -111,7 +111,7 @@ class FrontEndTests(BaseCase):
     def test_register_functionality(self, *_):
         # Functionality Testing by Requirement Partitioning
         self.open(base_url + '/register')
-        
+
         # R1: Email and password cannot be empty.
         # R1-T1: Both empty
         user = "Func One Test One"
@@ -185,7 +185,7 @@ class FrontEndTests(BaseCase):
         testing method.
         """
         self.open(base_url + '/register')
-        
+
         # Register & Login
         email, user, password = "bob@gmail.com", "Bob", "Password123!"
         self.register_helper(email, user, password)
@@ -228,15 +228,15 @@ class FrontEndTests(BaseCase):
         self.login_helper(email, password)
         self.assert_helper(element, text, base_url + '/login')
 
-        # Output: User inputs invalid email or password such that they 
-        # do not meet the requirements of a valid email and/or a valid 
+        # Output: User inputs invalid email or password such that they
+        # do not meet the requirements of a valid email and/or a valid
         # password (Won't even check database).
         email, password = "b.o.b.@gmail..com", "Password123!"
         element, text = "#message", "Incorrect email or password"
         self.login_helper(email, password)
         self.assert_helper(element, text, None)
 
-        # Output: Email and/or password is incorrect, that is, the 
+        # Output: Email and/or password is incorrect, that is, the
         # email and password do not match any entry in the database.
         email, password = "notindatabase@gmail.com", "Password123!"
         self.login_helper(email, password)
@@ -252,13 +252,13 @@ class FrontEndTests(BaseCase):
         email, username, password = "bob@gmail.com", "Bob", "Password123!"
         self.register_helper(email, username, password)
 
-        # R2-1: A user can log in using her/his email address and the 
+        # R2-1: A user can log in using her/his email address and the
         # password.
         element, text = "#welcome-header", "Welcome Bob!"
         self.login_helper(email, password)
         self.assert_helper(element, text, base_url + '/login')
 
-        # R2-2: Shouldn't even check database if email or password is 
+        # R2-2: Shouldn't even check database if email or password is
         # not valid.
         email, password = "b.o.b.@gmail.com", "psw"
         element, text = "#message", "Invalid email or password"
@@ -269,7 +269,7 @@ class FrontEndTests(BaseCase):
         """ Input Partitioning """
         # Initialize database
         self.initialize_database()
-        
+
         # Register & Log-in
         email, username = "createlisting02@test.com", "Create Listing 02"
         password = "Onetwo!"
@@ -305,13 +305,13 @@ class FrontEndTests(BaseCase):
         element, text = "#message", "Invalid Description: lol"
         self.create_listing_helper(t, d, p)
         self.assert_helper(element, text, base_url)
-        
+
         # Title: Invalid   | Description: Invalid | Price: Valid
         t, d, p = "1 Bed 4 Bath!", "lol", 100
         element, text = "#message", "Invalid Title: 1 Bed 4 Bath!"
         self.create_listing_helper(t, d, p)
         self.assert_helper(element, text, base_url)
-        
+
         # Title: Invalid | Description: Valid   | Price: Invalid
         t, d, p = "1 Bed 4 Bath!", "This is a lovely place", 1
         element, text = "#message", "Invalid Title: 1 Bed 4 Bath!"
@@ -322,7 +322,7 @@ class FrontEndTests(BaseCase):
         t, d, p = "1 Bed 4 Bath!", "lol", 1
         element, text = "#message", "Invalid Title: 1 Bed 4 Bath!"
         self.create_listing_helper(t, d, p)
-        self.assert_helper(element, text, None) 
+        self.assert_helper(element, text, None)
 
     def test_create_listing_output(self, *_):
         """ Output Coverage """
@@ -363,7 +363,7 @@ class FrontEndTests(BaseCase):
         """ Requirement Partitioning """
         # Initialize database
         self.initialize_database()
-        
+
         # Register & Log-in
         email, username = "createlisting01@test.com", "Create Listing 01"
         password = "Onetwo!"
@@ -397,7 +397,7 @@ class FrontEndTests(BaseCase):
         self.create_listing_helper(t, d, p)
         self.assert_helper(element, text, base_url)
 
-        # R4-3 : The description of the product can be arbitrary characters, 
+        # R4-3 : The description of the product can be arbitrary characters,
         #        with a minimum character length of 20 and a maximum of 2000
         # R4-3P: 20 <= len(description) <= 2000
         t, d, p = "3 Bed 1 Bath", "This is a lovely place", 100
@@ -410,7 +410,7 @@ class FrontEndTests(BaseCase):
         element, text = "#message", "Invalid Description: lol"
         self.create_listing_helper(t, d, p)
         self.assert_helper(element, text, base_url)
-        
+
         # R4-4 : Description has to be longer than product's title
         # R4-4P: len(title) < len(description)
         t, d, p = "4 Bed 1 Baths", "This is a lovely place", 100
@@ -436,14 +436,14 @@ class FrontEndTests(BaseCase):
         element, text = "#message", "Invalid Price: 69420.0"
         self.create_listing_helper(t, d, p)
         self.assert_helper(element, text, base_url)
-        
+
         # R4-8 : A user cannot create products that have the same title
         # R4-8P: title1 != title2
         t, d, p = "6 Bed 1 Bath", "This is a lovely place", 100
         self.create_listing_helper(t, d, p)
         element, text = "#welcome-header", "Welcome Create Listing 01!"
         self.assert_helper(element, text, None)
-        
+
         # R4-8N: title1 == title2
         t, d, p = "1 Bed 1 Bath", "This is a lovely place", 100
         element, text = "#message", "Invalid Title: 1 Bed 1 Bath"

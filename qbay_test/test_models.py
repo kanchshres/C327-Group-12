@@ -902,6 +902,46 @@ class UnitTest(unittest.TestCase):
 
         assert queried_user.database_obj.username == "ganya"
 
+    def test_listing_inject_seller(self):
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
+
+        user = User("testUser", "user@example.ca", "password123")
+        user.add_to_database()
+
+        with open("./qbay_test/Generic_SQLI.txt") as f:
+            for line in f:
+                try:
+                    Listing.create_listing(title="testing title",
+                                           description="testing description",
+                                           price=10.0,
+                                           owner=user,
+                                           address=line
+                                           )
+                except (ValueError, AttributeError):
+                    pass
+
+    def test_listing_inject_address(self):
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
+
+        user = User("testUser", "user@example.ca", "password123")
+        user.add_to_database()
+        
+        with open("./qbay_test/Generic_SQLI.txt") as f:
+            for line in f:
+                try:
+                    Listing.create_listing(title="testing title",
+                                           description="testing description",
+                                           price=10.0,
+                                           owner=user,
+                                           address=line
+                                           )
+                except ValueError:
+                    pass
+
 
 if __name__ == "__main__":
     unittest.main()

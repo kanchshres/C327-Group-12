@@ -45,6 +45,7 @@ class Listing(db.Model):
     title = db.Column(db.String(255), unique=True, nullable=False)
     description = db.Column(db.String(5000), nullable=False)
     price = db.Column(db.Integer, nullable=False)
+    address = db.Column(db.String(5000), nullable=False)
     time_created = db.Column(db.DateTime(timezone=False),
                              server_default=func.now())
     last_modified_date = db.Column(db.String(10), nullable=False)
