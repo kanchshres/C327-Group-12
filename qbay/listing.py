@@ -1,13 +1,12 @@
 # listing.py
 from enum import Enum, unique
 from multiprocessing.sharedctypes import Value
+from qbay import database
+from qbay.database import db
 from qbay.user import User
 from qbay.review import Review
 from datetime import datetime
 import re
-
-from qbay import database
-from qbay.database import db
 
 
 class Listing:
@@ -224,7 +223,7 @@ class Listing:
     """Determine if a given title is valid """
     @staticmethod
     def valid_title(title):
-        regex = re.compile(r'^([A-Za-z0-9]([A-Za-z0-9]| ){,78}[A-Za-z0-9])$')
+        regex = re.compile(r'^([A-Za-z0-9]([A-Za-z0-9]| ){,79})$')
         if re.fullmatch(regex, title):
             with database.app.app_context():
                 exists = database.Listing.query.filter_by(title=title).all()
