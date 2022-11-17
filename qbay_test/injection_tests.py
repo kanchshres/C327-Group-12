@@ -48,8 +48,8 @@ class UnitTest(unittest.TestCase):
         account = User.login(email, password)
         return account
 
+    """Tests SQL Injection line on selecter parameter"""
     def create_listing_helper(self, t, d, p, o, param):
-        # Tests SQL Injection line on selected parameter
         with open('./qbay_test/Generic_SQLI.txt') as f:
             i = 1
             for line in f:
