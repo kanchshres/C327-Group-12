@@ -191,9 +191,10 @@ def create_listing_post(user):
     title = request.form.get('title')
     description = request.form.get('description')
     price = float(request.form.get('price'))
+    address = request.form.get('address')
 
     try:
-        Listing.create_listing(title, description, price, user)
+        Listing.create_listing(title, description, price, user, address)
         database.db.session.commit()
     except ValueError as e:
         return render_template('create_listing.html', message=str(e))
