@@ -6,7 +6,7 @@ from unittest.mock import patch
 from datetime import datetime
 
 """
-This file defines all integration tests for the frontend registration page.
+This file defines all Front-end Integration Tests
 """
 
 
@@ -302,7 +302,7 @@ class FrontEndTests(BaseCase):
 
         # Title: Valid   | Description: Invalid | Price: Invalid
         t, d, p = "1 Bed 4 Baths", "lol", 1
-        element, text = "#message", "Invalid Price: 1.0"
+        element, text = "#message", "Invalid Description: lol"
         self.create_listing_helper(t, d, p)
         self.assert_helper(element, text, base_url)
         
