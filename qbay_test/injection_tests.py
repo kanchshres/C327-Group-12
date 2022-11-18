@@ -18,7 +18,7 @@ class UnitTest(unittest.TestCase):
 
         with open("./qbay_test/Generic_SQLI.txt") as f:
             for line in f:
-                User.register(line, "testemail@gmail.com", 
+                User.register(line, "testemail@gmail.com",
                               "Password123!")
 
     def test_email(self):
@@ -40,16 +40,18 @@ class UnitTest(unittest.TestCase):
         with open('./qbay_test/Generic_SQLI.txt') as f:
             for line in f:
                 User.register("Bob", "testemail@gmail.com", line)
-   
+
     """Create account to verify in test_create_listing functions"""
+
     def create_account(self, username, email, password):
-        # Create account 
+        # Create account
         User.register(username, email, password)
         account = User.login(email, password)
         return account
 
     """Tests SQL Injection line on selecter parameter"""
-    def create_listing_helper(self, t, d, p, o, param):
+
+    def create_listing_helper(self, t, d, p, o, a, param):
         with open('./qbay_test/Generic_SQLI.txt') as f:
             i = 1
             for line in f:
@@ -58,7 +60,7 @@ class UnitTest(unittest.TestCase):
                 if param == "title":
                     try:
                         t, d, p, o = line, d, p, o
-                        Listing.create_listing(t, d, p, o)
+                        Listing.create_listing(t, d, p, o, a)
                         assert (Listing.valid_title(line)) is True
                     except ValueError as e:
                         assert (Listing.valid_title(line)) is False
@@ -66,30 +68,32 @@ class UnitTest(unittest.TestCase):
                     try:
                         t, d, p, o = "Place " + str(i), line, p, o
                         i += 1
-                        Listing.create_listing(t, d, p, o)
+                        Listing.create_listing(t, d, p, o, a)
                         assert (Listing.valid_description(line, t)) is True
                     except ValueError as e:
                         assert (Listing.valid_description(line, t)) is False
                 elif param == "price":
-                    try: 
+                    try:
                         t, d, p, o = t, d, float(line), o
-                        Listing.create_listing(t, d, p, o)
+                        Listing.create_listing(t, d, p, o, a)
                         assert (Listing.valid_price(line)) is True
                     except ValueError as e:
                         # Could not convert string to float
                         pass
-                
-    def test_creat_listing_title(self):
+
+    def test_create_listing_title(self):
         """
         For each line/input/test-case, pass through the Listing.create_listing
         function as the title parameter to test for vulnerabilities
         """
         username, email, password = "TestCL1", "testCL1@gmail.com", "Onetwo!"
+        address = "101 Kings Street"
         account = self.create_account(username, email, password)
         title, description, price = "", "This is a lovely place", 100
         owner, parameter = account, "title"
-        self.create_listing_helper(title, description, price, owner, parameter)
-    
+        self.create_listing_helper(
+            title, description, price, owner, address, parameter)
+
     def test_create_listing_description(self):
         """
         For each line/input/test-case, pass through the Listing.create_listing
@@ -98,9 +102,11 @@ class UnitTest(unittest.TestCase):
         username, email, password = "TestCL2", "testCL2@gmail.com", "Onetwo!"
         account = self.create_account(username, email, password)
         title, description, price = "Place x", "", 100
+        address = "101 Kings Street"
         owner, parameter = account, "description"
-        self.create_listing_helper(title, description, price, owner, parameter)
-    
+        self.create_listing_helper(
+            title, description, price, owner, address, parameter)
+
     def test_create_listing_price(self):
         """
         For each line/input/test-case, pass through the Listing.create_listing
@@ -109,5 +115,47 @@ class UnitTest(unittest.TestCase):
         username, email, password = "TestCL3", "testCL3@gmail.com", "Onetwo!"
         account = self.create_account(username, email, password)
         title, description, price = "4 bed 2 bath", "This is a lovely place", 0
+        address = "101 Kings Street"
         owner, parameter = account, "price"
-        self.create_listing_helper(title, description, price, owner, parameter)
+        self.create_listing_helper(
+            title, description, price, owner, address, parameter)
+
+    def test_listing_inject_seller(self):
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
+
+        with open("./qbay_test/Generic_SQLI.txt") as f:
+            cur = 0
+            for line in f:
+                title = f"Testing title {cur}"
+                try:
+                    Listing.create_listing(title=title,
+                                           description="testing description 1",
+                                           price=10.0,
+                                           owner=line,
+                                           address="101 Kingstreet"
+                                           )
+                except AttributeError as e:
+                    assert e.name == 'id'
+                cur += 1
+
+    def test_listing_inject_address(self):
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
+
+        user = User("testUser", "user@example.ca", "password123")
+        user.add_to_database()
+
+        with open("./qbay_test/Generic_SQLI.txt") as f:
+            cur = 0
+            for line in f:
+                title = f"Testing title {cur}"
+                Listing.create_listing(title=title,
+                                       description="testing description 1",
+                                       price=10.0,
+                                       owner=user,
+                                       address=line
+                                       )
+                cur += 1
