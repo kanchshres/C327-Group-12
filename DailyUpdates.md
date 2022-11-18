@@ -46,3 +46,5 @@ Difficulties
 Next steps
 * Looking at existing code to see if any other instances can be refactored
 * Prepare for Sprint 6
+* Resolve merge conflicts when merging into main
+* Refactor other's code as it needs a shower (smelly)
