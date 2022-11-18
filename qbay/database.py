@@ -12,8 +12,13 @@ import datetime
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] =\
-    'sqlite:///' + os.path.join(basedir, 'qbay_database.db')
+db_string = os.getenv('db_string')
+if db_string:
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_string
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] =\
+        'sqlite:///' + os.path.join(basedir, 'qbay_database.db')
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = '69cae04b04756f65eabcd2c5a11c8c24'
 
