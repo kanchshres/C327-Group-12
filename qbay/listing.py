@@ -223,7 +223,8 @@ class Listing:
     """Determine if a given title is valid """
     @staticmethod
     def valid_title(title):
-        regex = re.compile(r'^([A-Za-z0-9]([A-Za-z0-9]| ){,78}[A-Za-z0-9])$')
+        regex = re.compile(
+            r'(^([A-Za-z0-9]([A-Za-z0-9]| ){,78}[A-Za-z0-9])$)|[A-Za-z0-9]')
         if re.fullmatch(regex, title):
             with database.app.app_context():
                 exists = database.Listing.query.filter_by(title=title).all()

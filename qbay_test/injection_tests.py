@@ -79,7 +79,7 @@ class UnitTest(unittest.TestCase):
                         # Could not convert string to float
                         pass
                 
-    def test_creat_listing_title(self):
+    def test_create_listing_title_injection(self):
         """
         For each line/input/test-case, pass through the Listing.create_listing
         function as the title parameter to test for vulnerabilities
@@ -90,7 +90,7 @@ class UnitTest(unittest.TestCase):
         owner, parameter = account, "title"
         self.create_listing_helper(title, description, price, owner, parameter)
     
-    def test_create_listing_description(self):
+    def test_create_listing_description_injection(self):
         """
         For each line/input/test-case, pass through the Listing.create_listing
         function as the description parameter to test for vulnerabilities
@@ -101,7 +101,7 @@ class UnitTest(unittest.TestCase):
         owner, parameter = account, "description"
         self.create_listing_helper(title, description, price, owner, parameter)
     
-    def test_create_listing_price(self):
+    def test_create_listing_price_injection(self):
         """
         For each line/input/test-case, pass through the Listing.create_listing
         function as the price parameter to test for vulnerabilities
