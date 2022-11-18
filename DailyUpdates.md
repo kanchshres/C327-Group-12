@@ -11,6 +11,12 @@
 
 ### Kanchan
 
+#### Nov 14
+1. deployment. 
+2. Requirements for deployment has been completed, and Docker has been fully implemented.
+3. It was difficult to understand how and what Docker does. But following the steps and reading some documentation helped me understand.
+4. Help out my peers with their test cases. 
+
 ### Shuvi
 
 ### Andrew
