@@ -8,38 +8,41 @@
 4. What is the plan for the days before the deadline?
 
 ## Team Members:
-
 ### Kanchan
-
-1. test_registration, test_update_listing
-2. test_registration has been completed. For test_update-listing, I have completed 2/3 of the required test cases, leaving 1 for Kaz to complete.
-3. I had to change how some html files worked so test cases could detect if it was on a specific page, and also add more ids to headers.
-4. Touch up on existing code and see if I can refactor it.
+1. deployment. 
+2. Requirements for deployment has been completed, and Docker has been fully implemented.
+3. It was difficult to understand how and what Docker does. But following the steps and reading some documentation helped me understand.
+4. Help out my peers with their test cases. 
 
 ### Shuvi
 
 ### Andrew
-Nov 9, 2022:
-1. Worked on test_login branch
-2. I've written all test cases for output coverage, and some of the test cases for input partitioning and requirement partitioning. 
-3. In previous days, I had issues getting seleniumbase to work properly, but it's working now.
-4. Finsih the test cases for input partitioning and requirement partitioning.
-
-Nov 10, 2022:
-1. Worked on test_login branch
-2. I've finished test cases for login page, and fixed failing test cases from yesterday.
-3. None
-4. I've completed my section.
 
 ### Kaz
 Branched worked on
 * security_testing_kaz
 
 Progress so far
-*
+* injection_tests.py
+  * Created injection tests for 1/2 of create_listing function
+    * Parameters: title, description, price
+* listing.py
+  * Fixed regex to properly validate titles
+* test_frondend.py
+  * Refactored teammate's code to reduce smelly code
+* Generic_SQLI.txt
+  * Added file for Injection lines
 
 Difficulties
-  * 
+* listing
+  * Fitting the regex within 80 char limit
+    * Line split to follow PEP8
+* injection_tests.py
+  * Understanding the requirements of the assignment
+    * Should I assert/What to assert
+    * What if the injection doesn't raise an error and is simply accepted as input?
+      * Valid description
 
 Next steps
-* 
+* Looking at existing code to see if any other instances can be refactored
+* Prepare for Sprint 6
