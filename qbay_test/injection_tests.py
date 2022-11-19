@@ -48,7 +48,7 @@ class UnitTest(unittest.TestCase):
         account = User.login(email, password)
         return account
 
-    """Tests SQL Injection line on selecter parameter"""
+    """Tests SQL Injection line on selected parameter"""
     def create_listing_helper(self, t, d, p, o, param):
         with open('./qbay_test/Generic_SQLI.txt') as f:
             i = 1
@@ -59,26 +59,29 @@ class UnitTest(unittest.TestCase):
                     try:
                         t, d, p, o = line, d, p, o
                         Listing.create_listing(t, d, p, o)
-                        assert (Listing.valid_title(line)) is True
                     except ValueError as e:
-                        assert (Listing.valid_title(line)) is False
+                        assert str(e) == "Invalid Title: " + line
                 elif param == "description":
                     try:
                         t, d, p, o = "Place " + str(i), line, p, o
                         i += 1
                         Listing.create_listing(t, d, p, o)
-                        assert (Listing.valid_description(line, t)) is True
                     except ValueError as e:
-                        assert (Listing.valid_description(line, t)) is False
+                        assert str(e) == "Invalid Description: " + line
                 elif param == "price":
                     try: 
                         t, d, p, o = t, d, float(line), o
                         Listing.create_listing(t, d, p, o)
-                        assert (Listing.valid_price(line)) is True
                     except ValueError as e:
-                        # Could not convert string to float
-                        pass
-                
+                        # Check if error is of type 1 or type 2
+                        if str(e) == "Invalid Price: " + str(p):
+                            # Type 1: line is an invalid price
+                            assert str(e) == "Invalid Price: " + str(p)
+                        else:
+                            # Type 2: line cannot be converted to float
+                            assert (str(e)[0:33]) == ("could not convert " +
+                                                      "string to float")
+                            
     def test_create_listing_title_injection(self):
         """
         For each line/input/test-case, pass through the Listing.create_listing
@@ -86,9 +89,8 @@ class UnitTest(unittest.TestCase):
         """
         username, email, password = "TestCL1", "testCL1@gmail.com", "Onetwo!"
         account = self.create_account(username, email, password)
-        title, description, price = "", "This is a lovely place", 100
-        owner, parameter = account, "title"
-        self.create_listing_helper(title, description, price, owner, parameter)
+        t, d, p = "", "This is a lovely place", 100
+        self.create_listing_helper(t, d, p, account, "title")
     
     def test_create_listing_description_injection(self):
         """
@@ -97,9 +99,8 @@ class UnitTest(unittest.TestCase):
         """
         username, email, password = "TestCL2", "testCL2@gmail.com", "Onetwo!"
         account = self.create_account(username, email, password)
-        title, description, price = "Place x", "", 100
-        owner, parameter = account, "description"
-        self.create_listing_helper(title, description, price, owner, parameter)
+        t, d, p = "Place x", "", 100
+        self.create_listing_helper(t, d, p, account, "description")
     
     def test_create_listing_price_injection(self):
         """
@@ -108,6 +109,5 @@ class UnitTest(unittest.TestCase):
         """
         username, email, password = "TestCL3", "testCL3@gmail.com", "Onetwo!"
         account = self.create_account(username, email, password)
-        title, description, price = "4 bed 2 bath", "This is a lovely place", 0
-        owner, parameter = account, "price"
-        self.create_listing_helper(title, description, price, owner, parameter)
+        t, d, p = "4 bed 2 bath", "This is a lovely place", 0
+        self.create_listing_helper(t, d, p, account, "price")
