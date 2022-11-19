@@ -46,8 +46,7 @@ class UnitTest(unittest.TestCase):
             for line in f:
                 try:
                     # Parameters changed
-                    title, description = "Place " + str(i), line 
-                    i += 1
+                    title, description, i = "Place " + str(i), line, i + 1
                     Listing.create_listing(title, description, price, account)
                 except ValueError as e:
                     assert str(e) == "Invalid Description: " + line

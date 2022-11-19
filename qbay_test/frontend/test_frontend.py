@@ -184,9 +184,9 @@ class FrontEndTests(BaseCase):
         """ Test login page using input coverage (input partitioning) 
         testing method.
         """
+        # Initialize & Set up
+        self.initialize_database()
         self.open(base_url + '/register')
-        
-        # Register & Login
         email, user, password = "bob@gmail.com", "Bob", "Password123!"
         self.register_helper(email, user, password)
 
@@ -218,8 +218,8 @@ class FrontEndTests(BaseCase):
         method.
         """
         # Initialize & Set up
-        self.open(base_url + '/register')
         self.initialize_database()
+        self.open(base_url + '/register')
         email, username, password = "bob@gmail.com", "Bob", "Password123!"
         self.register_helper(email, username, password)
 
