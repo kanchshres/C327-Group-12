@@ -17,6 +17,17 @@
 ### Shuvi
 
 ### Andrew
+Nov 16
+1. register_injection
+2. made outline for register sql injection test cases (no test cases are complete, but I've got a good idea of what I want to do)
+3. Don't know exactly what to test to ensure the attack wasn't successful.
+4. Ask TA for clarification on SQL Injection, and use that to complete test cases.
+
+Nov 17
+1. register_injection
+2. Finished register injection test cases.
+3. No
+4. I'm done my section, I just need to review other people's PR's, and assist others as necessary.
 
 ### Kaz
 Branched worked on
