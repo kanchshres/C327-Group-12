@@ -8,10 +8,7 @@
 4. What is the plan for the days before the deadline?
 
 ## Team Members:
-
 ### Kanchan
-
-#### Nov 14
 1. deployment. 
 2. Requirements for deployment has been completed, and Docker has been fully implemented.
 3. It was difficult to understand how and what Docker does. But following the steps and reading some documentation helped me understand.
@@ -33,3 +30,32 @@ Nov 17
 4. I'm done my section, I just need to review other people's PR's, and assist others as necessary.
 
 ### Kaz
+Branched worked on
+* security_testing_kaz
+
+Progress so far
+* injection_tests.py
+  * Created injection tests for 1/2 of create_listing function
+    * Parameters: title, description, price
+* listing.py
+  * Fixed regex to properly validate titles
+* test_frondend.py
+  * Refactored teammate's code to reduce smelly code
+* Generic_SQLI.txt
+  * Added file for Injection lines
+
+Difficulties
+* listing
+  * Fitting the regex within 80 char limit
+    * Line split to follow PEP8
+* injection_tests.py
+  * Understanding the requirements of the assignment
+    * Should I assert/What to assert
+    * What if the injection doesn't raise an error and is simply accepted as input?
+      * Valid description
+
+Next steps
+* Looking at existing code to see if any other instances can be refactored
+* Prepare for Sprint 6
+* Resolve merge conflicts when merging into main
+* Refactor other's code as it needs a shower (smelly)
