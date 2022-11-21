@@ -8,10 +8,7 @@
 4. What is the plan for the days before the deadline?
 
 ## Team Members:
-
 ### Kanchan
-
-#### Nov 14
 1. deployment. 
 2. Requirements for deployment has been completed, and Docker has been fully implemented.
 3. It was difficult to understand how and what Docker does. But following the steps and reading some documentation helped me understand.
@@ -20,37 +17,34 @@
 ### Shuvi
 
 ### Andrew
-Nov 9, 2022:
-1. Worked on test_login branch
-2. I've written all test cases for output coverage, and some of the test cases for input partitioning and requirement partitioning. 
-3. In previous days, I had issues getting seleniumbase to work properly, but it's working now.
-4. Finsih the test cases for input partitioning and requirement partitioning.
-
-Nov 10, 2022:
-1. Worked on test_login branch
-2. I've finished test cases for login page, and fixed failing test cases from yesterday.
-3. None
-4. I've completed my section.
 
 ### Kaz
 Branched worked on
-* test_create_listing
-* test_update_listing
+* security_testing_kaz
 
 Progress so far
-* test_create_listing
-  * Completed all functionality tests using requirement partitioning, input partitioning, output coverage
-  * Created helper functions to avoid semlly code (duplicate/similar code) as well as allow others to refactor theirs
-* test_update_listing
-  * Complete remaining functionality test of requirement partitioning left by Kanchan
-  * Refactored Kanchans previous tests to de-odorize the smell (lol)
-  * Created additional test cases for exhaustive output coverage
+* injection_tests.py
+  * Created injection tests for 1/2 of create_listing function
+    * Parameters: title, description, price
+* listing.py
+  * Fixed regex to properly validate titles
+* test_frondend.py
+  * Refactored teammate's code to reduce smelly code
+* Generic_SQLI.txt
+  * Added file for Injection lines
 
 Difficulties
-  * Had to change index to give id for the message displayed in create listing page
-  * Had to remove the required range of price when clicking create button for testing purposes
-  * Extreme trouble setting up Selenium on system
+* listing
+  * Fitting the regex within 80 char limit
+    * Line split to follow PEP8
+* injection_tests.py
+  * Understanding the requirements of the assignment
+    * Should I assert/What to assert
+    * What if the injection doesn't raise an error and is simply accepted as input?
+      * Valid description
 
 Next steps
+* Looking at existing code to see if any other instances can be refactored
+* Prepare for Sprint 6
 * Resolve merge conflicts when merging into main
 * Refactor other's code as it needs a shower (smelly)
