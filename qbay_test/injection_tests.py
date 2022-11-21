@@ -10,117 +10,11 @@ This file defines all SQL Injection Back-end Tests
 
 
 class UnitTest(unittest.TestCase):
-    def test_username(self):
-        """ For each line/input/test-case, pass through the 
-        User.register() function as the username parameter to test for 
-        vulnerabilities to SQL Injection
-        """
-
-        with open("./qbay_test/Generic_SQLI.txt") as f:
-            for line in f:
-                User.register(line, "testemail@gmail.com",
-                              "Password123!")
-
-    def test_email(self):
-        """ For each line/input/test-case, pass through the 
-        User.register() function as the email parameter to test for 
-        vulnerabilities to SQL Injection
-        """
-
-        with open('./qbay_test/Generic_SQLI.txt') as f:
-            for line in f:
-                User.register("Bob", line, "Password123!")
-
-    def test_password(self):
-        """ For each line/input/test-case, pass through the 
-        User.register() function as the password parameter to test for 
-        vulnerabilities to SQL Injection
-        """
-
-        with open('./qbay_test/Generic_SQLI.txt') as f:
-            for line in f:
-                User.register("Bob", "testemail@gmail.com", line)
-
-    """Create account to verify in test_create_listing functions"""
-
-    def create_account(self, username, email, password):
-        # Create account
-        User.register(username, email, password)
-        account = User.login(email, password)
-        return account
-
-    """Tests SQL Injection line on selecter parameter"""
-
-    def create_listing_helper(self, t, d, p, o, a, param):
-        with open('./qbay_test/Generic_SQLI.txt') as f:
-            i = 1
-            for line in f:
-                # Determine which parameter to substitute for injection line
-                # Determine assertion statement based on parameter substituted
-                if param == "title":
-                    try:
-                        t, d, p, o = line, d, p, o
-                        Listing.create_listing(t, d, p, o, a)
-                        assert (Listing.valid_title(line)) is True
-                    except ValueError as e:
-                        assert (Listing.valid_title(line)) is False
-                elif param == "description":
-                    try:
-                        t, d, p, o = "Place " + str(i), line, p, o
-                        i += 1
-                        Listing.create_listing(t, d, p, o, a)
-                        assert (Listing.valid_description(line, t)) is True
-                    except ValueError as e:
-                        assert (Listing.valid_description(line, t)) is False
-                elif param == "price":
-                    try:
-                        t, d, p, o = t, d, float(line), o
-                        Listing.create_listing(t, d, p, o, a)
-                        assert (Listing.valid_price(line)) is True
-                    except ValueError as e:
-                        # Could not convert string to float
-                        pass
-
-    def test_create_listing_title(self):
-        """
-        For each line/input/test-case, pass through the Listing.create_listing
-        function as the title parameter to test for vulnerabilities
-        """
-        username, email, password = "TestCL1", "testCL1@gmail.com", "Onetwo!"
-        address = "101 Kings Street"
-        account = self.create_account(username, email, password)
-        title, description, price = "", "This is a lovely place", 100
-        owner, parameter = account, "title"
-        self.create_listing_helper(
-            title, description, price, owner, address, parameter)
-
-    def test_create_listing_description(self):
-        """
-        For each line/input/test-case, pass through the Listing.create_listing
-        function as the description parameter to test for vulnerabilities
-        """
-        username, email, password = "TestCL2", "testCL2@gmail.com", "Onetwo!"
-        account = self.create_account(username, email, password)
-        title, description, price = "Place x", "", 100
-        address = "101 Kings Street"
-        owner, parameter = account, "description"
-        self.create_listing_helper(
-            title, description, price, owner, address, parameter)
-
-    def test_create_listing_price(self):
-        """
-        For each line/input/test-case, pass through the Listing.create_listing
-        function as the price parameter to test for vulnerabilities
-        """
-        username, email, password = "TestCL3", "testCL3@gmail.com", "Onetwo!"
-        account = self.create_account(username, email, password)
-        title, description, price = "4 bed 2 bath", "This is a lovely place", 0
-        address = "101 Kings Street"
-        owner, parameter = account, "price"
-        self.create_listing_helper(
-            title, description, price, owner, address, parameter)
-
     def test_listing_inject_seller(self):
+        """
+        Attemp to pass in the injection text as plain string to the database
+        Should catch attribute error when trying to parse the object
+        """
         with app.app_context():
             db.drop_all()
             db.create_all()
@@ -137,10 +31,16 @@ class UnitTest(unittest.TestCase):
                                            address="101 Kingstreet"
                                            )
                 except AttributeError as e:
+                    # AttributeError e should prints "Invalid attribute: id"
+                    # e.name should be the same as the invalid attribute name"
                     assert e.name == 'id'
                 cur += 1
 
     def test_listing_inject_address(self):
+        """
+        Pass in injection string into database.
+        String should be accepted but does not execute code
+        """
         with app.app_context():
             db.drop_all()
             db.create_all()
