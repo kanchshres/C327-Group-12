@@ -15,6 +15,12 @@
 4. Help out my peers with their test cases. 
 
 ### Shuvi
+1. Initial commit
+2. Added test cases to test_models.py
+3. Added address field for create_listing
+4. Moved test cases to injection_tests.py
+5. Addressed PR comments
+6. Added address to create_listing
 
 ### Andrew
 Nov 16

@@ -1,12 +1,13 @@
 # listing.py
 from enum import Enum, unique
 from multiprocessing.sharedctypes import Value
-from qbay import database
-from qbay.database import db
 from qbay.user import User
 from qbay.review import Review
 from datetime import datetime
 import re
+
+from qbay import database
+from qbay.database import db
 
 
 class Listing:
@@ -26,6 +27,7 @@ class Listing:
     """
 
     """ Initialize digital Listing"""
+
     def __init__(self, title: str = "", description: str = "",
                  price: float = 0.0, owner: User = User(), address: str = ""):
         # Required
@@ -43,6 +45,18 @@ class Listing:
         self._reviews: list[Review] = []
 
     # Required
+    @property
+    def database_obj(self) -> database.Listing:
+        """Returns a reference to the database"""
+        return self._database_obj
+
+    @property
+    def id(self):
+        """Fetches the user's id"""
+        if self.database_obj:
+            self._id = self.database_obj.id
+        return self._id
+
     """Fetches title of digital Listing"""
     @property
     def title(self):
@@ -145,25 +159,13 @@ class Listing:
         # note: adding a review will currently not update the
         # last_modified_date, since it's not modifying the actual post
 
-    # Database
-    """Returns a reference to the database"""
-    @property
-    def database_obj(self) -> database.Listing:
-        return self._database_obj
-
-    """Fetches the user's id"""
-    @property
-    def id(self):
-        if self.database_obj:
-            self._id = self.database_obj.id
-        return self._id
-
     """Adds listing to the database"""
     def add_to_database(self):
         listing = database.Listing(title=self.title,
                                    description=self.description,
                                    price=self.price * 100,
                                    owner_id=self.seller.id,
+                                   address=self.address,
                                    last_modified_date=self.modified_date)
         with database.app.app_context():
             db.session.add(listing)
@@ -173,7 +175,7 @@ class Listing:
             self._id = listing.id
 
     @staticmethod
-    def create_listing(title, description, price, owner):
+    def create_listing(title, description, price, owner, address=""):
         """Creates new listing
         Client can not modify the mod_date, rather, it is handled in the 
         server database upon entry update 
@@ -183,43 +185,21 @@ class Listing:
         - description: A short description (string)
         - price: The cost of renting the listing (float)
         - owner: The User associated with the listing (User)
-
+        - address: The address of the listing (string)
         """
         if not (Listing.valid_title(title)):
             raise ValueError(f"Invalid Title: {title}")
-        if not (Listing.valid_description(description, title)):
-            raise ValueError(f"Invalid Description: {description}")
-        if not (Listing.valid_price(price)):
-            raise ValueError(f"Invalid Price: {price}")
         if not (Listing.valid_seller(owner)):
             raise ValueError(f"Invalid Seller: {owner}")
+        if not (Listing.valid_price(price)):
+            raise ValueError(f"Invalid Price: {price}")
+        if not (Listing.valid_description(description, title)):
+            raise ValueError(f"Invalid Description: {description}")
             
-        listing = Listing(title, description, price, owner)
+        listing = Listing(title, description, price, owner, address)
         listing.add_to_database()
         return listing
 
-    @staticmethod
-    def query_listing(id):
-        """Returns a Listing object for interacting with the database
-        in a safe manner. It will initialize a new User object that
-        is tethered to the corresponding database object
-
-        Args:
-            id (int): integer denoting the unique identifier of the object
-            to be queried for
-
-        Returns:
-            Listing: a listing object that is tethered to the corresponding
-            database object with the given id
-        """
-        database_listing = database.Listing.query.get(int(id))
-        if database_listing:
-            listing = Listing()
-            listing._database_obj = database_listing
-            return listing
-        return None
-
-    # Validation Functions
     """Determine if a given title is valid """
     @staticmethod
     def valid_title(title):
@@ -258,23 +238,53 @@ class Listing:
                 return ((user is not None) and (user.email != ""))
         return False
     
-    """Updates the listing title and pushes changes to the database"""
     def update_title(self, title):
+        """Updates the listing title and pushes changes to the 
+        database.
+        """
         self.title = title
+
         with database.app.app_context():
             self.database_obj.title = title
             db.session.commit()
-    
-    """Updates the listing description and pushes changes to the database"""
+
     def update_description(self, description):
+        """Updates the listing description and pushes changes to the 
+        database.
+        """
         self.description = description
+
         with database.app.app_context():
             self.database_obj.description = description
             db.session.commit()
 
-    """Updates the listing price and pushes changes to the database"""
     def update_price(self, price):
+        """Updates the listing price and pushes changes to the 
+        database.
+        """
         self.price = price
+
         with database.app.app_context():
             self.database_obj.price = price * 100
             db.session.commit()
+
+    @staticmethod
+    def query_listing(id):
+        """Returns a Listing object for interacting with the database
+        in a safe manner. It will initialize a new User object that
+        is tethered to the corresponding database object
+
+        Args:
+            id (int): integer denoting the unique identifier of the object
+            to be queried for
+
+        Returns:
+            Listing: a listing object that is tethered to the corresponding
+            database object with the given id
+        """
+        database_listing = database.Listing.query.get(int(id))
+        if database_listing:
+            listing = Listing()
+            listing._database_obj = database_listing
+            return listing
+        return None
