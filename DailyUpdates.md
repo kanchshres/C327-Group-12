@@ -23,6 +23,7 @@
 3. Added address field for create_listing
 4. Moved test cases to injection_tests.py
 5. Addressed PR comments
+6. Added address to create_listing
 
 ### Andrew
 Nov 9, 2022:

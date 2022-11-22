@@ -175,7 +175,7 @@ class Listing:
             self._id = listing.id
 
     @staticmethod
-    def create_listing(title, description, price, owner, address):
+    def create_listing(title, description, price, owner, address=""):
         """Creates new listing
         Client can not modify the mod_date, rather, it is handled in the 
         server database upon entry update 
@@ -185,7 +185,7 @@ class Listing:
         - description: A short description (string)
         - price: The cost of renting the listing (float)
         - owner: The User associated with the listing (User)
-
+        - address: The address of the listing (string)
         """
         if not (Listing.valid_title(title)):
             raise ValueError(f"Invalid Title: {title}")
