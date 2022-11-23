@@ -11,6 +11,7 @@ from qbay.database import db
 from qbay.wallet import Wallet, BankingAccount
 
 if TYPE_CHECKING:
+    from .listing import Listing
     from .wallet import Wallet
     from .review import Review
 
@@ -41,6 +42,7 @@ class User():
         self._billing_address = ""
         self._wallet: Wallet = Wallet()
         self._reviews: 'list[Review]' = []
+        self._listings_booked: 'list[Listing]' = []
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -182,6 +184,17 @@ class User():
     def billing_address(self, bill_addr: str):
         """Sets a new billing address"""
         self._billing_address = bill_addr
+
+    @property
+    def listings_booked(self):
+        """Fetches the billing address"""
+        if self.database_obj:
+            self._listings_booked = self.database_obj.listings
+        return self._listings_booked
+    
+    def add_booking(self, booking: 'Booking'):
+        """Adds a review to the list of Bookings"""
+        self._bookings.append(booking)
 
     @staticmethod
     def valid_username(name):
