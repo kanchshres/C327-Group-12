@@ -82,6 +82,7 @@ class Booking:
 
         # To book, update listing booking date
         listing.valid_booking_date(book_start, book_end)
+        # Get all dates in the booking range given
         start = datetime.strptime(book_start, "%Y-%m-%d")
         end = datetime.strptime(book_end, "%Y-%m-%d")
         days_booked = (end - start).days
@@ -98,6 +99,7 @@ class Booking:
             - (listing.price * days_booked)
         owner.wallet.balance = owner.wallet.balance \
             + (listing.price * days_booked)
+        # Add to database
         Booking.add_to_database(owner_id, listing_id, book_start, book_end)
     
     def add_to_database(owner_id, listing_id, start, end):

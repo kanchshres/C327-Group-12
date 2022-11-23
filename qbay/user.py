@@ -192,9 +192,9 @@ class User():
             self._listings_booked = self.database_obj.listings
         return self._listings_booked
     
-    def add_booking(self, booking: 'Booking'):
+    def add_booking(self, booking: 'Listing'):
         """Adds a review to the list of Bookings"""
-        self._bookings.append(booking)
+        self._listings_booked.append(booking)
 
     @staticmethod
     def valid_username(name):
