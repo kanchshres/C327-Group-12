@@ -3,7 +3,7 @@ from enum import Enum, unique
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Union
 from qbay import database
-from qbay.database import db
+from qbay.database import db, app
 if TYPE_CHECKING:
     from qbay.user import User
     from qbay.listing import Listing
@@ -80,14 +80,15 @@ class Booking:
         if buyer.balance < listing.price:
             raise ValueError("Buyer's balance is too low for this booking!")
 
-        # To book, update listing booking date
-        listing.valid_booking_date(book_start, book_end)
         # Get all dates in the booking range given
         start = datetime.strptime(book_start, "%Y-%m-%d")
         end = datetime.strptime(book_end, "%Y-%m-%d")
         days_booked = (end - start).days
         booked_dates = [start + timedelta(days=x)
                         for x in range(0, days_booked + 1)]
+        
+        # To book, update listing booking date
+        listing.valid_booking_date(booked_dates)
         listing.add_booking_date(booked_dates)
 
         # Add this listing to buyer's list of bookings
@@ -103,8 +104,12 @@ class Booking:
         Booking.add_to_database(owner_id, listing_id, book_start, book_end)
     
     def add_to_database(owner_id, listing_id, start, end):
-        database.Booking(owner_id=owner_id, 
+        booking = database.Booking(owner_id=owner_id, 
                          listing_id=listing_id,
                          start=start,
                          end=end)
+
+        with database.app.app_context():
+            db.session.add(booking)
+            db.session.commit()
         

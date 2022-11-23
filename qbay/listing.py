@@ -300,12 +300,9 @@ class Listing:
         for date in booked_dates:
             self.booked_dates.add(datetime.isoformat(date))
 
-    def valid_booking_date(self, frm: str, to: str):
+    def valid_booking_date(self, booked_dates: list[str]):
         """ Check if given booking start and ending dates are valid """
-        if frm in self.booked_dates and to in self.booked_dates:
-            raise ValueError(f"{frm} and {to} overlap with existing bookings!")
-        elif frm in self.booked_dates:
-            raise ValueError(f"{frm} overlaps with existing bookings!")
-        elif to in self.booked_dates:
-            raise ValueError(f"{to} overlaps with existing bookings!")
+        for date in booked_dates:
+            if date in self.booked_dates:
+                raise ValueError("Given dates overlap with existing bookings!")
         return True
