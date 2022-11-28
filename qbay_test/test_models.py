@@ -7,6 +7,7 @@ from qbay.user import User
 from qbay.database import app, db
 from qbay.review import Review
 from qbay.listing import Listing
+from qbay.booking import Booking
 from datetime import datetime
 from qbay.transaction import Transaction, TransactionStatus
 from qbay.wallet import Wallet, BankingAccount
@@ -901,6 +902,101 @@ class UnitTest(unittest.TestCase):
         assert queried_again.database_obj.username == "ganya"
 
         assert queried_user.database_obj.username == "ganya"
+
+    def booking_helper(self):
+        """Helper function for booking backend test cases"""
+
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
+
+        User.register("Bob", "bob@gmail.com", "Password123!")
+        User.register("Tim", "tim@gmail.com", "Password123!")
+        bob = User.login("bob@gmail.com", "Password123!")
+        tim = User.login("tim@gmail.com", "Password123!")
+
+        listing = Listing.create_listing("Title", "Some description that is " +
+                                         "valid length", 35, bob, 
+                                         "1000 Some Street")
+
+        tim.balance = 40
+
+        return bob, tim, listing
+
+    def test_booking_r1(self):
+        """Tests the requirement: A user can book a listing."""
+
+        bob, tim, listing = self.booking_helper()
+
+        """ Commented until merged with branch containing 
+        Booking.book_listing function
+        ----------------------------------------------
+        
+        Booking.book_listing(tim.id, bob.id, listing.id, "2022-12-01", 
+                             "2022-12-10")
+        """
+
+    def test_booking_r2(self):
+        """Tests the requirement: A user cannot book a listing for 
+        his/her listing.
+        """
+        bob, tim, listing = self.booking_helper()
+
+        """ Commented until merged with branch containing 
+        Booking.book_listing function
+        ----------------------------------------------
+        
+        with self.assertRaisesRegex(ValueError, 
+                                    "Owner and buyer are the same!"):
+                                    
+            Booking.book_listing(bob.id, bob.id, listing.id, "2022-12-01", 
+                                 "2022-12-10")
+        """
+
+    def test_booking_r3(self):
+        """"Tests the requirement: A user cannot book a listing that 
+        costs more than his/her balance.
+        """
+        bob, tim, listing = self.booking_helper()
+
+        tim.balance = 10
+
+        """ Commented until merged with branch containing 
+        Booking.book_listing function
+        ----------------------------------------------
+
+        with self.assertRaisesRegex(ValueError, 
+                                    "Buyer's balance is too low for this " + 
+                                    "booking!"):
+
+            Booking.book_listing(tim.id, bob.id, listing.id, "2022-12-01", 
+                                 "2022-12-10")
+        """
+
+    def test_booking_r4(self):
+        """ Tests the requirement: A user cannot book a listing that 
+        is already booked with the overlapped dates.
+        """
+        bob, tim, listing = self.booking_helper()
+
+        User.register("Fred", "fred@gmail.com", "Password123!")
+        fred = User.login("fred@gmail.com", "Password123!")
+        fred.balance = 40
+
+        """ Commented until merged with branch containing 
+        Booking.book_listing function
+        ----------------------------------------------
+
+        Booking.book_listing(tim.id, bob.id, listing.id, "2022-12-01", 
+                             "2022-12-10")
+
+        with self.assertRaisesRegex(ValueError, 
+                                    "Given dates overlap with existing " +
+                                    "bookings!"):
+
+            Booking.book_listing(fred.id, bob.id, listing.id, "2022-12-05",
+                                 "2022-12-16")
+        """
 
 
 if __name__ == "__main__":
