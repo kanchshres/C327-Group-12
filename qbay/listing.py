@@ -39,6 +39,7 @@ class Listing:
         self._created_date: datetime = datetime.now()
         self._modified_date: datetime = datetime.now()
         self._seller = owner
+        self._booked_dates = set()
 
         # Extra
         self._address: str = address
@@ -107,8 +108,8 @@ class Listing:
     @property
     def created_date(self):
         if self.database_obj:
-            self.created_date = self.database_obj.time_created
-        return self._created_date
+            self._created_date = self.database_obj.date_created
+        return self._created_date.date().isoformat()
 
     """Fetches last date modified"""
     @property
@@ -151,7 +152,11 @@ class Listing:
     @reviews.setter
     def reviews(self, comments: 'list[Review]'):
         self._reviews = comments
-        self._modified_date = datetime.now()
+
+    """Fetches list of booked dates"""
+    @property
+    def booked_dates(self) -> 'dict':
+        return self._booked_dates
 
     """Add reviews to listing"""
     def add_review(self, review: 'Review'):
@@ -166,6 +171,7 @@ class Listing:
                                    price=self.price * 100,
                                    owner_id=self.seller.id,
                                    address=self.address,
+                                   date_created=self.created_date,
                                    last_modified_date=self.modified_date)
         with database.app.app_context():
             db.session.add(listing)
@@ -288,3 +294,15 @@ class Listing:
             listing._database_obj = database_listing
             return listing
         return None
+
+    def add_booking_date(self, booked_dates: list[str]):
+        """ Adds booked dates to list of bookings """
+        for date in booked_dates:
+            self.booked_dates.add(datetime.isoformat(date))
+
+    def valid_booking_date(self, booked_dates: list[str]):
+        """ Check if given booking start and ending dates are valid """
+        for date in booked_dates:
+            if date in self.booked_dates:
+                raise ValueError("Given dates overlap with existing bookings!")
+        return True
