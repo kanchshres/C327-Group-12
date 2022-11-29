@@ -180,6 +180,28 @@ def update_informations_post(user: User):
                            errors=messages)
 
 
+@app.route('/booking/<int:listing_id>', methods=['GET'])
+def booking_get(listing_id):
+    listing = database.Listing.query.filter_by(id=listing_id).first()
+    user = database.User.query.filter_by(id=session["logged_in"]).first()
+    return render_template('booking.html',listing=listing, user=user, 
+                            message='')
+
+
+@app.route('/booking/<int:listing_id>', methods=['POST'])
+def booking_post(listing_id):
+    buyer = database.User.query.filter_by(id=session["logged_in"]).first().id
+    listing = database.Listing.query.filter_by(id=listing_id).first()
+    seller = listing.owner_id
+    description = request.form.get('schedule')
+    
+
+# Listing id
+# Seller id
+# Buyer id - user
+# Booking Time
+
+
 @app.route('/create_listing', methods=['GET'])
 def create_listing_get():
     return render_template('create_listing.html', message='')
