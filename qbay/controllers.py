@@ -4,6 +4,7 @@ from qbay.user import User
 from qbay.listing import Listing
 from qbay import database
 from qbay.database import app
+from qbay.booking import Booking
 
 from functools import wraps
 
@@ -56,7 +57,7 @@ def home(user):
 
 @app.route('/login', methods=['GET'])
 def login_get():
-    return render_template('login.html', message='Please login')
+    return render_template('login.html', message='')
 
 
 @app.route('/login', methods=['POST'])
@@ -184,8 +185,8 @@ def update_informations_post(user: User):
 def booking_get(listing_id):
     listing = database.Listing.query.filter_by(id=listing_id).first()
     user = database.User.query.filter_by(id=session["logged_in"]).first()
-    return render_template('booking.html',listing=listing, user=user, 
-                            message='')
+    return render_template('booking.html', listing=listing, user=user, 
+                           message='')
 
 
 @app.route('/booking/<int:listing_id>', methods=['POST'])
@@ -193,8 +194,12 @@ def booking_post(listing_id):
     buyer = database.User.query.filter_by(id=session["logged_in"]).first().id
     listing = database.Listing.query.filter_by(id=listing_id).first()
     seller = listing.owner_id
-    description = request.form.get('schedule')
-    
+    start_date = request.form.get('trip-start')
+    end_date = request.form.get('trip-end')
+    try:
+        Booking.book_listing(buyer, seller, listing_id, start_date, end_date)
+    except error as e:
+        print("hi")
 
 # Listing id
 # Seller id

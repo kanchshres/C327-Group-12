@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<h1>{% block title %}Your Listings{% endblock %}</h1>
+<h1>{% block title %}My Listings{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-<h2 id="welcome-header">Below are your listings, select the one to update</h2>
+<h2 id="welcome-header">Select Listing</h2>
 
 <form method="post">
     <div id="listings">
@@ -20,7 +20,7 @@
 </form>
 
 <div>
-    <a href='/' class="btn btn-primary" id="btn-submit" >Back to home</a>
+    <a href='/' class="btn" id="btn-submit" >Back</a>
 
 </div>
 <a href='/logout'>logout</a>

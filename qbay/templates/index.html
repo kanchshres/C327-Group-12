@@ -6,24 +6,25 @@
 
 {% block content %}
 <h2 id="welcome-header">Welcome {{ user.username }}!</h2>
-<h2 id="balance">Your current balance is {{ user.wallet.balance }}!</h2>
+<h4 id="balance">Balance: ${{ user.wallet.balance }} </h4>
 
+<a href='/user_update' class="btn btn-primary" id="btn-submit" >My Profile</a>
+<a href='/user_listings' class="btn btn-primary" id="btn-submit" >My Listings</a>
 <a href='/create_listing' class="btn btn-primary" id="btn-submit" >Create Listing</a>
-<a href='/user_listings' class="btn btn-primary" id="btn-submit" >Update Your Listings</a>
-<a href='/user_update' class="btn btn-primary" id="btn-submit" >Update User Profile</a>
 <br> <br>
 
-<h2>All Available Listings</h2>
+<h3>Listings</h3>
 
 <div id="listings">
     {% for listing in listings %}
     <div>
         <h4>
             <div id="listing">
-                {{ listing.title }} | ${{ listing.price / 100 }} | Seller: {{ listing.owner.username }} | Last Modified: {{ listing.last_modified_date }}
+                <font size="+1">{{ listing.title }}</font> ~ ${{ listing.price / 100 }} &nbsp;&nbsp;&nbsp;
+                <a href='/booking/{{ listing.id }}' class="btn" >Book</a><br>
             </div>
         </h4>
-            <h5>{{ listing.description }}</h5>
+            <h5>{{ listing.description }}</h5> 
     </div>
     {% endfor %}
 </div>
