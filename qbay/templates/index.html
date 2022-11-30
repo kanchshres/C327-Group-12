@@ -19,12 +19,12 @@
     {% for listing in listings %}
     <div>
         <h4>
-            <div id="listing">
-                <font size="+1">{{ listing.title }}</font> ~ ${{ listing.price / 100 }} &nbsp;&nbsp;&nbsp;
-                <a href='/booking/{{ listing.id }}' class="btn" >Book</a><br>
-            </div>
+            <div id="listing">{{ listing.title }} </div>
+            ${{ listing.price / 100 }} &nbsp;&nbsp;&nbsp;
+            <a href='/booking/{{ listing.id }}' class="btn" >Book</a><br>
         </h4>
-            <h5>{{ listing.description }}</h5> 
+        <h5>{{ listing.description }}</h5> 
+        -----------------------------------------------------------------------
     </div>
     {% endfor %}
 </div>

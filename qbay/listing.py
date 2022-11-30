@@ -83,8 +83,7 @@ class Listing:
     """Sets title for digital Listing if valid"""
     @description.setter
     def description(self, description):
-        if not ((20 <= len(description) <= 2000)
-                and (len(description) > len(self.title))):
+        if not (Listing.valid_description(description, self.title)):
             raise ValueError(f"Invalid Description: {description}")
         self._description = description
         self._modified_date = datetime.now()
@@ -99,7 +98,7 @@ class Listing:
     """Sets price for digital Listing if valid"""
     @price.setter
     def price(self, price):
-        if not (Listing.valid_price(price) and self.price < price):
+        if not (Listing.valid_price(price, self.price)):
             raise ValueError(f"Invalid Price: {price}")
         self._price = price
         self._modified_date = datetime.now()
@@ -197,7 +196,7 @@ class Listing:
             raise ValueError(f"Invalid Title: {title}")
         if not (Listing.valid_seller(owner)):
             raise ValueError(f"Invalid Seller: {owner}")
-        if not (Listing.valid_price(price)):
+        if not (Listing.valid_price(price, 0)):
             raise ValueError(f"Invalid Price: {price}")
         if not (Listing.valid_description(description, title)):
             raise ValueError(f"Invalid Description: {description}")
@@ -225,8 +224,8 @@ class Listing:
 
     """Determine if a given price is valid"""
     @staticmethod
-    def valid_price(price):
-        return (10.00 <= price <= 10000.00)
+    def valid_price(newPrice, oldPrice):
+        return ((10.00 <= newPrice <= 10000.00) and (oldPrice < newPrice))
 
     """Determine if a given last modification date is valid"""
     @staticmethod
@@ -249,7 +248,6 @@ class Listing:
         database.
         """
         self.title = title
-
         with database.app.app_context():
             self.database_obj.title = title
             db.session.commit()
@@ -259,7 +257,6 @@ class Listing:
         database.
         """
         self.description = description
-
         with database.app.app_context():
             self.database_obj.description = description
             db.session.commit()
@@ -269,9 +266,17 @@ class Listing:
         database.
         """
         self.price = price
-
         with database.app.app_context():
             self.database_obj.price = price * 100
+            db.session.commit()
+
+    def update_address(self, address):
+        """Updates the listing address and pushes changes to the 
+        database.
+        """
+        self.address = address
+        with database.app.app_context():
+            self.database_obj.address = address
             db.session.commit()
 
     @staticmethod

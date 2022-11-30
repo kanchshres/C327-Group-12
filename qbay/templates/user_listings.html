@@ -10,18 +10,21 @@
 <form method="post">
     <div id="listings">
         {% for listing in listings %}
-        <div>
+        <h3>
+            {{ listing.title }}<br>
+            ${{ listing.price / 100 }} &nbsp;&nbsp;&nbsp;
+            <a href='/update_listing/{{ listing.id }}' class="btn" >Edit</a>
             <input type="radio" id={{listing.id}} name="id" value={{listing.id}}>
-            <label for="listing">{{listing.title}}</label><br>
-        </div>
+        </h3>
+        
+        Address: {{listing.address}}
+        <h4>{{ listing.description }}</h4> 
+        Created: {{listing.date_created}} | Modified: {{listing.last_modified_date}}<br>
+        -----------------------------------------------------------------------
         {% endfor %}
     </div>
     <input class="btn btn-primary" type="submit" value="Submit">
-</form>
-
-<div>
     <a href='/' class="btn" id="btn-submit" >Back</a>
-
-</div>
-<a href='/logout'>logout</a>
+</form>
 {% endblock %}
+

@@ -264,6 +264,7 @@ def update_listing_post():
     title = request.form.get('title')
     description = request.form.get('description')
     price = float(request.form.get('price')) * 100
+    address = request.form.get('address')
 
     messages = []
     if title != listing.title:
@@ -287,6 +288,10 @@ def update_listing_post():
                 f"Price updated successfully: {price / 100:.2f}"]
         except ValueError as e:
             messages += [str(e)]
+
+    if address != listing.database_obj.address:
+        listing.update_address(address)
+        messages += [f"Address updated successfully"]
 
     database.db.session.commit()
 
