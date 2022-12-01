@@ -86,6 +86,10 @@ class BankingAccount:
     def balance(self):
         return self._balance
 
+    @balance.setter
+    def balance(self, value):
+        self._balance = value
+
     """Subtract balance from current account balance to a transaction
 
     params:

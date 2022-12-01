@@ -39,7 +39,7 @@ class Listing:
         self._created_date: datetime = datetime.now()
         self._modified_date: datetime = datetime.now()
         self._seller = owner
-        self._booked_dates = set()
+        self._booked_dates = None
 
         # Extra
         self._address: str = address
@@ -155,8 +155,12 @@ class Listing:
 
     """Fetches list of booked dates"""
     @property
-    def booked_dates(self) -> 'dict':
-        return self._booked_dates
+    def booked_dates(self) -> 'list[str]':
+        if self.database_obj:
+            result = database.Dates.query.filter_by(listing_id=self.id).all()
+            booked_dates = [ d.date for d in result ]
+            return booked_dates
+        return None
 
     """Add reviews to listing"""
     def add_review(self, review: 'Review'):
@@ -295,14 +299,21 @@ class Listing:
             return listing
         return None
 
-    def add_booking_date(self, booked_dates: list[str]):
+    def add_booking_date(self, booked_dates: list[datetime]):
         """ Adds booked dates to list of bookings """
-        for date in booked_dates:
-            self.booked_dates.add(datetime.isoformat(date))
+        with database.app.app_context():
+            for date in booked_dates:
+                date_db = database.Dates(date=date.strftime('%Y-%m-%d'),
+                                        listing_id=self.id)
+                db.session.add(date_db)
+            db.session.commit()
 
-    def valid_booking_date(self, booked_dates: list[str]):
+    def valid_booking_date(self, booked_dates: list[datetime]):
         """ Check if given booking start and ending dates are valid """
+        print(self.booked_dates)
         for date in booked_dates:
+            date = date.strftime('%Y-%m-%d')
+            print(date)
             if date in self.booked_dates:
                 raise ValueError("Given dates overlap with existing bookings!")
         return True
