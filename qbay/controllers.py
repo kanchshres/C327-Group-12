@@ -231,9 +231,9 @@ def create_listing_post(user):
     return redirect('/')
 
 
-@app.route('/user_listings', methods=['GET'])
+@app.route('/user_listings')
 @authenticate
-def view_user_listings_get(user):
+def view_user_listings(user):
     listings = database.Listing.query.filter_by(owner_id=user.id).all()
     return render_template('user_listings.html', user=user, listings=listings)
 
@@ -279,8 +279,11 @@ def update_listing_post(listing_id):
             messages += [str(e)]
 
     if address != listing.database_obj.address:
-        listing.update_address(address)
-        messages += [f"Address updated successfully"]
+        try:
+            listing.update_address(address)
+            messages += [f"Address updated successfully: {address}"]
+        except ValueError as e:
+            messages += [str(e)]
 
     database.db.session.commit()
 

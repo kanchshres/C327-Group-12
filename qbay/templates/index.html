@@ -11,9 +11,9 @@
     <a href='/logout' style="float:right;">Logout</a>
 </div><br>
 
-<a href='/user_update' class="btn btn-primary" id="btn-submit" >My Profile</a>
-<a href='/user_listings' class="btn btn-primary" id="btn-submit" >My Listings</a>
-<a href='/create_listing' class="btn btn-primary" id="btn-submit" >Create Listing</a>
+<a href='/user_update' class="btn " id="btn-submit" >My Profile</a>
+<a href='/user_listings' class="btn" id="btn-submit" >My Listings</a>
+<a href='/create_listing' class="btn " id="btn-submit" >Create Listing</a>
 <br> <br>
 
 <h3>Listings</h3>
@@ -26,7 +26,7 @@
         </h4>
         <h5>{{ listing.description }}</h5> 
         <div style="display:flex;justify-content:flex-end;Width:490px">
-            <a href='/booking/{{ listing.id }}' class="btn" >Book</a>
+            <a href='/booking/{{ listing.id }}' class="btn btn-primary" >Book</a>
         </div>
     </div>
     ---------------------------------------------------------------
