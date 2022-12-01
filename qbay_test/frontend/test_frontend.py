@@ -45,8 +45,7 @@ class FrontEndTests(BaseCase):
     def update_listing_helper(self, title, description, price):
         # Update listing given title, description, price
         self.click_link("My Listings")
-        self.click('input[type="radio"]')
-        self.click('input[type="submit"]')
+        self.click_link("Edit")
         self.type("#title", title)
         self.type("#description", description)
         self.type("#price", price)
@@ -263,7 +262,7 @@ class FrontEndTests(BaseCase):
         self.login_helper(email, password)
         self.assert_helper(element, text, None)
 
-    
+    # Create Listing Stuff Here
 
     def test_listing_update_input(self, *_):
         """ Input Partitioning """

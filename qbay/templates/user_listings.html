@@ -13,8 +13,7 @@
         <div id="listing">
             <h4>
                 {{ listing.title }}<br>
-                ${{ listing.price / 100 }} &nbsp;&nbsp;&nbsp;
-                <input type="radio" id={{listing.id}} name="id" value={{listing.id}}>
+                ${{ listing.price / 100 }}
             </h4>
             
             Address: {{listing.address}}
@@ -26,7 +25,6 @@
         </div>
         {% endfor %}
     </div>
-    <input class="btn btn-primary" type="submit" value="Submit">
     <a href='/' class="btn" id="btn-submit" >Back</a>
 </form>
 {% endblock %}

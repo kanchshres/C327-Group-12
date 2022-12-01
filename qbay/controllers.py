@@ -206,11 +206,6 @@ def booking_post(listing_id):
     return render_template('booking.html', listing=listing, user=buyer, 
                            message=message)
 
-# Listing id
-# Seller id
-# Buyer id - user
-# Booking Time
-
 
 @app.route('/create_listing', methods=['GET'])
 def create_listing_get():
@@ -239,33 +234,22 @@ def create_listing_post(user):
 @app.route('/user_listings', methods=['GET'])
 @authenticate
 def view_user_listings_get(user):
-    id = user.id
-    listings = database.Listing.query.filter_by(owner_id=id).all()
+    listings = database.Listing.query.filter_by(owner_id=user.id).all()
     return render_template('user_listings.html', user=user, listings=listings)
 
 
-@app.route('/user_listings', methods=['POST'])
-def view_user_listings_post():
-    listing_id = request.form.get('id')
-    if listing_id:
-        session['update_listing'] = listing_id
-    return redirect('/update_listing')
-
-
-@app.route('/update_listing', methods=['GET'])
-@authenticate
-def update_listing_get(user: User):
-    id = session['update_listing']
-    listing_db = database.Listing.query.get(id)
+@app.route('/update_listing/<int:listing_id>', methods=['GET'])
+def update_listing_get(listing_id):
+    listing = database.Listing.query.get(listing_id)
+    user = database.User.query.filter_by(id=session["logged_in"]).first()
     return render_template('/update_listing.html',
-                           user=user, listing=listing_db,
+                           user=user, listing=listing,
                            errors='')
 
 
-@app.route('/update_listing', methods=['POST'])
-def update_listing_post():
-    id = session['update_listing']
-    listing = Listing.query_listing(id)  # the Listing obj linked to db obj
+@app.route('/update_listing/<int:listing_id>', methods=['POST'])
+def update_listing_post(listing_id):
+    listing = Listing.query_listing(listing_id)  # Listing obj linked to db obj
     title = request.form.get('title')
     description = request.form.get('description')
     price = float(request.form.get('price')) * 100
