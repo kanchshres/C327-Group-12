@@ -136,12 +136,16 @@ class User():
     @property
     def balance(self):
         """Fetches the user's balance
-
         Returns the user's wallet if the wallet exists, 0 otherwise
         """
         if self.database_obj:
-            self._wallet.balance = self.database_obj.wallet.balance
-        return self._wallet.balance
+            self._balance = self.database_obj.balance
+        return self._balance
+
+    @balance.setter
+    def balance(self, value):
+        """ Set the user's balance """
+        self._balance = value
 
     @property
     def reviews(self):
