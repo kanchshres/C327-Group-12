@@ -4,10 +4,8 @@ from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Union
 from qbay import database
 from qbay.database import db, app
-if TYPE_CHECKING:
-    from qbay.user import User
-    from qbay.listing import Listing
-    from qbay.transaction import Transaction
+from qbay.user import User
+from qbay.listing import Listing
 
 
 class Booking:

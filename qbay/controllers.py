@@ -115,7 +115,7 @@ def register_post():
         # use backend api to register the user
         success = User.register(username, email, password)
         if not success:
-            error_message = "Registration failed."
+            error_message = "Registration failed"
     # if there is any error messages when registering new user
     # at the backend, go back to the register page.
     if error_message:
@@ -196,10 +196,15 @@ def booking_post(listing_id):
     seller = listing.owner_id
     start_date = request.form.get('trip-start')
     end_date = request.form.get('trip-end')
+
     try:
         Booking.book_listing(buyer, seller, listing_id, start_date, end_date)
-    except error as e:
-        print("hi")
+        message = "Booking Successful"
+    except ValueError as e:
+        message = str(e)
+
+    return render_template('booking.html', listing=listing, user=buyer, 
+                           message=message)
 
 # Listing id
 # Seller id

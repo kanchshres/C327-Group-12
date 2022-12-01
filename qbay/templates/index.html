@@ -6,7 +6,11 @@
 
 {% block content %}
 <h2 id="welcome-header">Welcome {{ user.username }}!</h2>
-<h4 id="balance">Balance: ${{ user.wallet.balance }} </h4>
+<h4 display: inline id="balance" style="display:inline">Balance: ${{ user.wallet.balance }}</h4>
+<div style="display: flex; justify-content: flex-end; Width:490px;">
+    <a href='/logout' >Logout</a><br><br>
+</div>
+
 
 <a href='/user_update' class="btn btn-primary" id="btn-submit" >My Profile</a>
 <a href='/user_listings' class="btn btn-primary" id="btn-submit" >My Listings</a>
@@ -14,20 +18,19 @@
 <br> <br>
 
 <h3>Listings</h3>
-
 <div id="listings">
     {% for listing in listings %}
-    <div>
+    <div id="listing" style='Width:475px;'>
         <h4>
-            <div id="listing">{{ listing.title }} </div>
+            {{ listing.title }}<br>
             ${{ listing.price / 100 }} &nbsp;&nbsp;&nbsp;
-            <a href='/booking/{{ listing.id }}' class="btn" >Book</a><br>
         </h4>
         <h5>{{ listing.description }}</h5> 
-        -----------------------------------------------------------------------
+        <div style="display: flex; justify-content: flex-end; Width:490px">
+            <a href='/booking/{{ listing.id }}' class="btn" >Book</a>
+        </div>
     </div>
+    ---------------------------------------------------------------
     {% endfor %}
 </div>
-
-<a href='/logout'>logout</a>
 {% endblock %}

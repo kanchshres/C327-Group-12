@@ -8,17 +8,18 @@
 <h2 id="welcome-header">Booking</h2>
 <h4 id="balance">Balance: ${{ user.balance }} </h4><br>
 
+<h4 id='message'>{{message}}</h4>
 <div id="listing">
     Owner: {{listing.owner.username}}
-    <h3>
+    <h3 style='Width:475px;'>
         {{ listing.title }}<br>
         ${{ listing.price / 100 }} &nbsp;&nbsp;&nbsp;
     </h3>
     
     Address: {{listing.address}}
-    <h4>{{ listing.description }}</h4> 
+    <h4 style='Width:475px;'>{{ listing.description }}</h4> 
     Created: {{listing.date_created}} | Modified: {{listing.last_modified_date}}<br>
-    -----------------------------------------------------------------------
+    ---------------------------------------------------------------
 </div>
   
 <form method="post">
@@ -31,7 +32,7 @@
         <label for="end">End Date:</label>&nbsp;&nbsp;
         <input type="date" id="end" name="trip-end"
             value="2018-07-22"
-            min="2018-01-03" max="2018-12-31"><br>
+            min="2018-01-03" max="2018-12-31"><br><br>
 
         <input class="btn btn-primary" type="submit" value="Confirm Booking">
         <a href='/' class="btn" id="btn-submit" >Back</a>
