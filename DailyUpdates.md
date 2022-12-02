@@ -25,4 +25,10 @@ Nov 28
 3. None
 4. Fix any errors necessary in the test cases.
 
+Dec 2
+1. backend_test
+2. Minor changes to make compatible with PR'ing to backend_dev, rather than main, so these test cases can be used to test backend_dev before it is merged to main
+3. None
+4. Fix any errors necessary in the test cases.
+
 ### Kaz

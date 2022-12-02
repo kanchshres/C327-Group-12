@@ -928,13 +928,8 @@ class UnitTest(unittest.TestCase):
 
         bob, tim, listing = self.booking_helper()
 
-        """ Commented until merged with branch containing 
-        Booking.book_listing function
-        ----------------------------------------------
-        
         Booking.book_listing(tim.id, bob.id, listing.id, "2022-12-01", 
                              "2022-12-10")
-        """
 
     def test_booking_r2(self):
         """Tests the requirement: A user cannot book a listing for 
@@ -942,16 +937,11 @@ class UnitTest(unittest.TestCase):
         """
         bob, tim, listing = self.booking_helper()
 
-        """ Commented until merged with branch containing 
-        Booking.book_listing function
-        ----------------------------------------------
-        
         with self.assertRaisesRegex(ValueError, 
                                     "Owner and buyer are the same!"):
                                     
             Booking.book_listing(bob.id, bob.id, listing.id, "2022-12-01", 
                                  "2022-12-10")
-        """
 
     def test_booking_r3(self):
         """"Tests the requirement: A user cannot book a listing that 
@@ -961,17 +951,12 @@ class UnitTest(unittest.TestCase):
 
         tim.balance = 10
 
-        """ Commented until merged with branch containing 
-        Booking.book_listing function
-        ----------------------------------------------
-
         with self.assertRaisesRegex(ValueError, 
                                     "Buyer's balance is too low for this " + 
                                     "booking!"):
 
             Booking.book_listing(tim.id, bob.id, listing.id, "2022-12-01", 
                                  "2022-12-10")
-        """
 
     def test_booking_r4(self):
         """ Tests the requirement: A user cannot book a listing that 
@@ -983,10 +968,6 @@ class UnitTest(unittest.TestCase):
         fred = User.login("fred@gmail.com", "Password123!")
         fred.balance = 40
 
-        """ Commented until merged with branch containing 
-        Booking.book_listing function
-        ----------------------------------------------
-
         Booking.book_listing(tim.id, bob.id, listing.id, "2022-12-01", 
                              "2022-12-10")
 
@@ -996,7 +977,6 @@ class UnitTest(unittest.TestCase):
 
             Booking.book_listing(fred.id, bob.id, listing.id, "2022-12-05",
                                  "2022-12-16")
-        """
 
 
 if __name__ == "__main__":
