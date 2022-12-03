@@ -16,25 +16,20 @@ Nov 22
 4. Discuss with my group to see if any adjustments are needed for the booking function
 
 ### Shuvi
-1. Initial commit
-2. Added test cases to test_models.py
-3. Added address field for create_listing
-4. Moved test cases to injection_tests.py
-5. Addressed PR comments
-6. Added address to create_listing
+
 
 ### Andrew
-Nov 16
-1. register_injection
-2. made outline for register sql injection test cases (no test cases are complete, but I've got a good idea of what I want to do)
-3. Don't know exactly what to test to ensure the attack wasn't successful.
-4. Ask TA for clarification on SQL Injection, and use that to complete test cases.
+Nov 28
+1. backend_test
+2. Finished backend test cases for booking system.
+3. None
+4. Fix any errors necessary in the test cases.
 
-Nov 17
-1. register_injection
-2. Finished register injection test cases.
-3. No
-4. I'm done my section, I just need to review other people's PR's, and assist others as necessary.
+Dec 2
+1. backend_test
+2. Minor changes to make compatible with PR'ing to backend_dev, rather than main, so these test cases can be used to test backend_dev before it is merged to main
+3. None
+4. Fix any errors necessary in the test cases.
 
 ### Kaz
 Branched worked on

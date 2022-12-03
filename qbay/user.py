@@ -40,6 +40,7 @@ class User():
         self._password = password
         self._postal_code = ""
         self._billing_address = ""
+        self._balance = 100
         self._wallet: Wallet = Wallet()
         self._reviews: 'list[Review]' = []
         self._listings_booked: 'list[Listing]' = []
@@ -57,7 +58,7 @@ class User():
                              password=self.password,
                              postal_code=self.postal_code,
                              billing_address=self.billing_address,
-                             balance=self.wallet.balance)
+                             balance=self.balance)
 
         try:
             with database.app.app_context():
@@ -135,9 +136,7 @@ class User():
 
     @property
     def balance(self):
-        """Fetches the user's balance
-        Returns the user's wallet if the wallet exists, 0 otherwise
-        """
+        """ Fetches the user's balance """
         if self.database_obj:
             self._balance = self.database_obj.balance
         return self._balance
@@ -371,6 +370,13 @@ class User():
 
         with database.app.app_context():
             self.database_obj.postal_code = postal_code
+            db.session.commit()
+    
+    def update_balance(self, value):
+        self.balance = value
+
+        with database.app.app_context():
+            self.database_obj.balance = value
             db.session.commit()
 
     @staticmethod

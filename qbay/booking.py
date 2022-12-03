@@ -6,7 +6,7 @@ from qbay import database
 from qbay.database import db, app
 from qbay.user import User
 from qbay.listing import Listing
-from qbay.transaction import Transaction
+from sqlalchemy import exc
 
 
 class Booking:
@@ -21,11 +21,14 @@ class Booking:
     - status: Type TransactionStatus()
     """
 
-    def __init__(self):
+    def __init__(self, buyer_id: int, owner_id: int, listing_id: int,
+                 start_date: str = "", end_date: str = ""):
         self._id = None
-        self._owner_id = None
-        self._listing_id = None
-        self._date = ""
+        self._owner_id = owner_id
+        self._buyer_id = buyer_id
+        self._listing_id = listing_id
+        self._start_date = start_date
+        self._end_date = end_date
 
     def __str__(self):
         return str(self._id)
@@ -38,9 +41,9 @@ class Booking:
     def owner_id(self) -> 'User':
         return self._owner_id
 
-    @owner_id.setter
-    def payer(self, value):
-        self._payer = value
+    @property
+    def buyer_id(self):
+        return self._buyer_id
 
     @property
     def listing_id(self):
@@ -51,25 +54,28 @@ class Booking:
         self._listing_id = value
 
     @property
-    def price(self):
-        return self._price
+    def start_date(self):
+        return self._start_date
 
-    @price.setter
-    def price(self, value):
-        self._price = value
-
+    @start_date.setter
+    def start_date(self, date: str):
+        self._start_date = date
+    
     @property
-    def date(self):
-        return self._date
+    def end_date(self):
+        return self._end_date
 
-    @date.setter
-    def date(self, value):
-        self._date = value
+    @end_date.setter
+    def end_date(self, date: str):
+        self._end_date = date
 
     @staticmethod
     def book_listing(buyer_id: int, owner_id: int, listing_id: int, 
                      book_start: str, book_end: str):
         """ Books listing for a buyer"""
+        if book_start > book_end:
+            raise ValueError("Start date is after end date!")
+            
         if buyer_id == owner_id:
             raise ValueError("Owner and buyer are the same!")
         
@@ -96,18 +102,26 @@ class Booking:
 
         # Update buyer and owner balance
         owner = User.query_user(owner_id)
-        buyer.balance = buyer.balance - cost
-        owner.balance = owner.balance + cost
+        buyer.update_balance(buyer.balance - cost)
+        owner.update_balance(owner.balance + cost)
+        booking = Booking(buyer_id, owner_id, listing_id, book_start, book_end)
         # Add to database
-        Booking.add_to_database(owner_id, listing_id, book_start, book_end)
+        booking.add_to_database()
+        return True
     
-    def add_to_database(owner_id, listing_id, start, end):
-        booking = database.Booking(owner_id=owner_id, 
-                                   listing_id=listing_id,
-                                   start_date=start,
-                                   end_date=end)
+    def add_to_database(self):
+        booking = database.Booking(buyer_id=self.buyer_id,
+                                   owner_id=self.owner_id,
+                                   listing_id=self.listing_id,
+                                   start_date=self.start_date,
+                                   end_date=self.end_date)
 
-        with database.app.app_context():
-            db.session.add(booking)
-            db.session.commit()
+        try:
+            with database.app.app_context():
+                db.session.add(booking)
+                db.session.commit()
+                self._id = booking.id
+            return True
+        except exc.IntegrityError:
+            return False
         
