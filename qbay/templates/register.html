@@ -7,15 +7,34 @@
 {% block content %}
 <h2 id="welcome-header">Register</h2>
 
-<h4 id='message'>{{message}}</h4>
+<h4 id='message' style="Color:rgb(219, 79, 208)">{{message}}</h4>
 <form method="post">
   <div class="form-group">
     <label for="email">Email</label>
-    <input class="form-control" name="email" id="email"><br>
+    <input class="form-control" name="email" id="email" value="{{pE}}"><br>
+
     <label for="name">Username</label>
-    <input class="form-control" name="username" id="username"><br>
+    <input class="form-control" name="username" id="username" value="{{pU}}">
+    <ul>
+      <li style="Color:rgb(74, 86, 121)">
+        Alphanumeric-only, and space allowed except as a prefix or a suffix
+      </li>
+      <li style="Color:rgb(74, 86, 121)">
+        Within the range of 2 - 20 characters
+      </li>
+    </ul>
+
     <label for="password">Password</label>
-    <input class="form-control" type="password" name="password" id="password"><br>
+    <input class="form-control" type="password" name="password" id="password">
+    <ul>
+      <li style="Color:rgb(74, 86, 121)">
+        At least one upper case, one lower case, and one special character
+      </li>
+      <li style="Color:rgb(74, 86, 121)">
+        Minimum of 6 characters
+      </li>
+    </ul>
+
     <label for="password">Confirm Password</label>
     <input class="form-control" type="password" name="password2" id="password2"><br>
     <input class="btn btn-primary" type="submit" value="Register">
