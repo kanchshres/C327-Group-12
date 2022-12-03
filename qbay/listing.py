@@ -317,3 +317,6 @@ class Listing:
             if date in self.booked_dates:
                 raise ValueError("Given dates overlap with existing bookings!")
         return True
+
+    def find_min_booking_date(self):
+        return min(self.booked_dates)
