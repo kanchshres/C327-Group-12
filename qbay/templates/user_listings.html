@@ -7,25 +7,25 @@
 {% block content %}
 <h2 id="welcome-header">My Listing</h2>
 
-<form method="post">
-    <div id="listings">
-        {% for listing in listings %}
-        <div id="listing">
-            <h4>
-                {{ listing.title }}<br>
-                ${{ listing.price / 100 }}
-            </h4>
-            
-            Address: {{listing.address}}
-            <h5 style='Width:475px;'>{{ listing.description }}</h5> 
-            Created: {{listing.date_created}} | Modified: {{listing.last_modified_date}} 
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <a href='/update_listing/{{ listing.id }}' class="btn btn-primary" >Edit</a> <br>
-            ---------------------------------------------------------------
+<div id="listings">
+    {% for listing in listings %}
+    <div id="listing" style='Width:475px;'>
+        <h4>
+            {{ listing.title }}<br>
+            ${{ listing.price / 100 }}
+        </h4>
+        
+        Address: {{listing.address}}
+        <h5>{{ listing.description }}</h5> 
+        <div style='Width:500px'>
+            <a style="Color:rgb(219, 79, 208)">Created: {{listing.date_created}} | Modified: {{listing.last_modified_date}}</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a href='/update_listing/{{ listing.id }}' class="btn btn-primary">Edit</a>
         </div>
-        {% endfor %}
     </div>
-    <a href='/' class="btn" id="btn-submit" >Back</a>
-</form>
+    ----------------------------------------------------------------
+    {% endfor %}
+</div>
+<a href='/' class="btn" id="btn-submit" >Back</a>
 {% endblock %}
 
