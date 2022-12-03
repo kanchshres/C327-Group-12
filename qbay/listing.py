@@ -206,8 +206,6 @@ class Listing:
             raise ValueError(f"Invalid Price: {price}")
         if not (Listing.valid_description(description, title)):
             raise ValueError(f"Invalid Description: {description}")
-        if not (Listing.valid_address(address)):
-            raise ValueError(f"Invalid Address: {address}")
             
         listing = Listing(title, description, price, owner, address)
         listing.add_to_database()
@@ -250,11 +248,6 @@ class Listing:
                 user = database.User.query.get(owner.id)
                 return ((user is not None) and (user.email != ""))
         return False
-
-    """Determine if a given address is valid"""
-    @staticmethod
-    def valid_address(address):
-        return (len(address) <= 46)
     
     def update_title(self, title):
         """Updates the listing title and pushes changes to the 
