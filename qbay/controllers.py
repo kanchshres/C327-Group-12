@@ -68,7 +68,7 @@ def login_post():
     try:
         user = User.login(email, password)
     except ValueError as err:
-        return render_template('login.html', message=err)
+        return render_template('login.html', message=err, pE=email)
 
     if user:
         session['logged_in'] = user.id
@@ -85,7 +85,7 @@ def login_post():
         # code 303 is to force a 'GET' request
         return redirect('/', code=303)
     else:
-        return render_template('login.html', message='login failed')
+        return render_template('login.html', message='login failed', pE=email)
 
 
 @app.route('/logout')
@@ -119,7 +119,8 @@ def register_post():
     # if there is any error messages when registering new user
     # at the backend, go back to the register page.
     if error_message:
-        return render_template('register.html', message=error_message)
+        return render_template('register.html', message=error_message, 
+                               pE=email, pU=username)
     else:
         return redirect('/login')
 
@@ -224,9 +225,11 @@ def create_listing_post(user):
         Listing.create_listing(title, description, price, user, address)
         database.db.session.commit()
     except ValueError as e:
-        return render_template('create_listing.html', message=str(e))
+        return render_template('create_listing.html', message=str(e), 
+                               pT=title, pD=description, pP=price, pA=address)
     except TypeError as e:
-        return render_template('create_listing.html', message=str(e))
+        return render_template('create_listing.html', message=str(e), 
+                               pT=title, pD=description, pP=price, pA=address)
 
     return redirect('/')
 
