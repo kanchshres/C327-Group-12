@@ -304,7 +304,7 @@ class Listing:
         with database.app.app_context():
             for date in booked_dates:
                 date_db = database.Dates(date=date.strftime('%Y-%m-%d'),
-                                        listing_id=self.id)
+                                         listing_id=self.id)
                 db.session.add(date_db)
             db.session.commit()
 
