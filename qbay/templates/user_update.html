@@ -6,21 +6,37 @@
 
 {% block content %}
 <h2 id="welcome-header">Update User</h2>
-<h4>
+<h4 style="Color:rgb(219, 79, 208)">
   {% for err in errors %} 
   {{ err }}<br>
   {% endfor %}
 </h4>
 <form method="post">
   <div class="form-group">
-    <label for="username">Username</label>
-    <input class="form-control" name="username" id="username" value="{{user.username}}"{{user.username}} required> <br>
     <label for="email">Email</label>
     <input class="form-control" name="email" id="email" value={{user.email}} required> <br>
+    <label for="username">Username</label>
+    <input class="form-control" name="username" id="username" value="{{user.username}}"{{user.username}} required>
+    <ul>
+      <li style="Color:rgb(74, 86, 121)">
+        Alphanumeric-only, and space allowed except as a prefix or a suffix
+      </li>
+      <li style="Color:rgb(74, 86, 121)">
+        Within the range of 2 - 20 characters
+      </li>
+    </ul>
+
     <label for="billing_address">Billing Address</label>
-    <input class="form-control" name="billing_address" id="billing_address" value="{{user.billing_address}}"{{user.billing_address}}> <br>
+    <input class="form-control" name="billing_address" id="billing_address" maxlength="46" value="{{user.billing_address}}"{{user.billing_address}}><br>
+
     <label for="postal_code">Postal Code</label>
-    <input class="form-control" name="postal_code" id="postal_code" value={{user.postal_code}}> <br>
+    <input class="form-control" name="postal_code" id="postal_code" value={{user.postal_code}}>
+    <ul>
+      <li style="Color:rgb(74, 86, 121)">
+        Valid Canadian Postal Code: K7L3N6
+      </li>
+    </ul>
+
     <input class="btn btn-primary" type="submit" value="Save">
     <a href='/' class="btn" id="btn-submit" >Back</a>
   </div>
