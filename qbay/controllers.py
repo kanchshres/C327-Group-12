@@ -128,9 +128,7 @@ def register_post():
 @app.route('/user_update', methods=['GET'])
 @authenticate
 def update_informations_get(user: User):
-    return render_template('/user_update.html',
-                           user=user,
-                           errors='')
+    return render_template('/user_update.html', user=user, errors='')
 
 
 @app.route('/user_update', methods=['POST'])
@@ -146,17 +144,17 @@ def update_informations_post(user: User):
 
     messages = []
 
-    if user.username != username:
-        try:
-            user.update_username(username)
-            messages += [f"Username updated successfully: {username}"]
-        except ValueError as e:
-            messages += [str(e)]
-
     if user.email != email:
         try:
             user.update_email(email)
             messages += [f"Email updated successfully: {email}"]
+        except ValueError as e:
+            messages += [str(e)]
+
+    if user.username != username:
+        try:
+            user.update_username(username)
+            messages += [f"Username updated successfully: {username}"]
         except ValueError as e:
             messages += [str(e)]
 
@@ -177,9 +175,9 @@ def update_informations_post(user: User):
     
     database.db.session.commit()
 
-    return render_template('/user_update.html',
-                           user=user,
-                           errors=messages)
+    return render_template('/user_update.html', user=user, errors=messages, 
+                           pE=email, pU=username, pBA=billing_address, 
+                           pPC=postal_code)
 
 
 @app.route('/booking/<int:listing_id>', methods=['GET'])
@@ -206,6 +204,14 @@ def booking_post(listing_id):
 
     return render_template('booking.html', listing=listing, user=buyer, 
                            message=message)
+
+
+@app.route('/user_bookings')
+@authenticate
+def view_user_bookings(user):
+    #bookings = database.Bookings.query.filter_by(buyer_id=user.id).all()
+    return render_template('user_bookings.html')
+
 
 
 @app.route('/create_listing', methods=['GET'])
@@ -238,7 +244,7 @@ def create_listing_post(user):
 @authenticate
 def view_user_listings(user):
     listings = database.Listing.query.filter_by(owner_id=user.id).all()
-    return render_template('user_listings.html', user=user, listings=listings)
+    return render_template('user_listings.html', listings=listings)
 
 
 @app.route('/update_listing/<int:listing_id>', methods=['GET'])
