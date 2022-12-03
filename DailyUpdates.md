@@ -38,7 +38,7 @@ Nov 17
 
 ### Kaz
 Branched worked on
-* security_testing_kaz
+* frontend_dev
 
 Progress so far
 * injection_tests.py
@@ -52,17 +52,16 @@ Progress so far
   * Added file for Injection lines
 
 Difficulties
-* listing
-  * Fitting the regex within 80 char limit
-    * Line split to follow PEP8
-* injection_tests.py
-  * Understanding the requirements of the assignment
-    * Should I assert/What to assert
-    * What if the injection doesn't raise an error and is simply accepted as input?
-      * Valid description
+* .hmtl
+  * Wasn't very familiar with HTML which forced me to learn a lot of things very quick
+  * 
+
 
 Next steps
 * Looking at existing code to see if any other instances can be refactored
-* Prepare for Sprint 6
+* Improving UI/UX
+  * Giving better error messages
+  * Limiting input
+* Adding new features
+  * Deleting Listings/Making them unavailable
 * Resolve merge conflicts when merging into main
-* Refactor other's code as it needs a shower (smelly)
