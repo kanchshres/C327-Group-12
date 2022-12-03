@@ -49,12 +49,12 @@ class Listing(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.String(5000), nullable=False)
-    price = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Integer, nullable=False)  # in cents to avoid errors
     address = db.Column(db.String(5000), nullable=False)
     date_created = db.Column(db.String(10), nullable=False)
     last_modified_date = db.Column(db.String(10), nullable=False)
     booked_dates = relationship('Dates', back_populates='listing')
-
+    
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     owner = relationship('User', back_populates='listings')
     bookings = relationship('Booking', back_populates='listing')
@@ -63,6 +63,7 @@ class Listing(db.Model):
     def __repr__(self) -> str:
         return f'<Listing {self.title}>'
 
+
 class Dates(db.Model):
     __tablename__ = "dates"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -70,8 +71,6 @@ class Dates(db.Model):
     listing = relationship("Listing", back_populates='booked_dates')
     date = db.Column(db.String(10), nullable=False)
 
-    # def __repr__(self) -> str:
-    #     return self.date
 
 class Booking(db.Model):
     __tablename__ = 'bookings'

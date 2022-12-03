@@ -159,7 +159,7 @@ class Listing:
     def booked_dates(self) -> 'list[str]':
         if self.database_obj:
             result = database.Dates.query.filter_by(listing_id=self.id).all()
-            booked_dates = [ d.date for d in result ]
+            booked_dates = [d.date for d in result]
             return booked_dates
         return None
 
@@ -311,7 +311,7 @@ class Listing:
         with database.app.app_context():
             for date in booked_dates:
                 date_db = database.Dates(date=date.strftime('%Y-%m-%d'),
-                                        listing_id=self.id)
+                                         listing_id=self.id)
                 db.session.add(date_db)
             db.session.commit()
 
