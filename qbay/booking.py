@@ -96,8 +96,8 @@ class Booking:
 
         # Update buyer and owner balance
         owner = User.query_user(owner_id)
-        buyer.balance = buyer.balance - cost
-        owner.balance = owner.balance + cost
+        buyer.update_balance(buyer.balance - cost)
+        owner.update(owner.balance + cost)
         # Add to database
         Booking.add_to_database(owner_id, listing_id, book_start, book_end)
     

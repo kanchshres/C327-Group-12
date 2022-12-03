@@ -372,6 +372,13 @@ class User():
         with database.app.app_context():
             self.database_obj.postal_code = postal_code
             db.session.commit()
+    
+    def update_balance(self, value):
+        self.balance = value
+
+        with database.app.app_context():
+            self.database_obj.balance = value
+            db.session.commit()
 
     @staticmethod
     def query_user(id):

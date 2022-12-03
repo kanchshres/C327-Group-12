@@ -158,7 +158,7 @@ class Listing:
     def booked_dates(self) -> 'list[str]':
         if self.database_obj:
             result = database.Dates.query.filter_by(listing_id=self.id).all()
-            booked_dates = [ d.date for d in result ]
+            booked_dates = [d.date for d in result]
             return booked_dates
         return None
 
