@@ -8,7 +8,7 @@
 
 <h2 id="welcome-header">Update Listing</h2>
 
-<h4 id="messages">
+<h4 id="messages" style="Color:rgb(219, 79, 208)">
   {% for message in messages %} 
   {{ message }}<br>
   {% endfor %}
@@ -16,13 +16,44 @@
 <form method="post">
   <div class="form-group">
     <label for="title">Title</label>
-    <input class="form-control" name="title" id="title" value="{{listing.title}}"{{listing.title}} required><br>
+    <input class="form-control" name="title" id="title" value="{{listing.title}}" required>
+    <ul>
+      <li style="Color:rgb(74, 86, 121)">
+        Alphanumeric-only, and space allowed except as a prefix or a suffix
+      </li>
+      <li style="Color:rgb(74, 86, 121)">
+        No longer than 80 characters
+      </li>
+      <li style="Color:rgb(74, 86, 121)">
+        Must be unique
+      </li>
+    </ul>
+
     <label for="description">Description</label>
-    <input class="form-control" name="description" id="description" value="{{listing.description}}"{{listing.description}} required><br>
+    <input class="form-control" name="description" id="description" value="{{listing.description}}" required>
+    <ul>
+      <li style="Color:rgb(74, 86, 121)">
+        Within the range of 20 - 2,000 characters
+      </li>
+      <li style="Color:rgb(74, 86, 121)">
+        Must be longer than title
+      </li>
+    </ul>  
+
     <label for="price">Price</label>
-    <input class="form-control" type="number" step="0.01" name="price" id="price" value="{{listing.price / 100}}"{{listing.price}} required><br>
-    <label for="price">Address</label>
-    <input class="form-control" name="address" id="address" value="{{listing.address}}"{{listing.address}} required><br>
+    <input class="form-control" type="number" step="0.01" name="price" id="price" value="{{listing.price / 100}}">
+    <ul style="Color:rgb(74, 86, 121)">
+      <li style="Color:rgb(74, 86, 121)">
+        Must be higher than original price: {{listing.price / 100}}
+      </li>
+      <li style="Color:rgb(74, 86, 121)">
+        Within the range of $10 - $10,000
+      </li>
+    </ul>  
+
+    <label for="address">Address</label>
+    <input class="form-control" name="address" id="address" maxlength="45" value="{{listing.address}}" required><br>
+
     <input class="btn btn-primary" type="submit" value="Save">
     <a href='/user_listings' class="btn" id="btn-submit" >Back</a>
   </div>
