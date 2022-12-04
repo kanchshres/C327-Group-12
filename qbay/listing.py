@@ -3,7 +3,7 @@ from enum import Enum, unique
 from multiprocessing.sharedctypes import Value
 from qbay.user import User
 from qbay.review import Review
-from datetime import datetime
+from datetime import datetime, timedelta
 import re
 
 from qbay import database
@@ -138,8 +138,6 @@ class Listing:
     """Sets address of Listing"""
     @address.setter
     def address(self, address):
-        if not (Listing.valid_address(address)):
-            raise ValueError(f"Invalid Address: {address}")
         self._address = address
         self._modified_date = datetime.now()
 
@@ -325,5 +323,16 @@ class Listing:
                 raise ValueError("Given dates overlap with existing bookings!")
         return True
 
-    def find_min_booking_date(self):
-        return min(self.booked_dates)
+    """Fetches the earliest date the listing can be booked"""
+    def find_min_booking_date(self):    
+        if self.booked_dates == []:
+            return datetime.now().strftime('%Y-%m-%d')
+        prev_d =  datetime.strptime(self.booked_dates[0], "%Y-%m-%d")
+        for i in range(1, len(self.booked_dates)):
+            curr_d = datetime.strptime(self.booked_dates[i], "%Y-%m-%d")
+            if (curr_d - prev_d).days > 1:
+                return curr_d.strftime('%Y-%m-%d')
+            prev_d = curr_d
+        return (curr_d + timedelta(days=1)).strftime('%Y-%m-%d')
+
+        

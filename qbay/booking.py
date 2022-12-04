@@ -73,12 +73,12 @@ class Booking:
     def book_listing(buyer_id: int, owner_id: int, listing_id: int, 
                      book_start: str, book_end: str):
         """ Books listing for a buyer"""
-        if book_start > book_end:
-            raise ValueError("Start date is after end date!")
-            
         if buyer_id == owner_id:
             raise ValueError("Owner and buyer are the same!")
-        
+
+        if book_start >= book_end:
+            raise ValueError("Start date is same or after end date!")
+            
         buyer = User.query_user(buyer_id)
         listing = Listing.query_listing(listing_id)
 
