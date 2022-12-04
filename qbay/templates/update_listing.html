@@ -16,7 +16,7 @@
 <form method="post">
   <div class="form-group">
     <label for="title">Title</label>
-    <input class="form-control" name="title" id="title" value="{{listing.title}}" required>
+    <input class="form-control" name="title" id="title" value="{{pT}}" required>
     <ul>
       <li style="Color:rgb(74, 86, 121)">
         Alphanumeric-only, and space allowed except as a prefix or a suffix
@@ -30,7 +30,7 @@
     </ul>
 
     <label for="description">Description</label>
-    <input class="form-control" name="description" id="description" value="{{listing.description}}" required>
+    <input class="form-control" name="description" id="description" value="{{pD}}" required>
     <ul>
       <li style="Color:rgb(74, 86, 121)">
         Within the range of 20 - 2,000 characters
@@ -41,7 +41,7 @@
     </ul>  
 
     <label for="price">Price</label>
-    <input class="form-control" type="number" step="0.01" name="price" id="price" value="{{listing.price / 100}}">
+    <input class="form-control" type="number" step="0.01" name="price" id="price" value="{{pP / 100}}">
     <ul style="Color:rgb(74, 86, 121)">
       <li style="Color:rgb(74, 86, 121)">
         Must be higher than original price: {{listing.price / 100}}
@@ -52,7 +52,7 @@
     </ul>  
 
     <label for="address">Address</label>
-    <input class="form-control" name="address" id="address" maxlength="45" value="{{listing.address}}" required><br>
+    <input class="form-control" name="address" id="address" maxlength="45" value="{{pA}}" required><br>
 
     <input class="btn btn-primary" type="submit" value="Save">
     <a href='/user_listings' class="btn" id="btn-submit" >Back</a>

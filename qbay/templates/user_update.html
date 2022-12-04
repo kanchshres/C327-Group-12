@@ -14,9 +14,9 @@
 <form method="post">
   <div class="form-group">
     <label for="email">Email</label>
-    <input class="form-control" name="email" id="email" value={{user.email}} required> <br>
+    <input class="form-control" name="email" id="email" value={{pE}} required> <br>
     <label for="username">Username</label>
-    <input class="form-control" name="username" id="username" value="{{user.username}}"{{user.username}} required>
+    <input class="form-control" name="username" id="username" value="{{pU}}" required>
     <ul>
       <li style="Color:rgb(74, 86, 121)">
         Alphanumeric-only, and space allowed except as a prefix or a suffix
@@ -27,10 +27,10 @@
     </ul>
 
     <label for="billing_address">Billing Address</label>
-    <input class="form-control" name="billing_address" id="billing_address" maxlength="46" value="{{user.billing_address}}"{{user.billing_address}}><br>
+    <input class="form-control" name="billing_address" id="billing_address" maxlength="46" value="{{pBA}}"><br>
 
     <label for="postal_code">Postal Code</label>
-    <input class="form-control" name="postal_code" id="postal_code" value={{user.postal_code}}>
+    <input class="form-control" name="postal_code" id="postal_code" value={{pPC}}>
     <ul>
       <li style="Color:rgb(74, 86, 121)">
         Valid Canadian Postal Code: K7L3N6

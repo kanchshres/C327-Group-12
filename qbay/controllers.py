@@ -128,7 +128,9 @@ def register_post():
 @app.route('/user_update', methods=['GET'])
 @authenticate
 def update_informations_get(user: User):
-    return render_template('/user_update.html', user=user, errors='')
+    return render_template('/user_update.html', user=user, errors='', 
+                           pE=user.email, pU=user.username, 
+                           pBA=user.billing_address, pPC=user.postal_code)
 
 
 @app.route('/user_update', methods=['POST'])
@@ -183,18 +185,23 @@ def update_informations_post(user: User):
 @app.route('/booking/<int:listing_id>', methods=['GET'])
 def booking_get(listing_id):
     listing = database.Listing.query.filter_by(id=listing_id).first()
+    listing_obj = Listing.query_listing(listing_id)
     user = database.User.query.filter_by(id=session["logged_in"]).first()
+    min_date = listing_obj.find_min_booking_date()
     return render_template('booking.html', listing=listing, user=user, 
-                           message='')
+                           min_date=min_date, message='')
 
 
 @app.route('/booking/<int:listing_id>', methods=['POST'])
 def booking_post(listing_id):
-    buyer = database.User.query.filter_by(id=session["logged_in"]).first().id
+    user = database.User.query.filter_by(id=session["logged_in"]).first()
+    buyer = user.id
     listing = database.Listing.query.filter_by(id=listing_id).first()
+    listing_obj = Listing.query_listing(listing_id)
     seller = listing.owner_id
     start_date = request.form.get('trip-start')
     end_date = request.form.get('trip-end')
+    min_date = listing_obj.find_min_booking_date()
 
     try:
         Booking.book_listing(buyer, seller, listing_id, start_date, end_date)
@@ -202,16 +209,20 @@ def booking_post(listing_id):
     except ValueError as e:
         message = str(e)
 
-    return render_template('booking.html', listing=listing, user=buyer, 
-                           message=message)
+    return render_template('booking.html', listing=listing, user=user, 
+                           min_date=min_date, message=message)
 
 
+"""
 @app.route('/user_bookings')
 @authenticate
 def view_user_bookings(user):
-    #bookings = database.Bookings.query.filter_by(buyer_id=user.id).all()
-    return render_template('user_bookings.html')
+    listings = []
+    bookings = database.Booking.query.filter_by(buyer_id=user.id).all()
+    for booking in bookings:
 
+    return render_template('user_bookings.html', bookings=bookings)
+"""
 
 
 @app.route('/create_listing', methods=['GET'])
@@ -226,7 +237,7 @@ def create_listing_post(user):
     description = request.form.get('description')
     price = float(request.form.get('price'))
     address = request.form.get('address')
-
+    
     try:
         Listing.create_listing(title, description, price, user, address)
         database.db.session.commit()
@@ -252,8 +263,9 @@ def update_listing_get(listing_id):
     listing = database.Listing.query.get(listing_id)
     user = database.User.query.filter_by(id=session["logged_in"]).first()
     return render_template('/update_listing.html',
-                           user=user, listing=listing,
-                           errors='')
+                           user=user, listing=listing, errors='',
+                           pT=listing.title, pD=listing.description,
+                           pP=listing.price, pA=listing.address)
 
 
 @app.route('/update_listing/<int:listing_id>', methods=['POST'])
@@ -297,5 +309,5 @@ def update_listing_post(listing_id):
     database.db.session.commit()
 
     return render_template('/update_listing.html',
-                           listing=listing.database_obj,
-                           messages=messages)
+                           listing=listing.database_obj, messages=messages,
+                           pT=title, pD=description, pP=price, pA=address)

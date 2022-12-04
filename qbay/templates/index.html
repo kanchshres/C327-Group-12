@@ -7,24 +7,19 @@
 {% block content %}
 <h2 id="welcome-header">Welcome {{ user.username }}!</h2>
 <div style="text-align:left;Width:488px;">
-    <h4 id="balance" style="display:inline">Balance: ${{ user.wallet.balance }}</h4>
+    <h4 id="balance" style="display:inline">Balance: ${{ user.balance }}</h4>
     <a href='/logout' style="float:right;">Logout</a>
 </div><br>
 
 <a href='/user_update' class="btn " id="btn-submit" >My Profile</a>
 <a href='/user_listings' class="btn" id="btn-submit" >My Listings</a>
-<a href='/user_bookings' class="btn" id="btn-submit" >My Bookings</a>
 <a href='/create_listing' class="btn " id="btn-submit" >Create Listing</a>
-<br> <br>
+<br><br>
 
-<style>
-    
-
-</style>
 <h3>Listings</h3>
 <div id="listings">
     {% for listing in listings %}
-    <div id="listing" style='Width:680px;'>
+    <div id="listing" style='Width:475px;'>
         <a style="Color:rgb(219, 79, 208)">Owner: {{listing.owner.username}}</a>
         <h4>
             {{ listing.title }}<br>
@@ -39,7 +34,7 @@
             <a href='/booking/{{ listing.id }}' class="btn btn-primary">Book</a>
         </div>
     </div>
-    --------------------------------------------------------------------------------------
+    ----------------------------------------------------------------
     {% endfor %}
 </div>
 {% endblock %}
