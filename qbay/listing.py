@@ -327,7 +327,7 @@ class Listing:
     def find_min_booking_date(self):    
         if self.booked_dates == []:
             return datetime.now().strftime('%Y-%m-%d')
-        prev_d =  datetime.strptime(self.booked_dates[0], "%Y-%m-%d")
+        prev_d = datetime.strptime(self.booked_dates[0], "%Y-%m-%d")
         for i in range(1, len(self.booked_dates)):
             curr_d = datetime.strptime(self.booked_dates[i], "%Y-%m-%d")
             if (curr_d - prev_d).days > 1:
