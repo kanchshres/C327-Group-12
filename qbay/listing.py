@@ -315,14 +315,22 @@ class Listing:
         return True
 
     def find_min_booking_date(self):
-        """ Finds the minimum starting date a buyer can book from.
-        Helps front end. """
-        if self.booked_dates == []:
-            return datetime.now().strftime('%Y-%m-%d')
-        prev_d = datetime.strptime(self.booked_dates[0], "%Y-%m-%d")
-        for i in range(1, len(self.booked_dates)):
-            curr_d = datetime.strptime(self.booked_dates[i], "%Y-%m-%d")
+        """ Finds the first available starting date a buyer can book from.
+        Used for front end. """
+        booked_dates = sorted(self.booked_dates, 
+                              key=lambda x: datetime.strptime(x, '%Y-%m-%d'))
+        # No bookings yet or earliest booking is after today
+        today = datetime.now().strftime('%Y-%m-%d')
+        if booked_dates == [] or (booked_dates[0] > today):
+            return today
+
+        # Find first available date, found when there's a gap between dates
+        prev_d = datetime.strptime(booked_dates[0], "%Y-%m-%d")
+        for i in range(1, len(booked_dates)):
+            curr_d = datetime.strptime(booked_dates[i], "%Y-%m-%d")
             if (curr_d - prev_d).days > 1:
-                return curr_d.strftime('%Y-%m-%d')
+                return (prev_d + timedelta(days=1)).strftime('%Y-%m-%d')
             prev_d = curr_d
+            
+        # No gaps exist, first available date is the day after latest booking
         return (curr_d + timedelta(days=1)).strftime('%Y-%m-%d')

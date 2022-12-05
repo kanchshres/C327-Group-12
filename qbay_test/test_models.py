@@ -922,6 +922,7 @@ class UnitTest(unittest.TestCase):
     def test_booking_r1(self):
         """Tests the requirement: A user can book a listing."""
         bob, tim, listing = self.booking_helper()
+        tim.update_balance(50)
 
         Booking.book_listing(tim.id, bob.id, listing.id, "2022-12-01", 
                              "2022-12-02")
@@ -964,12 +965,13 @@ class UnitTest(unittest.TestCase):
         Booking.book_listing(tim.id, bob.id, listing.id, "2022-12-01", 
                              "2022-12-03")
 
+
         with self.assertRaisesRegex(ValueError, 
                                     "Given dates overlap with existing " +
                                     "bookings!"):
 
             Booking.book_listing(fred.id, bob.id, listing.id, "2022-12-02",
-                                 "2022-12-04")
+                                "2022-12-04")
 
 
 if __name__ == "__main__":
