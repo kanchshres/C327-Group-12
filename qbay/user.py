@@ -190,13 +190,13 @@ class User():
 
     @property
     def listings_booked(self):
-        """Fetches the billing address"""
+        """Fetches the list of listings booked"""
         if self.database_obj:
             self._listings_booked = self.database_obj.listings
         return self._listings_booked
     
     def add_booking(self, booking: 'Listing'):
-        """Adds a review to the list of Bookings"""
+        """Adds a listing to the list of listings booked"""
         self._listings_booked.append(booking)
 
     @staticmethod
@@ -373,6 +373,9 @@ class User():
             db.session.commit()
     
     def update_balance(self, value):
+        """Updates the user's balance and pushes changes to the 
+        database.
+        """
         self.balance = value
 
         with database.app.app_context():
@@ -397,5 +400,6 @@ class User():
         if database_user:
             user = User()
             user._database_obj = database_user
+            user.balance = user.database_obj.balance
             return user
         return None
