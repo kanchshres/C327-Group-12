@@ -605,8 +605,7 @@ class FrontEndTests(BaseCase):
                          "#$!&*123"]  # Special characters
         for name in bad_usernames:
             change_name(name)
-            # If new name is invalid then it remains unchanged
-            self.assert_text("Bob", "#username")
+            self.assert_text(name, "#username")
 
         # Input partitioning + shotgun: good cases
         good_usernames = ["ASD",  # Doundary: Length 3
@@ -646,7 +645,7 @@ class FrontEndTests(BaseCase):
 
         for email in bad_emails:
             change_email(email)
-            self.assert_text("bob@gmail.com", "#email")
+            self.assert_text(email, "#email")
 
         # Input partitioning + shotgun: good cases
         good_emails = ["simple@example.com",
