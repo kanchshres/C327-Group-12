@@ -201,13 +201,13 @@ def booking_post(listing_id):
     seller = listing.owner_id
     start_date = request.form.get('trip-start')
     end_date = request.form.get('trip-end')
-    min_date = listing_obj.find_min_booking_date()
-
+    
     try:
         Booking.book_listing(buyer, seller, listing_id, start_date, end_date)
         message = "Booking Successful"
     except ValueError as e:
         message = str(e)
+    min_date = listing_obj.find_min_booking_date()
 
     return render_template('booking.html', listing=listing, user=user, 
                            min_date=min_date, message=message)
