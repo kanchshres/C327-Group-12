@@ -326,11 +326,12 @@ class Listing:
 
         # Find first available date, found when there's a gap between dates
         prev_d = datetime.strptime(booked_dates[0], "%Y-%m-%d")
+        curr_d = prev_d
         for i in range(1, len(booked_dates)):
             curr_d = datetime.strptime(booked_dates[i], "%Y-%m-%d")
             if (curr_d - prev_d).days > 1:
                 return (prev_d + timedelta(days=1)).strftime('%Y-%m-%d')
             prev_d = curr_d
-            
+
         # No gaps exist, first available date is the day after latest booking
         return (curr_d + timedelta(days=1)).strftime('%Y-%m-%d')
