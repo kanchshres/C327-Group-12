@@ -628,10 +628,6 @@ class UnitTest(unittest.TestCase):
         description = "Best school to ever exist"
         seller = User()
         obj = Listing(title, description, price, seller, address)
-
-        r1 = Review()
-        obj.add_review(r1)
-
         obj.add_to_database()
 
         # test if changing the title works
@@ -915,19 +911,20 @@ class UnitTest(unittest.TestCase):
         User.register("Tim", "tim@gmail.com", "Password123!")
         bob_db = User.login("bob@gmail.com", "Password123!")
         tim_db = User.login("tim@gmail.com", "Password123!")
+        bob = User.query_user(bob_db.id)
+        tim = User.query_user(tim_db.id)
 
         listing = Listing.create_listing("Title", "Some description that is " +
                                          "valid length", 20, bob_db, 
                                          "1000 Some Street")
-
-        return bob_db, tim_db, listing
+        return bob, tim, listing
 
     def test_booking_r1(self):
         """Tests the requirement: A user can book a listing."""
         bob, tim, listing = self.booking_helper()
 
         Booking.book_listing(tim.id, bob.id, listing.id, "2022-12-01", 
-                             "2022-12-05")
+                             "2022-12-02")
 
     def test_booking_r2(self):
         """Tests the requirement: A user cannot book a listing for 

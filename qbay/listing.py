@@ -3,7 +3,7 @@ from enum import Enum, unique
 from multiprocessing.sharedctypes import Value
 from qbay.user import User
 from qbay.review import Review
-from datetime import datetime
+from datetime import datetime, timedelta
 import re
 
 from qbay import database
@@ -58,118 +58,116 @@ class Listing:
             self._id = self.database_obj.id
         return self._id
 
-    """Fetches title of digital Listing"""
     @property
     def title(self):
+        """Fetches title of digital Listing"""
         if self.database_obj:
             self._title = self.database_obj.title
         return self._title
 
-    """Sets title for digital Listing if valid"""
     @title.setter
     def title(self, title):
+        """Sets title for digital Listing if valid"""
         if not (Listing.valid_title(title)):
             raise ValueError(f"Invalid Title: {title}")
         self._title = title
         self._modified_date = datetime.now()
 
-    """Fetches description of digital Listing"""
     @property
     def description(self):
+        """Fetches description of digital Listing"""
         if self.database_obj:
             self._description = self.database_obj.description
         return self._description
 
-    """Sets title for digital Listing if valid"""
     @description.setter
     def description(self, description):
+        """Sets title for digital Listing if valid"""
         if not ((20 <= len(description) <= 2000)
                 and (len(description) > len(self.title))):
             raise ValueError(f"Invalid Description: {description}")
         self._description = description
         self._modified_date = datetime.now()
 
-    """Fetches price of digital Listing"""
     @property
     def price(self):
+        """Fetches price of digital Listing"""
         if self.database_obj:
             self._price = self.database_obj.price / 100
         return self._price
 
-    """Sets price for digital Listing if valid"""
     @price.setter
     def price(self, price):
+        """Sets price for digital Listing if valid"""
         if not (Listing.valid_price(price) and self.price < price):
             raise ValueError(f"Invalid Price: {price}")
         self._price = price
         self._modified_date = datetime.now()
 
-    """Fetches last modification date of digital listing"""
     @property
     def created_date(self):
+        """Fetches last modification date of digital listing"""
         if self.database_obj:
             self._created_date = self.database_obj.date_created
         return self._created_date.date().isoformat()
 
-    """Fetches last date modified"""
     @property
     def modified_date(self):
+        """Fetches last date modified"""
         if self.database_obj:
             self._modified_date = self.database_obj.last_modified_date
         return self._modified_date.date().isoformat()
 
-    """Fetches owner of digital Listing"""
     @property
     def seller(self):
+        """Fetches owner of digital Listing"""
         return self._seller
 
-    """Sets owner of digital Listing if valid"""
     @seller.setter
     def seller(self, owner):
+        """Sets owner of digital Listing if valid"""
         if (not Listing.valid_seller(owner)):
             raise ValueError(f"Invalid Seller: {owner}")
         self._seller = owner
         self._modified_date = datetime.now()
 
     # Extra
-    """Fetches address of Listing"""
     @property
     def address(self):
+        """Fetches address of Listing"""
         return self._address
 
-    """Sets address of Listing"""
     @address.setter
     def address(self, location):
+        """Sets address of Listing"""
         self._address = location
         self._modified_date = datetime.now()
 
-    """Fetches reviews of Listing"""
     @property
     def reviews(self) -> 'list[Review]':
+        """Fetches reviews of Listing"""
         return self._reviews
 
-    """Sets reviews of Listing"""
     @reviews.setter
     def reviews(self, comments: 'list[Review]'):
+        """Sets reviews of Listing"""
         self._reviews = comments
 
-    """Fetches list of booked dates"""
     @property
     def booked_dates(self) -> 'list[str]':
+        """Fetches list of booked dates"""
         if self.database_obj:
             result = database.Dates.query.filter_by(listing_id=self.id).all()
             booked_dates = [d.date for d in result]
             return booked_dates
         return None
 
-    """Add reviews to listing"""
     def add_review(self, review: 'Review'):
+        """Add reviews to listing"""
         self._reviews.append(review)
-        # note: adding a review will currently not update the
-        # last_modified_date, since it's not modifying the actual post
 
-    """Adds listing to the database"""
     def add_to_database(self):
+        """Adds listing to the database"""
         listing = database.Listing(title=self.title,
                                    description=self.description,
                                    price=self.price * 100,
@@ -210,9 +208,9 @@ class Listing:
         listing.add_to_database()
         return listing
 
-    """Determine if a given title is valid """
     @staticmethod
     def valid_title(title):
+        """Determine if a given title is valid """
         regex = re.compile(
             r'(^([A-Za-z0-9]([A-Za-z0-9]| ){,78}[A-Za-z0-9])$)|[A-Za-z0-9]')
         if re.fullmatch(regex, title):
@@ -221,27 +219,27 @@ class Listing:
             return not len(exists)
         return False
 
-    """Determine if a given description is valid"""
     @staticmethod
     def valid_description(description, title):
+        """Determine if a given description is valid"""
         return ((19 < len(description) < 2001)
                 and (len(title) < len(description)))
 
-    """Determine if a given price is valid"""
     @staticmethod
     def valid_price(price):
+        """Determine if a given price is valid"""
         return (10.00 <= price <= 10000.00)
 
-    """Determine if a given last modification date is valid"""
     @staticmethod
     def valid_date(mod_date):
+        """Determine if a given last modification date is valid"""
         min_date = datetime(2021, 1, 2)
         max_date = datetime(2025, 1, 2)
         return (min_date < mod_date < max_date)
 
-    """Determine if a given owner is valid"""
     @staticmethod
     def valid_seller(owner):
+        """Determine if a given owner is valid"""
         if (owner.id):
             with database.app.app_context():
                 user = database.User.query.get(owner.id)
@@ -269,7 +267,7 @@ class Listing:
             db.session.commit()
 
     def update_price(self, price):
-        """Updates the listing price and pushes changes to the 
+        """ Updates the listing price and pushes changes to the 
         database.
         """
         self.price = price
@@ -280,7 +278,7 @@ class Listing:
 
     @staticmethod
     def query_listing(id):
-        """Returns a Listing object for interacting with the database
+        """ Returns a Listing object for interacting with the database
         in a safe manner. It will initialize a new User object that
         is tethered to the corresponding database object
 
@@ -301,22 +299,30 @@ class Listing:
 
     def add_booking_date(self, booked_dates: list[datetime]):
         """ Adds booked dates to list of bookings """
-        with database.app.app_context():
-            for date in booked_dates:
-                date_db = database.Dates(date=date.strftime('%Y-%m-%d'),
-                                         listing_id=self.id)
+        for date in booked_dates:
+            date_db = database.Dates(date=date.strftime('%Y-%m-%d'),
+                                     listing_id=self.id)
+            with database.app.app_context():
                 db.session.add(date_db)
-            db.session.commit()
+                db.session.commit()
 
     def valid_booking_date(self, booked_dates: list[datetime]):
         """ Check if given booking start and ending dates are valid """
-        print(self.booked_dates)
         for date in booked_dates:
             date = date.strftime('%Y-%m-%d')
-            print(date)
             if date in self.booked_dates:
                 raise ValueError("Given dates overlap with existing bookings!")
         return True
 
     def find_min_booking_date(self):
-        return min(self.booked_dates)
+        """ Finds the minimum starting date a buyer can book from.
+        Helps front end. """
+        if self.booked_dates == []:
+            return datetime.now().strftime('%Y-%m-%d')
+        prev_d = datetime.strptime(self.booked_dates[0], "%Y-%m-%d")
+        for i in range(1, len(self.booked_dates)):
+            curr_d = datetime.strptime(self.booked_dates[i], "%Y-%m-%d")
+            if (curr_d - prev_d).days > 1:
+                return curr_d.strftime('%Y-%m-%d')
+            prev_d = curr_d
+        return (curr_d + timedelta(days=1)).strftime('%Y-%m-%d')
