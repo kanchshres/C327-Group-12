@@ -24,7 +24,7 @@ class Listing:
 
     EXTRA
     - address: The location of the listing (string)
-    - reviews: A list of reviews associates with the listing (list[Review])
+    - reviews: A list of reviews associates with the listing (List[Review])
     """
 
     """ Initialize digital Listing"""
@@ -44,7 +44,7 @@ class Listing:
 
         # Extra
         self._address: str = address
-        self._reviews: list[Review] = []
+        self._reviews: List[Review] = []
 
     # Required
     @property
@@ -145,17 +145,17 @@ class Listing:
         self._modified_date = datetime.now()
 
     @property
-    def reviews(self) -> 'list[Review]':
+    def reviews(self) -> 'List[Review]':
         """Fetches reviews of Listing"""
         return self._reviews
 
     @reviews.setter
-    def reviews(self, comments: 'list[Review]'):
+    def reviews(self, comments: 'List[Review]'):
         """Sets reviews of Listing"""
         self._reviews = comments
 
     @property
-    def booked_dates(self) -> 'list[str]':
+    def booked_dates(self) -> 'List[str]':
         """Fetches list of booked dates"""
         if self.database_obj:
             result = database.Dates.query.filter_by(listing_id=self.id).all()
@@ -298,8 +298,8 @@ class Listing:
             return listing
         return None
 
-    def add_booking_date(self, booked_dates: list[datetime]):
-        """ Adds booked dates to list of bookings """
+    def add_booking_date(self, booked_dates: List[datetime]):
+        """ Adds booked dates to List of bookings """
         for date in booked_dates:
             date_db = database.Dates(date=date.strftime('%Y-%m-%d'),
                                      listing_id=self.id)
@@ -307,7 +307,7 @@ class Listing:
                 db.session.add(date_db)
                 db.session.commit()
 
-    def valid_booking_date(self, booked_dates: list[datetime]):
+    def valid_booking_date(self, booked_dates: List[datetime]):
         """ Check if given booking start and ending dates are valid """
         for date in booked_dates:
             date = date.strftime('%Y-%m-%d')
