@@ -337,4 +337,4 @@ class Listing:
             prev_d = curr_d
             
         # No gaps exist, first available date is the day after latest booking
-        return (curr_d + timedelta(days=1)).strftime('%Y-%m-%d')
+        return (prev_d + timedelta(days=1)).strftime('%Y-%m-%d')

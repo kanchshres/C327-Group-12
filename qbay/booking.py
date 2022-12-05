@@ -93,15 +93,12 @@ class Booking:
         Returns:
             True if registration succeeded, otherwise False
         """
-        if book_start >= book_end:
-            raise ValueError("Start date is after end date!")
-
         if buyer_id == owner_id:
             raise ValueError("Owner and buyer are the same!")
 
         if book_start >= book_end:
             raise ValueError("Start date is same or after end date!")
-            
+  
         buyer = User.query_user(buyer_id)
         listing = Listing.query_listing(listing_id)
 
@@ -126,8 +123,8 @@ class Booking:
 
         # Update buyer and owner balance
         owner = User.query_user(owner_id)
-        # buyer.update_balance(buyer.balance - cost) need to fix
-        # owner.update_balance(owner.balance + cost) need to fix
+        buyer.update_balance(buyer.balance - cost) # need to fix
+        owner.update_balance(owner.balance + cost) # need to fix
         booking = Booking(buyer_id, owner_id, listing_id, book_start, book_end)
         booking.add_to_database()
         return True
