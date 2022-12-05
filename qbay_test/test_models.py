@@ -959,8 +959,7 @@ class UnitTest(unittest.TestCase):
         bob, tim, listing = self.booking_helper()
 
         User.register("Fred", "fred@gmail.com", "Password123!")
-        fred_db = User.login("fred@gmail.com", "Password123!")
-        fred = User.query_user(fred_db.id)
+        fred = User.login("fred@gmail.com", "Password123!")
 
         Booking.book_listing(tim.id, bob.id, listing.id, "2022-12-01", 
                              "2022-12-03")

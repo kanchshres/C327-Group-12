@@ -1,5 +1,6 @@
 # listing.py
 from enum import Enum, unique
+from typing import List
 from multiprocessing.sharedctypes import Value
 from qbay.user import User
 from qbay.review import Review

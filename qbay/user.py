@@ -1,6 +1,6 @@
 # user.py
 import sys
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 import re
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -42,8 +42,8 @@ class User():
         self._billing_address = ""
         self._balance = 100
         self._wallet: Wallet = Wallet()
-        self._reviews: 'list[Review]' = []
-        self._listings_booked: 'list[Listing]' = []
+        self._reviews: 'List[Review]' = []
+        self._listings_booked: 'List[Listing]' = []
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -152,7 +152,7 @@ class User():
         return self._reviews
 
     @reviews.setter
-    def reviews(self, reviews: 'list[Review]'):
+    def reviews(self, reviews: 'List[Review]'):
         """Sets a new list of reviews"""
         self._reviews = reviews
 
@@ -330,9 +330,8 @@ class User():
         """
         self.username = username
         try:
-            with database.app.app_context():
-                self.database_obj.username = username
-                db.session.commit()
+            self.database_obj.username = username
+            db.session.commit()
         except exc.IntegrityError:
             db.session.rollback()
             raise ValueError(f"Username already exists: {username}")
@@ -346,9 +345,8 @@ class User():
             raise ValueError(f"Email already exists: {email}")
         self.email = email
         try:
-            with database.app.app_context():
-                self.database_obj.email = email
-                db.session.commit()
+            self.database_obj.email = email
+            db.session.commit()
         except exc.IntegrityError:
             db.session.rollback()
 
@@ -357,30 +355,24 @@ class User():
         database.
         """
         self.billing_address = address
-
-        with database.app.app_context():
-            self.database_obj.billing_address = address
-            db.session.commit()
+        self.database_obj.billing_address = address
+        db.session.commit()
 
     def update_postal_code(self, postal_code):
         """Updates the postal code and pushes changes to the 
         database.
         """
         self.postal_code = postal_code
-
-        with database.app.app_context():
-            self.database_obj.postal_code = postal_code
-            db.session.commit()
+        self.database_obj.postal_code = postal_code
+        db.session.commit()
     
     def update_balance(self, value):
         """Updates the user's balance and pushes changes to the 
         database.
         """
         self.balance = value
-
-        with database.app.app_context():
-            self.database_obj.balance = value
-            db.session.commit()
+        self.database_obj.balance = value
+        db.session.commit()
 
     @staticmethod
     def query_user(id):
