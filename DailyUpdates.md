@@ -36,27 +36,32 @@ Branched worked on
 * frontend_dev
 
 Progress so far
-* injection_tests.py
-  * Created injection tests for 1/2 of create_listing function
-    * Parameters: title, description, price
-* listing.py
-  * Fixed regex to properly validate titles
-* test_frondend.py
-  * Refactored teammate's code to reduce smelly code
-* Generic_SQLI.txt
-  * Added file for Injection lines
+* Rehaul of UI/UX
+  * Adding colours, restructuring layout of text, buttons, etc
+  * Display requirements for fields such that user understands the limitations of each
+  * Allow fields to maintain inputs if error occurs such as when registering or creating listing
+* Added new feature of booking listings
+  * Create a button associated to booking a specific listing
+  * Have calendar inputs for the duration of booking
+    * Greyed out dates that have been already booked
+* Prototyped new feature of viewing booked listings
+  * Set up page in which users will be allowed to see their booked listings
 
 Difficulties
-* .hmtl
-  * Wasn't very familiar with HTML which forced me to learn a lot of things very quick
-  * 
-
+* HTML
+  * Wasn't very familiar with HTML which forced me to learn at a rapid pace
+* Artistic Design
+  * Had difficulty deciding how I wanted each page to look
+* My Bookings
+  * Having issues displaying information about the user's booked listings
 
 Next steps
-* Looking at existing code to see if any other instances can be refactored
 * Improving UI/UX
-  * Giving better error messages
-  * Limiting input
+  * Giving better error messages for when user has an invalid input
+  * Limiting input fields to certain amount of characters
+    * Retiring/modifying old test cases to match improved UI/UX
+  * Refine how everything is displayed to provide the best look and feel
 * Adding new features
+  * Allow the user the view their booked listings
   * Deleting Listings/Making them unavailable
-* Resolve merge conflicts when merging into main
+* Looking at existing code to see if any other instances can be refactored
