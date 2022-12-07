@@ -178,7 +178,7 @@ def update_informations_post(user: User):
     database.db.session.commit()
 
     return render_template('/user_update.html', user=user, errors=messages, 
-                           pE=email, pU=username, pBA=billing_address, 
+                           pE=user.email, pU=username, pBA=billing_address, 
                            pPC=postal_code)
 
 
@@ -204,7 +204,7 @@ def booking_post(listing_id):
     
     try:
         Booking.book_listing(buyer, seller, listing_id, start_date, end_date)
-        message = "Booking Successful"
+        message = "Booking Successful: " + start_date + " to " + end_date
     except ValueError as e:
         message = str(e)
     min_date = listing_obj.find_min_booking_date()
@@ -213,16 +213,17 @@ def booking_post(listing_id):
                            min_date=min_date, message=message)
 
 
-"""
 @app.route('/user_bookings')
 @authenticate
 def view_user_bookings(user):
     listings = []
     bookings = database.Booking.query.filter_by(buyer_id=user.id).all()
     for booking in bookings:
+        listing = database.Listing.query.get(booking.listing_id)
+        listings.append(listing)
 
-    return render_template('user_bookings.html', bookings=bookings)
-"""
+    return render_template('user_bookings.html', bookings=bookings, 
+                           listings=listings)
 
 
 @app.route('/create_listing', methods=['GET'])

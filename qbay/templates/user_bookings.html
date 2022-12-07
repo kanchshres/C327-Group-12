@@ -7,5 +7,37 @@
 {% block content %}
 <h2 id="welcome-header">My Bookings</h2>
 
+<div id="listings">
+    {% for listing in listings %}
+    <h3>Listings</h3>
+    <div id="listing" style='Width:475px;'>
+        <h4>
+            {{ listing.title }}<br>
+            ${{ listing.price / 100 }} / Night<br>
+            Listing ID: {{ listing.id }}
+        </h4>
+        
+        Address: {{listing.address}}
+        <h5>{{ listing.description }}</h5> 
+        <div style='Width:500px'>
+            <a style="Color:rgb(219, 79, 208)">Created: {{listing.date_created}} | Modified: {{listing.last_modified_date}}</a>
+        </div>
+    </div>
+    ----------------------------------------------------------------
+    {% endfor %}
+</div>
+
+<div id="bookings">
+    {% for booking in bookings %}
+    <h3>Bookings</h3>
+    <h4>Listing ID: {{booking.listing_id}}</h4><br>
+    <div style='Width:500px'>
+        <a style="Color:rgb(219, 79, 208)">Start Date: {{booking.start_date}} | End Date: {{booking.end_date}}</a>
+    </div>
+    ----------------------------------------------------------------
+    {% endfor %}
+</div>
+
+
 <a href='/' class="btn" id="btn-submit" >Back</a>
 {% endblock %}
