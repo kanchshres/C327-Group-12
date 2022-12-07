@@ -50,8 +50,8 @@ class Booking:
         return self._buyer_id
 
     @buyer_id.setter
-    def listing_id(self, value):
-        self._listing_id = value
+    def buyer_id(self, value):
+        self._buyer_id = value
 
     @property
     def listing_id(self):
