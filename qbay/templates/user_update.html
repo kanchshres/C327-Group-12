@@ -6,9 +6,11 @@
 
 {% block content %}
 <h2 id="welcome-header">Update User</h2>
-<h4 style="Color:rgb(219, 79, 208)">
-  {% for err in errors %} 
+<h4 id="messages" style="Color:rgb(219, 79, 208)">
+  {% for err in errors %}
+  <div id="message"> 
   {{ err }}<br>
+  <div>
   {% endfor %}
 </h4>
 <form method="post">

@@ -645,7 +645,7 @@ class FrontEndTests(BaseCase):
 
         for email in bad_emails:
             change_email(email)
-            self.assert_text(email, "#email")
+            self.assert_text("bob@gmail.com", "#email")
 
         # Input partitioning + shotgun: good cases
         good_emails = ["simple@example.com",
