@@ -60,8 +60,8 @@ Next steps
   * Giving better error messages for when user has an invalid input
   * Limiting input fields to certain amount of characters
     * Retiring/modifying old test cases to match improved UI/UX
+  * Finalizing page in which users are able to see their booked listings
   * Refine how everything is displayed to provide the best look and feel
 * Adding new features
-  * Allow the user the view their booked listings
   * Deleting Listings/Making them unavailable
 * Looking at existing code to see if any other instances can be refactored
