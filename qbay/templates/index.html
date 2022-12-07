@@ -13,6 +13,7 @@
 
 <a href='/user_update' class="btn " id="btn-submit" >My Profile</a>
 <a href='/user_listings' class="btn" id="btn-submit" >My Listings</a>
+<a href='/user_bookings' class="btn " id="btn-submit" >My Bookings</a>
 <a href='/create_listing' class="btn " id="btn-submit" >Create Listing</a>
 <br><br>
 
@@ -23,7 +24,7 @@
         <a style="Color:rgb(219, 79, 208)">Owner: {{listing.owner.username}}</a>
         <h4>
             {{ listing.title }}<br>
-            ${{ listing.price / 100 }}
+            ${{ listing.price / 100 }} / Night
         </h4>
 
         Address: {{listing.address}}
