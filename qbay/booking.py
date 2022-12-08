@@ -43,15 +43,15 @@ class Booking:
 
     @owner_id.setter
     def owner_id(self, value):
-        self._listing_id = value
+        self.owner_id = value
 
     @property
     def buyer_id(self):
         return self._buyer_id
 
     @buyer_id.setter
-    def listing_id(self, value):
-        self._listing_id = value
+    def buyer_id(self, value):
+        self.buyer_id = value
 
     @property
     def listing_id(self):

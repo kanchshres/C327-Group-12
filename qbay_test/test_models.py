@@ -964,13 +964,12 @@ class UnitTest(unittest.TestCase):
         Booking.book_listing(tim.id, bob.id, listing.id, "2022-12-01", 
                              "2022-12-03")
 
-
         with self.assertRaisesRegex(ValueError, 
                                     "Given dates overlap with existing " +
                                     "bookings!"):
 
             Booking.book_listing(fred.id, bob.id, listing.id, "2022-12-02",
-                                "2022-12-04")
+                                 "2022-12-04")
 
 
 if __name__ == "__main__":
