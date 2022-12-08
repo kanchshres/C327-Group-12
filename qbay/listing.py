@@ -252,30 +252,24 @@ class Listing:
         database.
         """
         self.title = title
-
-        with database.app.app_context():
-            self.database_obj.title = title
-            db.session.commit()
+        self.database_obj.title = title
+        db.session.commit()
 
     def update_description(self, description):
         """Updates the listing description and pushes changes to the 
         database.
         """
         self.description = description
-
-        with database.app.app_context():
-            self.database_obj.description = description
-            db.session.commit()
+        self.database_obj.description = description
+        db.session.commit()
 
     def update_price(self, price):
         """ Updates the listing price and pushes changes to the 
         database.
         """
         self.price = price
-
-        with database.app.app_context():
-            self.database_obj.price = price * 100
-            db.session.commit()
+        self.database_obj.price = price * 100
+        db.session.commit()
 
     @staticmethod
     def query_listing(id):
