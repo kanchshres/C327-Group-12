@@ -1,5 +1,6 @@
 # listing.py
 from enum import Enum, unique
+from typing import List
 from multiprocessing.sharedctypes import Value
 from qbay.user import User
 from qbay.review import Review
@@ -23,7 +24,7 @@ class Listing:
 
     EXTRA
     - address: The location of the listing (string)
-    - reviews: A list of reviews associates with the listing (list[Review])
+    - reviews: A list of reviews associates with the listing (List[Review])
     """
 
     """ Initialize digital Listing"""
@@ -43,7 +44,7 @@ class Listing:
 
         # Extra
         self._address: str = address
-        self._reviews: list[Review] = []
+        self._reviews: List[Review] = []
 
     # Required
     @property
@@ -143,17 +144,17 @@ class Listing:
         self._modified_date = datetime.now()
 
     @property
-    def reviews(self) -> 'list[Review]':
+    def reviews(self) -> 'List[Review]':
         """Fetches reviews of Listing"""
         return self._reviews
 
     @reviews.setter
-    def reviews(self, comments: 'list[Review]'):
+    def reviews(self, comments: 'List[Review]'):
         """Sets reviews of Listing"""
         self._reviews = comments
 
     @property
-    def booked_dates(self) -> 'list[str]':
+    def booked_dates(self) -> 'List[str]':
         """Fetches list of booked dates"""
         if self.database_obj:
             result = database.Dates.query.filter_by(listing_id=self.id).all()
@@ -249,36 +250,24 @@ class Listing:
         database.
         """
         self.title = title
-        with database.app.app_context():
-            self.database_obj.title = title
-            db.session.commit()
+        self.database_obj.title = title
+        db.session.commit()
 
     def update_description(self, description):
         """Updates the listing description and pushes changes to the 
         database.
         """
         self.description = description
-        with database.app.app_context():
-            self.database_obj.description = description
-            db.session.commit()
+        self.database_obj.description = description
+        db.session.commit()
 
     def update_price(self, price):
         """ Updates the listing price and pushes changes to the 
         database.
         """
         self.price = price
-        with database.app.app_context():
-            self.database_obj.price = price * 100
-            db.session.commit()
-
-    def update_address(self, address):
-        """Updates the listing address and pushes changes to the 
-        database.
-        """
-        self.address = address
-        with database.app.app_context():
-            self.database_obj.address = address
-            db.session.commit()
+        self.database_obj.price = price * 100
+        db.session.commit()
 
     @staticmethod
     def query_listing(id):
@@ -301,8 +290,8 @@ class Listing:
             return listing
         return None
 
-    def add_booking_date(self, booked_dates: list[datetime]):
-        """ Adds booked dates to list of bookings """
+    def add_booking_date(self, booked_dates: List[datetime]):
+        """ Adds booked dates to List of bookings """
         for date in booked_dates:
             date_db = database.Dates(date=date.strftime('%Y-%m-%d'),
                                      listing_id=self.id)
@@ -310,7 +299,7 @@ class Listing:
                 db.session.add(date_db)
                 db.session.commit()
 
-    def valid_booking_date(self, booked_dates: list[datetime]):
+    def valid_booking_date(self, booked_dates: List[datetime]):
         """ Check if given booking start and ending dates are valid """
         for date in booked_dates:
             date = date.strftime('%Y-%m-%d')
@@ -330,11 +319,12 @@ class Listing:
 
         # Find first available date, found when there's a gap between dates
         prev_d = datetime.strptime(booked_dates[0], "%Y-%m-%d")
+        curr_d = prev_d
         for i in range(1, len(booked_dates)):
             curr_d = datetime.strptime(booked_dates[i], "%Y-%m-%d")
             if (curr_d - prev_d).days > 1:
                 return (prev_d + timedelta(days=1)).strftime('%Y-%m-%d')
             prev_d = curr_d
-            
+
         # No gaps exist, first available date is the day after latest booking
         return (prev_d + timedelta(days=1)).strftime('%Y-%m-%d')

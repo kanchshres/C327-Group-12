@@ -43,7 +43,7 @@ class Booking:
 
     @owner_id.setter
     def owner_id(self, value):
-        self._listing_id = value
+        self.owner_id = value
 
     @property
     def buyer_id(self):
@@ -51,7 +51,7 @@ class Booking:
 
     @buyer_id.setter
     def buyer_id(self, value):
-        self._buyer_id = value
+        self.buyer_id = value
 
     @property
     def listing_id(self):
@@ -123,8 +123,8 @@ class Booking:
 
         # Update buyer and owner balance
         owner = User.query_user(owner_id)
-        buyer.update_balance(buyer.balance - cost)  # need to fix
-        owner.update_balance(owner.balance + cost)  # need to fix
+        buyer.update_balance(buyer.balance - cost)
+        owner.update_balance(owner.balance + cost)
         booking = Booking(buyer_id, owner_id, listing_id, book_start, book_end)
         booking.add_to_database()
         return True
