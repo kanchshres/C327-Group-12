@@ -91,7 +91,7 @@ class Booking:
         - book_end (str): Ending date of the booking, exclusive
 
         Returns:
-            True if registration succeeded, otherwise False
+            True if booking succeeded, otherwise raises an exception
         """
         if book_start >= book_end:
             raise ValueError("Start date is the same or after the end date!")
