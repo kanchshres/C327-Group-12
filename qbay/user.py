@@ -8,11 +8,9 @@ from sqlalchemy import exc, update, delete, insert, select
 
 from qbay import database
 from qbay.database import db
-from qbay.wallet import Wallet, BankingAccount
 
 if TYPE_CHECKING:
     from .listing import Listing
-    from .wallet import Wallet
     from .review import Review
 
 
@@ -26,7 +24,6 @@ class User():
     - password: Password associated with account
     - postal code: Postal code of user
     - billing address: Billing address of user
-    - wallet: Wallet object associated with account
     - review: All the reviews the user has created
     """
 
@@ -41,7 +38,6 @@ class User():
         self._postal_code = ""
         self._billing_address = ""
         self._balance = 100
-        self._wallet: Wallet = Wallet()
         self._reviews: 'List[Review]' = []
         self._listings_booked: 'List[Listing]' = []
 
@@ -123,16 +119,6 @@ class User():
         if not User.valid_password(password):
             raise ValueError(f'Invalid password: {password}')
         self._password = password
-
-    @property
-    def wallet(self) -> 'Wallet':
-        """Fetches the user's wallet"""
-        return self._wallet
-
-    @wallet.setter
-    def wallet(self, wallet: 'Wallet'):
-        """Sets a new wallet for the user"""
-        self._wallet = wallet
 
     @property
     def balance(self):
@@ -270,7 +256,7 @@ class User():
     def register(name, email, password):
         """ Register a user and initialize a profile for them only if all 
         requirements are met.
-        Wallet's balance is initialized to 100 upon creation
+        User's balance is initialized to 100 upon creation
 
         params:
             name (string):     user name
@@ -312,7 +298,6 @@ class User():
         """
         if not (User.valid_email(email) and User.valid_password(password)):
             raise ValueError("Invalid email or password")
-
         with database.app.app_context():
             user = database.User.query.filter_by(email=email).first()
 

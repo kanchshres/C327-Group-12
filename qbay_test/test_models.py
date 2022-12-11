@@ -9,8 +9,6 @@ from qbay.review import Review
 from qbay.listing import Listing
 from qbay.booking import Booking
 from datetime import datetime
-from qbay.transaction import Transaction, TransactionStatus
-from qbay.wallet import Wallet, BankingAccount
 from datetime import datetime, timedelta
 import pytest
 
@@ -36,10 +34,6 @@ class UnitTest(unittest.TestCase):
 
         user.password = "Password123!"
         assert user.password == "Password123!"
-
-        test_wall = Wallet()
-        user.wallet = test_wall
-        assert user.wallet == test_wall
 
         test_rev = Review()
         user.add_review(test_rev)
@@ -67,72 +61,6 @@ class UnitTest(unittest.TestCase):
 
         review.comment = "hello world"
         assert review.comment == "hello world"
-
-    # def test_wallet_balance_transfer(self):
-    #     bank_account = BankingAccount()
-    #     user = User()
-    #     user.wallet.bankingAccount = bank_account
-
-    #     assert user.wallet.bankingAccount.balance == 0
-    #     assert user.wallet.balance == 100
-
-    #     bank_account.add_balance(10000)
-    #     assert user.wallet.bankingAccount.balance == 10000
-    #     assert user.wallet.balance == 100
-
-    #     user._wallet.transfer_balance(4000)
-    #     assert user.wallet.bankingAccount.balance == 6000
-    #     assert user.balance == 4100
-    #     assert user.wallet.balance == 4100
-
-    #     with self.assertRaises(ValueError):
-    #         user.wallet.transfer_balance(-2000)
-
-    #     with self.assertRaises(ValueError):
-    #         bank_account.add_balance(-2000)
-
-    #     assert user.balance == 4100
-    #     assert bank_account.balance == 6000
-
-    # def test_transaction(self):
-    #     transact = Transaction()
-    #     transact.id = 50
-    #     assert transact.id == 50
-
-    #     test_user = User()
-    #     transact.payer = test_user
-    #     assert transact.payer == test_user
-
-    #     test_user_2 = User()
-    #     transact.payee = test_user_2
-    #     assert transact.payee == test_user_2
-
-    #     transact.amount = 50
-    #     assert transact.amount == 50
-
-    #     test_listing = Listing()
-    #     transact.listing = test_listing
-    #     assert transact.listing == test_listing
-
-    #     transact.status = "transactionInProgress"
-    #     assert transact.status == TransactionStatus.IN_PROGRESS
-
-    # def test_transaction_invalid_status(self):
-    #     transact = Transaction()
-    #     transact.status = TransactionStatus.COMPLETED
-    #     assert transact.status == TransactionStatus.COMPLETED
-
-    #     transact.status = "transactionCancelled"
-    #     assert transact.status == TransactionStatus.CANCELLED
-
-    #     with self.assertRaises(ValueError):
-    #         transact.status = "Value error"
-
-    #     with self.assertRaises(TypeError):
-    #         transact.status = None
-
-    #     with self.assertRaises(TypeError):
-    #         transact.status = User()
 
     def test_listing(self):
         """Sprint 1 Testing"""

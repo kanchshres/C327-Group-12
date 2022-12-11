@@ -35,7 +35,6 @@ class User(db.Model):
     billing_address = db.Column(db.String(46), nullable=True)
     balance = db.Column(db.Integer, nullable=False)  # in cents
 
-    wallet = relationship('Wallet', back_populates='user', uselist=False)
     listings = relationship('Listing', back_populates='owner')
     reviews = relationship('Review', back_populates='user')
     bookings = relationship('Booking', back_populates='buyer')
@@ -90,26 +89,6 @@ class Booking(db.Model):
         return f'<Booking {self.id}>'
 
 
-class Wallet(db.Model):
-    __tablename__ = 'wallets'
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    balance = db.Column(db.Float(precision=2, asdecimal=True), nullable=False)
-
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    user = relationship('User', back_populates='wallet')
-
-    transactions = relationship(
-        'Transaction', primaryjoin="Wallet.id==Transaction.payer_id")
-
-    banking_account_id = db.Column(
-        db.Integer, db.ForeignKey('banking_accounts.id'))
-    banking_account = relationship('BankingAccount')
-
-    def __repr__(self) -> str:
-        return f'<Wallet {self.id}>'
-
-
 class Review(db.Model):
     __tablename__ = 'reviews'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -123,33 +102,3 @@ class Review(db.Model):
 
     def __repr__(self) -> str:
         return f'<Review {self.id}>'
-
-
-class BankingAccount(db.Model):
-    __tablename__ = 'banking_accounts'
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    balance = db.Column(db.Float(precision=2, asdecimal=True), nullable=False)
-
-    def __repr__(self) -> str:
-        return f'<BankingAccount {self.id}>'
-
-
-class Transaction(db.Model):
-    __tablename__ = 'transaction'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    amount = db.Column(db.Float(precision=2, asdecimal=True), nullable=False)
-    status = db.Column(db.String(30), nullable=False)
-
-    payer_id = db.Column(db.Integer, db.ForeignKey(Wallet.id))
-    payer = relationship(
-        'Wallet', foreign_keys=[payer_id], back_populates='transactions')
-
-    payee_id = db.Column(db.Integer, db.ForeignKey(Wallet.id))
-    payee = relationship('Wallet', foreign_keys=[payee_id])
-
-    booking_id = db.Column(db.Integer, db.ForeignKey(Booking.id))
-    booking = relationship('Booking')
-
-    def __repr__(self) -> str:
-        return f'<Transaction {self.id}>'

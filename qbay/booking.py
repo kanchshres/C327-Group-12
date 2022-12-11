@@ -91,7 +91,7 @@ class Booking:
         - book_end (str): Ending date of the booking, exclusive
 
         Returns:
-            True if registration succeeded, otherwise False
+            True if booking succeeded, otherwise raises an exception
         """
         if buyer_id == owner_id:
             raise ValueError("Owner and buyer are the same!")

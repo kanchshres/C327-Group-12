@@ -309,7 +309,8 @@ class Listing:
 
     def find_min_booking_date(self):
         """ Finds the first available starting date a buyer can book from.
-        Used for front end. """
+        Used for front end.
+        """
         booked_dates = sorted(self.booked_dates, 
                               key=lambda x: datetime.strptime(x, '%Y-%m-%d'))
         # No bookings yet or earliest booking is after today
