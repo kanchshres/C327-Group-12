@@ -9,7 +9,7 @@
 
 <div id="listings">
     {% for listing in listings %}
-    <div id="listing" style='Width:475px;'>
+    <div id="listing" style='Width:645px;'>
         <h4>
             {{ listing.title }}<br>
             ${{ listing.price / 100 }} / Night
@@ -17,13 +17,18 @@
         
         Address: {{listing.address}}
         <h5>{{ listing.description }}</h5> 
-        <div style='Width:500px'>
+        <div style='Width:660px'>
             <a style="Color:rgb(219, 79, 208)">Created: {{listing.date_created}} | Modified: {{listing.last_modified_date}}</a>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <a href='/update_listing/{{ listing.id }}' class="btn btn-primary">Edit</a>
         </div>
     </div>
-    ----------------------------------------------------------------
+    -------------------------------------------------------------------------------------
     {% endfor %}
 </div>
 
