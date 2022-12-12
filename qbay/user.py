@@ -1,6 +1,6 @@
 # user.py
 import sys
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 import re
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -8,10 +8,9 @@ from sqlalchemy import exc, update, delete, insert, select
 
 from qbay import database
 from qbay.database import db
-from qbay.wallet import Wallet, BankingAccount
 
 if TYPE_CHECKING:
-    from .wallet import Wallet
+    from .listing import Listing
     from .review import Review
 
 
@@ -25,7 +24,6 @@ class User():
     - password: Password associated with account
     - postal code: Postal code of user
     - billing address: Billing address of user
-    - wallet: Wallet object associated with account
     - review: All the reviews the user has created
     """
 
@@ -39,8 +37,9 @@ class User():
         self._password = password
         self._postal_code = ""
         self._billing_address = ""
-        self._wallet: Wallet = Wallet()
-        self._reviews: 'list[Review]' = []
+        self._balance = 100
+        self._reviews: 'List[Review]' = []
+        self._listings_booked: 'List[Listing]' = []
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -55,7 +54,7 @@ class User():
                              password=self.password,
                              postal_code=self.postal_code,
                              billing_address=self.billing_address,
-                             balance=self.wallet.balance)
+                             balance=self.balance)
 
         try:
             with database.app.app_context():
@@ -122,24 +121,16 @@ class User():
         self._password = password
 
     @property
-    def wallet(self) -> 'Wallet':
-        """Fetches the user's wallet"""
-        return self._wallet
-
-    @wallet.setter
-    def wallet(self, wallet: 'Wallet'):
-        """Sets a new wallet for the user"""
-        self._wallet = wallet
-
-    @property
     def balance(self):
-        """Fetches the user's balance
-
-        Returns the user's wallet if the wallet exists, 0 otherwise
-        """
+        """ Fetches the user's balance """
         if self.database_obj:
-            self._wallet.balance = self.database_obj.wallet.balance
-        return self._wallet.balance
+            self._balance = self.database_obj.balance
+        return self._balance
+
+    @balance.setter
+    def balance(self, value):
+        """ Set the user's balance """
+        self._balance = value
 
     @property
     def reviews(self):
@@ -147,7 +138,7 @@ class User():
         return self._reviews
 
     @reviews.setter
-    def reviews(self, reviews: 'list[Review]'):
+    def reviews(self, reviews: 'List[Review]'):
         """Sets a new list of reviews"""
         self._reviews = reviews
 
@@ -182,6 +173,17 @@ class User():
     def billing_address(self, bill_addr: str):
         """Sets a new billing address"""
         self._billing_address = bill_addr
+
+    @property
+    def listings_booked(self):
+        """Fetches the list of listings booked"""
+        if self.database_obj:
+            self._listings_booked = self.database_obj.listings
+        return self._listings_booked
+    
+    def add_booking(self, booking: 'Listing'):
+        """Adds a listing to the list of listings booked"""
+        self._listings_booked.append(booking)
 
     @staticmethod
     def valid_username(name):
@@ -254,7 +256,7 @@ class User():
     def register(name, email, password):
         """ Register a user and initialize a profile for them only if all 
         requirements are met.
-        Wallet's balance is initialized to 100 upon creation
+        User's balance is initialized to 100 upon creation
 
         params:
             name (string):     user name
@@ -296,7 +298,6 @@ class User():
         """
         if not (User.valid_email(email) and User.valid_password(password)):
             raise ValueError("Invalid email or password")
-
         with database.app.app_context():
             user = database.User.query.filter_by(email=email).first()
 
@@ -314,9 +315,8 @@ class User():
         """
         self.username = username
         try:
-            with database.app.app_context():
-                self.database_obj.username = username
-                db.session.commit()
+            self.database_obj.username = username
+            db.session.commit()
         except exc.IntegrityError:
             db.session.rollback()
             raise ValueError(f"Username already exists: {username}")
@@ -330,9 +330,8 @@ class User():
             raise ValueError(f"Email already exists: {email}")
         self.email = email
         try:
-            with database.app.app_context():
-                self.database_obj.email = email
-                db.session.commit()
+            self.database_obj.email = email
+            db.session.commit()
         except exc.IntegrityError:
             db.session.rollback()
 
@@ -341,20 +340,24 @@ class User():
         database.
         """
         self.billing_address = address
-
-        with database.app.app_context():
-            self.database_obj.billing_address = address
-            db.session.commit()
+        self.database_obj.billing_address = address
+        db.session.commit()
 
     def update_postal_code(self, postal_code):
         """Updates the postal code and pushes changes to the 
         database.
         """
         self.postal_code = postal_code
-
-        with database.app.app_context():
-            self.database_obj.postal_code = postal_code
-            db.session.commit()
+        self.database_obj.postal_code = postal_code
+        db.session.commit()
+    
+    def update_balance(self, value):
+        """Updates the user's balance and pushes changes to the 
+        database.
+        """
+        self.balance = value
+        self.database_obj.balance = value
+        db.session.commit()
 
     @staticmethod
     def query_user(id):
@@ -374,5 +377,6 @@ class User():
         if database_user:
             user = User()
             user._database_obj = database_user
+            user.balance = user.database_obj.balance
             return user
         return None
