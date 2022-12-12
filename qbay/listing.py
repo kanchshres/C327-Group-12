@@ -227,6 +227,7 @@ class Listing:
 
     @staticmethod
     def valid_price(newPrice, oldPrice):
+        """Determine if a given price is valid"""
         return ((10.00 <= newPrice <= 10000.00) and (oldPrice < newPrice))
 
     @staticmethod

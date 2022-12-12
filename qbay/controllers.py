@@ -68,7 +68,7 @@ def login_post():
     try:
         user = User.login(email, password)
     except ValueError as err:
-        return render_template('login.html', message=err, pE=email)
+        return render_template('login.html', message=err, prevEmail=email)
 
     if user:
         session['logged_in'] = user.id
@@ -85,7 +85,8 @@ def login_post():
         # code 303 is to force a 'GET' request
         return redirect('/', code=303)
     else:
-        return render_template('login.html', message='login failed', pE=email)
+        return render_template('login.html', message='login failed', 
+                               prevEmail=email)
 
 
 @app.route('/logout')
@@ -120,7 +121,7 @@ def register_post():
     # at the backend, go back to the register page.
     if error_message:
         return render_template('register.html', message=error_message, 
-                               pE=email, pU=username)
+                               prevEmail=email, prevUsername=username)
     else:
         return redirect('/login')
 
@@ -129,8 +130,9 @@ def register_post():
 @authenticate
 def update_informations_get(user: User):
     return render_template('/user_update.html', user=user, errors='', 
-                           pE=user.email, pU=user.username, 
-                           pBA=user.billing_address, pPC=user.postal_code)
+                           prevEmail=user.email, prevUsername=user.username, 
+                           prevBillingAddress=user.billing_address, 
+                           prevPostalCode=user.postal_code)
 
 
 @app.route('/user_update', methods=['POST'])
@@ -178,8 +180,9 @@ def update_informations_post(user: User):
     database.db.session.commit()
 
     return render_template('/user_update.html', user=user, errors=messages, 
-                           pE=user.email, pU=username, pBA=billing_address, 
-                           pPC=postal_code)
+                           prevEmail=user.email, prevUsername=username, 
+                           prevBillingAddress=billing_address, 
+                           prevPostalCode=postal_code)
 
 
 @app.route('/booking/<int:listing_id>', methods=['GET'])
@@ -244,10 +247,12 @@ def create_listing_post(user):
         database.db.session.commit()
     except ValueError as e:
         return render_template('create_listing.html', message=str(e), 
-                               pT=title, pD=description, pP=price, pA=address)
+                               prevTitle=title, prevDescription=description, 
+                               prevPrice=price, prevAddress=address)
     except TypeError as e:
         return render_template('create_listing.html', message=str(e), 
-                               pT=title, pD=description, pP=price, pA=address)
+                               prevTitle=title, prevDescription=description, 
+                               prevPrice=price, prevAddress=address)
 
     return redirect('/')
 
@@ -265,8 +270,10 @@ def update_listing_get(listing_id):
     user = database.User.query.filter_by(id=session["logged_in"]).first()
     return render_template('/update_listing.html',
                            user=user, listing=listing, errors='',
-                           pT=listing.title, pD=listing.description,
-                           pP=listing.price, pA=listing.address)
+                           prevTitle=listing.title, 
+                           prevDescription=listing.description,
+                           prevPrice=listing.price, 
+                           prevAddress=listing.address)
 
 
 @app.route('/update_listing/<int:listing_id>', methods=['POST'])
@@ -311,4 +318,5 @@ def update_listing_post(listing_id):
 
     return render_template('/update_listing.html',
                            listing=listing.database_obj, messages=messages,
-                           pT=title, pD=description, pP=price, pA=address)
+                           prevTitle=title, prevDescription=description, 
+                           prevPrice=price, prevAddress=address)

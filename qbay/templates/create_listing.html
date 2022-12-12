@@ -11,7 +11,7 @@
 <form method="post" autocomplete="on">
   <div class="form-group">
     <label for="title">Title</label>
-    <input class="form-control" name="title" id="title" value="{{pT}}" required>
+    <input class="form-control" name="title" id="title" value="{{prevTitle}}" required>
     <ul>
       <li style="Color:rgb(74, 86, 121)">
         Alphanumeric-only, and space allowed except as a prefix or a suffix
@@ -25,7 +25,7 @@
     </ul>
 
     <label for="description">Description</label>
-    <input class="form-control" name="description" id="description" value="{{pD}}" required>
+    <input class="form-control" name="description" id="description" value="{{prevDescription}}" required>
     <ul>
       <li style="Color:rgb(74, 86, 121)">
         Within the range of 20 - 2,000 characters
@@ -36,7 +36,7 @@
     </ul>  
 
     <label for="price">Price</label>
-    <input class="form-control" type="number" step="0.01" name="price" id="price" value="{{pP}}" required>
+    <input class="form-control" type="number" step="0.01" name="price" id="price" value="{{prevPrice}}" required>
     <ul style="Color:rgb(74, 86, 121)">
       <li style="Color:rgb(74, 86, 121)">
         Within the range of $10 - $10,000
@@ -44,7 +44,7 @@
     </ul>  
 
     <label for="address">Address</label>
-    <input class="form-control" name="address" id="address" maxlength="45" value="{{pA}}" required><br>
+    <input class="form-control" name="address" id="address" maxlength="45" value="{{prevAddress}}" required><br>
       
     <input class="btn btn-primary" type="submit" value="Create">
     <a href='/' class="btn" id="btn-submit" >Back</a>
