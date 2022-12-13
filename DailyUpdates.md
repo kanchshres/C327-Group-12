@@ -32,3 +32,36 @@ Dec 2
 4. Fix any errors necessary in the test cases.
 
 ### Kaz
+Branched worked on
+* frontend_dev
+
+Progress so far
+* Rehaul of UI/UX
+  * Adding colours, restructuring layout of text, buttons, etc
+  * Display requirements for fields such that user understands the limitations of each
+  * Allow fields to maintain inputs if error occurs such as when registering or creating listing
+* Added new feature of booking listings
+  * Create a button associated to booking a specific listing
+  * Have calendar inputs for the duration of booking
+    * Greyed out dates that have been already booked
+* Prototyped new feature of viewing booked listings
+  * Set up page in which users will be allowed to see their booked listings
+
+Difficulties
+* HTML
+  * Wasn't very familiar with HTML which forced me to learn at a rapid pace
+* Artistic Design
+  * Had difficulty deciding how I wanted each page to look
+* My Bookings
+  * Having issues displaying information about the user's booked listings
+
+Next steps
+* Improving UI/UX
+  * Giving better error messages for when user has an invalid input
+  * Limiting input fields to certain amount of characters
+    * Retiring/modifying old test cases to match improved UI/UX
+  * Finalizing page in which users are able to see their booked listings
+  * Refine how everything is displayed to provide the best look and feel
+* Adding new features
+  * Deleting Listings/Making them unavailable
+* Looking at existing code to see if any other instances can be refactored

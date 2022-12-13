@@ -493,10 +493,10 @@ class UnitTest(unittest.TestCase):
         p2 = 10000
         p3 = 9.999999
         p4 = 10000.001
-        assert (l1.valid_price(p1)) is True
-        assert (l1.valid_price(p2)) is True
-        assert (l1.valid_price(p3)) is False
-        assert (l1.valid_price(p4)) is False
+        assert (l1.valid_price(p1, 0)) is True
+        assert (l1.valid_price(p2, p1)) is True
+        assert (l1.valid_price(p3, p2)) is False
+        assert (l1.valid_price(p4, p3)) is False
 
     def test_r4_6_create_listing(self):
         """Testing R4-6:

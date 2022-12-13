@@ -53,7 +53,7 @@ class Listing(db.Model):
     date_created = db.Column(db.String(10), nullable=False)
     last_modified_date = db.Column(db.String(10), nullable=False)
     booked_dates = relationship('Dates', back_populates='listing')
-
+    
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     owner = relationship('User', back_populates='listings')
     bookings = relationship('Booking', back_populates='listing')

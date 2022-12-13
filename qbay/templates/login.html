@@ -5,17 +5,17 @@
 {% endblock %}
 
 {% block content %}
-<h2 id="welcome-header">Please login below</h2>
+<h2 id="welcome-header">Login</h2>
 
-<h4 id='message'>{{message}}</h4>
+<h4 id='message' style="Color:rgb(219, 79, 208)">{{message}}</h4>
 <form method="post">
   <div class="form-group">
     <label for="email">Email</label>
-    <input class="form-control" name="email" id="email">
+    <input class="form-control" name="email" id="email" value="{{prevEmail}}"><br>
     <label for="password">Password</label>
-    <input class="form-control" type="password" name="password" id="password">
+    <input class="form-control" type="password" name="password" id="password"><br>
     <input class="btn btn-primary" type="submit" value="Login">
-  <a href='/register' class="btn btn-primary" id="btn-submit" >Register</a>
+    <a href='/register' class="btn" id="btn-submit" >Register</a>
   </div>
 </form>
 {% endblock %}

@@ -4,6 +4,7 @@ from qbay.user import User
 from qbay.listing import Listing
 from qbay import database
 from qbay.database import app
+from qbay.booking import Booking
 
 from functools import wraps
 
@@ -56,7 +57,7 @@ def home(user):
 
 @app.route('/login', methods=['GET'])
 def login_get():
-    return render_template('login.html', message='Please login')
+    return render_template('login.html', message='')
 
 
 @app.route('/login', methods=['POST'])
@@ -67,7 +68,7 @@ def login_post():
     try:
         user = User.login(email, password)
     except ValueError as err:
-        return render_template('login.html', message=err)
+        return render_template('login.html', message=err, prevEmail=email)
 
     if user:
         session['logged_in'] = user.id
@@ -84,7 +85,8 @@ def login_post():
         # code 303 is to force a 'GET' request
         return redirect('/', code=303)
     else:
-        return render_template('login.html', message='login failed')
+        return render_template('login.html', message='login failed', 
+                               prevEmail=email)
 
 
 @app.route('/logout')
@@ -114,11 +116,12 @@ def register_post():
         # use backend api to register the user
         success = User.register(username, email, password)
         if not success:
-            error_message = "Registration failed."
+            error_message = "Registration failed"
     # if there is any error messages when registering new user
     # at the backend, go back to the register page.
     if error_message:
-        return render_template('register.html', message=error_message)
+        return render_template('register.html', message=error_message, 
+                               prevEmail=email, prevUsername=username)
     else:
         return redirect('/login')
 
@@ -126,9 +129,10 @@ def register_post():
 @app.route('/user_update', methods=['GET'])
 @authenticate
 def update_informations_get(user: User):
-    return render_template('/user_update.html',
-                           user=user,
-                           errors='')
+    return render_template('/user_update.html', user=user, errors='', 
+                           prevEmail=user.email, prevUsername=user.username, 
+                           prevBillingAddress=user.billing_address, 
+                           prevPostalCode=user.postal_code)
 
 
 @app.route('/user_update', methods=['POST'])
@@ -144,17 +148,17 @@ def update_informations_post(user: User):
 
     messages = []
 
-    if user.username != username:
-        try:
-            user.update_username(username)
-            messages += [f"Username updated successfully: {username}"]
-        except ValueError as e:
-            messages += [str(e)]
-
     if user.email != email:
         try:
             user.update_email(email)
             messages += [f"Email updated successfully: {email}"]
+        except ValueError as e:
+            messages += [str(e)]
+
+    if user.username != username:
+        try:
+            user.update_username(username)
+            messages += [f"Username updated successfully: {username}"]
         except ValueError as e:
             messages += [str(e)]
 
@@ -175,9 +179,54 @@ def update_informations_post(user: User):
     
     database.db.session.commit()
 
-    return render_template('/user_update.html',
-                           user=user,
-                           errors=messages)
+    return render_template('/user_update.html', user=user, errors=messages, 
+                           prevEmail=user.email, prevUsername=username, 
+                           prevBillingAddress=billing_address, 
+                           prevPostalCode=postal_code)
+
+
+@app.route('/booking/<int:listing_id>', methods=['GET'])
+def booking_get(listing_id):
+    listing = database.Listing.query.filter_by(id=listing_id).first()
+    listing_obj = Listing.query_listing(listing_id)
+    user = database.User.query.filter_by(id=session["logged_in"]).first()
+    min_date = listing_obj.find_min_booking_date()
+    return render_template('booking.html', listing=listing, user=user, 
+                           min_date=min_date, message='')
+
+
+@app.route('/booking/<int:listing_id>', methods=['POST'])
+def booking_post(listing_id):
+    user = database.User.query.filter_by(id=session["logged_in"]).first()
+    buyer = user.id
+    listing = database.Listing.query.filter_by(id=listing_id).first()
+    listing_obj = Listing.query_listing(listing_id)
+    seller = listing.owner_id
+    start_date = request.form.get('trip-start')
+    end_date = request.form.get('trip-end')
+    
+    try:
+        Booking.book_listing(buyer, seller, listing_id, start_date, end_date)
+        message = "Booking Successful: " + start_date + " to " + end_date
+    except ValueError as e:
+        message = str(e)
+    min_date = listing_obj.find_min_booking_date()
+
+    return render_template('booking.html', listing=listing, user=user, 
+                           min_date=min_date, message=message)
+
+
+@app.route('/user_bookings')
+@authenticate
+def view_user_bookings(user):
+    listings = []
+    bookings = database.Booking.query.filter_by(buyer_id=user.id).all()
+    for booking in bookings:
+        listing = database.Listing.query.get(booking.listing_id)
+        listings.append(listing)
+
+    return render_template('user_bookings.html', bookings=bookings, 
+                           listings=listings)
 
 
 @app.route('/create_listing', methods=['GET'])
@@ -192,51 +241,48 @@ def create_listing_post(user):
     description = request.form.get('description')
     price = float(request.form.get('price'))
     address = request.form.get('address')
-
+    
     try:
         Listing.create_listing(title, description, price, user, address)
         database.db.session.commit()
     except ValueError as e:
-        return render_template('create_listing.html', message=str(e))
+        return render_template('create_listing.html', message=str(e), 
+                               prevTitle=title, prevDescription=description, 
+                               prevPrice=price, prevAddress=address)
     except TypeError as e:
-        return render_template('create_listing.html', message=str(e))
+        return render_template('create_listing.html', message=str(e), 
+                               prevTitle=title, prevDescription=description, 
+                               prevPrice=price, prevAddress=address)
 
     return redirect('/')
 
 
-@app.route('/user_listings', methods=['GET'])
+@app.route('/user_listings')
 @authenticate
-def view_user_listings_get(user):
-    id = user.id
-    listings = database.Listing.query.filter_by(owner_id=id).all()
-    return render_template('user_listings.html', user=user, listings=listings)
+def view_user_listings(user):
+    listings = database.Listing.query.filter_by(owner_id=user.id).all()
+    return render_template('user_listings.html', listings=listings)
 
 
-@app.route('/user_listings', methods=['POST'])
-def view_user_listings_post():
-    listing_id = request.form.get('id')
-    if listing_id:
-        session['update_listing'] = listing_id
-    return redirect('/update_listing')
-
-
-@app.route('/update_listing', methods=['GET'])
-@authenticate
-def update_listing_get(user: User):
-    id = session['update_listing']
-    listing_db = database.Listing.query.get(id)
+@app.route('/update_listing/<int:listing_id>', methods=['GET'])
+def update_listing_get(listing_id):
+    listing = database.Listing.query.get(listing_id)
+    user = database.User.query.filter_by(id=session["logged_in"]).first()
     return render_template('/update_listing.html',
-                           user=user, listing=listing_db,
-                           errors='')
+                           user=user, listing=listing, errors='',
+                           prevTitle=listing.title, 
+                           prevDescription=listing.description,
+                           prevPrice=listing.price, 
+                           prevAddress=listing.address)
 
 
-@app.route('/update_listing', methods=['POST'])
-def update_listing_post():
-    id = session['update_listing']
-    listing = Listing.query_listing(id)  # the Listing obj linked to db obj
+@app.route('/update_listing/<int:listing_id>', methods=['POST'])
+def update_listing_post(listing_id):
+    listing = Listing.query_listing(listing_id)  # Listing obj linked to db obj
     title = request.form.get('title')
     description = request.form.get('description')
     price = float(request.form.get('price')) * 100
+    address = request.form.get('address')
 
     messages = []
     if title != listing.title:
@@ -261,8 +307,16 @@ def update_listing_post():
         except ValueError as e:
             messages += [str(e)]
 
+    if address != listing.database_obj.address:
+        try:
+            listing.update_address(address)
+            messages += [f"Address updated successfully: {address}"]
+        except ValueError as e:
+            messages += [str(e)]
+
     database.db.session.commit()
 
     return render_template('/update_listing.html',
-                           listing=listing.database_obj,
-                           messages=messages)
+                           listing=listing.database_obj, messages=messages,
+                           prevTitle=title, prevDescription=description, 
+                           prevPrice=price, prevAddress=address)

@@ -6,27 +6,41 @@
 
 {% block content %}
 <h2 id="welcome-header">Welcome {{ user.username }}!</h2>
-<h2 id="balance">Your current balance is {{ user.balance }}!</h2>
+<div style="text-align:left;Width:660px;">
+    <h4 id="balance" style="display:inline">Balance: ${{ user.balance }}</h4>
+    <a href='/logout' style="float:right;">Logout</a>
+</div><br>
 
-<a href='/create_listing' class="btn btn-primary" id="btn-submit" >Create Listing</a>
-<a href='/user_listings' class="btn btn-primary" id="btn-submit" >Update Your Listings</a>
-<a href='/user_update' class="btn btn-primary" id="btn-submit" >Update User Profile</a>
-<br> <br>
+<a href='/user_update' class="btn " id="btn-submit" >My Profile</a>
+<a href='/user_listings' class="btn" id="btn-submit" >My Listings</a>
+<a href='/user_bookings' class="btn " id="btn-submit" >My Bookings</a>
+<a href='/create_listing' class="btn " id="btn-submit" >Create Listing</a>
+<br><br>
 
-<h2>All Available Listings</h2>
-
+<h3>Listings</h3>
 <div id="listings">
     {% for listing in listings %}
-    <div>
+    <div id="listing" style='Width:645px;'>
+        <a style="Color:rgb(219, 79, 208)">Owner: {{listing.owner.username}}</a>
         <h4>
-            <div id="listing">
-                {{ listing.title }} | ${{ listing.price / 100 }} | Seller: {{ listing.owner.username }} | Last Modified: {{ listing.last_modified_date }}
-            </div>
+            {{ listing.title }}<br>
+            ${{ listing.price / 100 }} / Night
         </h4>
-            <h5>{{ listing.description }}</h5>
+
+        Address: {{listing.address}}
+        <h5>{{ listing.description }}</h5> 
+        <div style=Width:660px;>
+            <a style="Color:rgb(219, 79, 208)">Created: {{listing.date_created}} | Modified: {{listing.last_modified_date}}</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a href='/booking/{{ listing.id }}' class="btn btn-primary">Book</a>
+        </div>
     </div>
+    -------------------------------------------------------------------------------------
     {% endfor %}
 </div>
-
-<a href='/logout'>logout</a>
 {% endblock %}

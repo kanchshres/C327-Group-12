@@ -84,8 +84,7 @@ class Listing:
     @description.setter
     def description(self, description):
         """Sets title for digital Listing if valid"""
-        if not ((20 <= len(description) <= 2000)
-                and (len(description) > len(self.title))):
+        if not (Listing.valid_description(description, self.title)):
             raise ValueError(f"Invalid Description: {description}")
         self._description = description
         self._modified_date = datetime.now()
@@ -100,7 +99,7 @@ class Listing:
     @price.setter
     def price(self, price):
         """Sets price for digital Listing if valid"""
-        if not (Listing.valid_price(price) and self.price < price):
+        if not (Listing.valid_price(price, self.price)):
             raise ValueError(f"Invalid Price: {price}")
         self._price = price
         self._modified_date = datetime.now()
@@ -127,7 +126,7 @@ class Listing:
     @seller.setter
     def seller(self, owner):
         """Sets owner of digital Listing if valid"""
-        if (not Listing.valid_seller(owner)):
+        if not (Listing.valid_seller(owner)):
             raise ValueError(f"Invalid Seller: {owner}")
         self._seller = owner
         self._modified_date = datetime.now()
@@ -200,7 +199,7 @@ class Listing:
             raise ValueError(f"Invalid Title: {title}")
         if not (Listing.valid_seller(owner)):
             raise ValueError(f"Invalid Seller: {owner}")
-        if not (Listing.valid_price(price)):
+        if not (Listing.valid_price(price, 0)):
             raise ValueError(f"Invalid Price: {price}")
         if not (Listing.valid_description(description, title)):
             raise ValueError(f"Invalid Description: {description}")
@@ -227,9 +226,9 @@ class Listing:
                 and (len(title) < len(description)))
 
     @staticmethod
-    def valid_price(price):
+    def valid_price(newPrice, oldPrice):
         """Determine if a given price is valid"""
-        return (10.00 <= price <= 10000.00)
+        return ((10.00 <= newPrice <= 10000.00) and (oldPrice < newPrice))
 
     @staticmethod
     def valid_date(mod_date):
@@ -330,4 +329,4 @@ class Listing:
             prev_d = curr_d
 
         # No gaps exist, first available date is the day after latest booking
-        return (curr_d + timedelta(days=1)).strftime('%Y-%m-%d')
+        return (prev_d + timedelta(days=1)).strftime('%Y-%m-%d')

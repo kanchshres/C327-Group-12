@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Booking{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<h2 id="welcome-header">Booking</h2>
+<h4 id="balance">Balance: ${{ user.balance }}</h4>
+<h4 id='message' style="Color:rgb(219, 79, 208)">{{message}}</h4>
+
+<div id="listing">
+    <a style="Color:rgb(219, 79, 208)">Owner: {{listing.owner.username}}</a>
+    <h3 style='Width:645px;'>
+        {{ listing.title }}<br>
+        ${{ listing.price / 100 }} / Night
+    </h3>
+    
+    Address: {{listing.address}}
+    <h4 style='Width:645px;'>{{ listing.description }}</h4> 
+    <a style="Color:rgb(219, 79, 208)">Created: {{listing.date_created}} | Modified: {{listing.last_modified_date}}</a><br>
+    -------------------------------------------------------------------------------------
+</div>
+  
+<form method="post">
+    <div class="form-group">
+        <label for="start">Start Date:</label>
+        <input type="date" id="start" name="trip-start" style="Color:rgb(74, 86, 121)"
+             min={{min_date}} max="2025-01-02" value={{min_date}}><br>
+    
+        <label for="end">End Date:</label>&nbsp;&nbsp;
+        <input type="date" id="end" name="trip-end" style="Color:rgb(74, 86, 121)"
+            min={{min_date}} max="2025-01-02" value={{min_date}}><br><br>
+
+        <input class="btn btn-primary" type="submit" value="Confirm Booking">
+        <a href='/' class="btn" id="btn-submit" >Back</a>
+    </div> 
+</form>   
+{% endblock %}
