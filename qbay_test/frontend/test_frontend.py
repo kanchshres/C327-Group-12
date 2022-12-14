@@ -711,7 +711,7 @@ class FrontEndTests(BaseCase):
 
     def test_create_listing(self, *_):
         self.initialize()
-        
+
         def create_listing(title, description, price, address):
             self.open(base_url + "/create_listing")
             self.type("#title", title)
@@ -724,12 +724,12 @@ class FrontEndTests(BaseCase):
         base_description = "testing description long long longer than title"
         base_price = 123.45
         base_address = "101 Kingstreet"
-        
+
         create_listing(base_title, base_description, base_price, base_address)
         self.assert_text_visible(base_title)
-        
+
         id = 0
-        
+
         good_titles = ["good title",
                        "Good Title",
                        "123 Title",
@@ -739,7 +739,7 @@ class FrontEndTests(BaseCase):
         for title in good_titles:
             create_listing(title, base_description, base_price, base_address)
             self.assert_text_visible(title)
-            
+
         bad_titles = ["!oh no",
                       " leading space",
                       "trailing space ",
@@ -748,53 +748,62 @@ class FrontEndTests(BaseCase):
                       "123456789012345678901234567890"
                       "way too long",
                       "unique"]
-        
+
         for title in bad_titles:
             create_listing(title, base_description, base_price, base_address)
-            self.assert_text_visible("Invalid Title: " + title.lstrip(" ").rstrip(" "))
-            
-        good_descriptions = ["long long long long 20 characters longer than title",
-                            "there isnt any requirement aside from length !!!!",
-                            " leading spaceeeessssssssssss long long longer than title",
-                            "trailing spacessssssssssssssss long   ",
-                            "2 thousand" * 200]
-        
+            self.assert_text_visible(
+                "Invalid Title: " + title.lstrip(" ").rstrip(" "))
+
+        good_descriptions = ["long long long long 20 characters"
+                             " longer than title",
+                             "there isnt any requirement aside "
+                             "from length !!!!",
+                             " leading spaceeeessssssssssss long"
+                             " long longer than title",
+                             "trailing spacessssssssssssssss long   ",
+                             "2 thousand" * 200]
+
         for description in good_descriptions:
-            create_listing(base_title + str(id), description, base_price, base_address)
+            create_listing(base_title + str(id), description,
+                           base_price, base_address)
             self.assert_text_visible(base_title + str(id))
             id += 1
-        
+
         bad_desciprtions = ["short.",
-                            "long long man"*500,
+                            "long long man" * 500,
                             "shorter than title 20"]
         for description in bad_desciprtions:
-            create_listing(base_title + str(id), description, base_price, base_address)
-            self.assert_text_visible("Invalid Description: " + description.lstrip(" ").rstrip(" "))
-            
+            create_listing(base_title + str(id), description,
+                           base_price, base_address)
+            self.assert_text_visible(
+                "Invalid Description: " + description.lstrip(" ").rstrip(" "))
+
         good_prices = [10,
                        11,
                        10.1,
                        101.11,
                        10000]
-        
+
         for price in good_prices:
-            create_listing(base_title + str(id), base_description, price, base_address)
+            create_listing(base_title + str(id),
+                           base_description, price, base_address)
             self.assert_text_visible(base_title + str(id))
             id += 1
-        
+
         bad_prices = [9.9,
                       9,
                       -1,
                       10001]
         for price in bad_prices:
-            create_listing(base_title + str(id), base_description, price, base_address)
+            create_listing(base_title + str(id),
+                           base_description, price, base_address)
             self.assert_text_visible("Invalid Price: " + str(price))
-            
-        #address has no checking
-        
+
+        # address has no checking
+
     def test_update_listing(self):
         self.initialize()
-        
+
         def create_listing(title, description, price, address):
             self.open(base_url + "/create_listing")
             self.type("#title", title)
@@ -807,9 +816,9 @@ class FrontEndTests(BaseCase):
         base_description = "testing description long long longer than title"
         base_price = 123.45
         base_address = "101 Kingstreet"
-        
+
         create_listing(base_title, base_description, base_price, base_address)
-        
+
         def update_listing(title, description, price, address):
             self.open(base_url + "/update_listing/1")
             self.type("#title", title)
@@ -822,16 +831,15 @@ class FrontEndTests(BaseCase):
                        "updated description length 20",
                        150,
                        "updated address")
-        
+
         self.assert_text_visible("Title updated successfully:")
         self.assert_text_visible("Description updated successfully:")
         self.assert_text_visible("Price updated successfully:")
         self.assert_text_visible("Address updated successfully:")
-        
+
         update_listing("updated title",
-                "updated description length 20",
-                100,
-                "updated address")
-        
+                       "updated description length 20",
+                       100,
+                       "updated address")
+
         self.assert_text_visible("Invalid Price:")
-        
