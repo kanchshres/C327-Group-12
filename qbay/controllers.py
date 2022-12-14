@@ -320,3 +320,4 @@ def update_listing_post(listing_id):
                            listing=listing.database_obj, messages=messages,
                            prevTitle=title, prevDescription=description, 
                            prevPrice=price, prevAddress=address)
+    

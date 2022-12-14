@@ -269,6 +269,11 @@ class Listing:
         self.price = price
         self.database_obj.price = price * 100
         db.session.commit()
+        
+    def update_address(self, address):
+        self.address = address
+        self.database_obj.address = address
+        db.session.commit()
 
     @staticmethod
     def query_listing(id):
