@@ -100,7 +100,14 @@ class Booking:
             raise ValueError("Start date is same or after end date!")
   
         buyer = User.query_user(buyer_id)
+        if not buyer:
+            raise ValueError("Invalid Buyer ID: " + str(buyer_id))
         listing = Listing.query_listing(listing_id)
+        if not listing:
+            raise ValueError("Invalid Listing ID: " + str(listing_id))
+        owner = User.query_user(owner_id)
+        if not owner:
+            raise ValueError("Invalid Owner ID: " + str(owner_id))
 
         # Get all dates in the booking range given, excluding end date
         # (buyer leaves on final date's morning)
@@ -122,7 +129,6 @@ class Booking:
         buyer.add_booking(listing)
 
         # Update buyer and owner balance
-        owner = User.query_user(owner_id)
         buyer.update_balance(buyer.balance - cost)
         owner.update_balance(owner.balance + cost)
         booking = Booking(buyer_id, owner_id, listing_id, book_start, book_end)
