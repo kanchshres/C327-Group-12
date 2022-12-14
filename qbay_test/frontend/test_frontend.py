@@ -708,3 +708,46 @@ class FrontEndTests(BaseCase):
         for postal_code in valid_postal_codes:
             change_postal_code(postal_code)
             self.assert_text(postal_code, "#postal_code")
+
+    def test_booking(self, *_):
+        self.initialize()
+
+        def create_listing(title, description, price, address):
+            self.open(base_url + "/create_listing")
+            self.type("#title", title)
+            self.type("#description", description)
+            self.type("#price", price)
+            self.type("#address", address)
+            self.click('input[type="submit"]')
+
+        base_title = "testing title length 20"
+        base_description = "testing description long long longer than title"
+        base_price = 10
+        base_address = "101 Kingstreet"
+
+        create_listing(base_title, base_description, base_price, base_address)
+
+        self.open(base_url + "/booking/1")
+        self.click('input[type="submit"]')
+
+        self.assert_text_visible("Owner and buyer are the same!")
+
+        self.open(base_url + "/logout")
+
+        self.initialize_database()
+
+        # Register & Login with Bob
+        self.open(base_url + '/register')
+        email, username, password = "alice@gmail.com", "alice", "Password123!"
+        self.register_helper(email, username, password)
+        self.login_helper(email, password)
+        self.assert_text_visible("Welcome alice!")
+
+        self.open(base_url + "/booking/1")
+        assert self.get_current_url() == 'http://127.0.0.1:8081/booking/1'
+
+        self.is_text_visible("Start date is same or after end date!")
+
+        # self.assert_text("Booking")
+        # self.click('input[type="submit"]')
+        # self.get_element('start').value = '2024-01-01'
