@@ -22,7 +22,7 @@ class UnitTest(unittest.TestCase):
         with open("./qbay_test/Generic_SQLI.txt") as f:
             for line in f:
                 User.register(line, "testemail@gmail.com",
-                              "Password123!")
+                              "Pass123!!")
 
     def test_email(self):
         """ For each line/input/test-case, pass through the 
@@ -31,7 +31,7 @@ class UnitTest(unittest.TestCase):
         """
         with open('./qbay_test/Generic_SQLI.txt') as f:
             for line in f:
-                User.register("Bob", line, "Password123!")
+                User.register("Bob", line, "Pass123!!")
 
     def test_password(self):
         """ For each line/input/test-case, pass through the 
@@ -146,7 +146,7 @@ class UnitTest(unittest.TestCase):
             db.drop_all()
             db.create_all()
 
-        user = User("testUser", "user@example.ca", "password123")
+        user = User("testUser", "user@example.ca", "Pass123!")
         user.add_to_database()
 
         with open("./qbay_test/Generic_SQLI.txt") as f:
@@ -160,18 +160,21 @@ class UnitTest(unittest.TestCase):
                                        address=line
                                        )
                 cur += 1
+    
+    def create_listing_helper(self, title, description, price, owner, address):
+        listing = Listing.create_listing(title, description, price,
+                                         owner, address)
+        return listing
 
     def test_booking_buyer(self):
         with app.app_context():
             db.drop_all()
             db.create_all()
 
-        owner = User("testUser", "user@example.ca", "password123")
-        owner.add_to_database()
-        listing = Listing("4 bed 2 bath", "Amazing and comfortable place",
-                          15.00, owner, "10 King St.")
-        listing.add_to_database()
-
+        owner = self.create_account("testUser1", "user@test.ca", "Pass123!")
+        listing = self.create_listing_helper("4 bed 2 bath", 
+                                             "Amazing and comfortable place",
+                                             15.00, owner, "10 King St.")
         test_id = 0
         start = datetime.strptime("2022-12-01", "%Y-%m-%d")
         end = datetime.strptime("2022-12-02", "%Y-%m-%d")
@@ -202,13 +205,11 @@ class UnitTest(unittest.TestCase):
             db.drop_all()
             db.create_all()
 
-        owner = User("testUser", "user@example.ca", "password123")
-        owner.add_to_database()
-        listing = Listing("4 bed 2 bath", "Amazing and comfortable place",
-                          15.00, owner, "10 King St.")
-        listing.add_to_database()
-        buyer = User("testUser2", "user2@example.ca", "password123")
-        buyer.add_to_database()
+        owner = self.create_account("testUser", "user@example.ca", "Pass123!")
+        listing = self.create_listing_helper("4 bed 2 bath", 
+                                             "Amazing and comfortable place",
+                                             15.00, owner, "10 King St.")
+        buyer = self.create_account("testUser2", "user2@test.ca", "Pass123!")
 
         test_id = 0
         start = datetime.strptime("2022-12-01", "%Y-%m-%d")
@@ -240,13 +241,8 @@ class UnitTest(unittest.TestCase):
             db.drop_all()
             db.create_all()
 
-        owner = User("testUser", "user@example.ca", "password123")
-        owner.add_to_database()
-        listing = Listing("4 bed 2 bath", "Amazing and comfortable place",
-                          15.00, owner, "10 King St.")
-        listing.add_to_database()
-        buyer = User("testUser2", "user2@example.ca", "password123")
-        buyer.add_to_database()
+        owner = self.create_account("testUser", "user@example.ca", "Pass123!")
+        buyer = self.create_account("testUser2", "user2@test.ca", "Pass123!")
 
         test_id = 0
         start = datetime.strptime("2022-12-01", "%Y-%m-%d")
@@ -278,13 +274,11 @@ class UnitTest(unittest.TestCase):
             db.drop_all()
             db.create_all()
 
-        owner = User("testUser", "user@example.ca", "password123")
-        owner.add_to_database()
-        listing = Listing("4 bed 2 bath", "Amazing and comfortable place",
-                          15.00, owner, "10 King St.")
-        listing.add_to_database()
-        buyer = User("testUser2", "user2@example.ca", "password123")
-        buyer.add_to_database()
+        owner = self.create_account("testUser", "user@example.ca", "Pass123!")
+        listing = self.create_listing_helper("4 bed 2 bath", 
+                                             "Amazing and comfortable place",
+                                             15.00, owner, "10 King St.")
+        buyer = self.create_account("testUser2", "user2@test.ca", "Pass123!")
 
         end = datetime.strptime("2022-12-02", "%Y-%m-%d")
         form = "%Y-%m-%d"
@@ -310,13 +304,11 @@ class UnitTest(unittest.TestCase):
             db.drop_all()
             db.create_all()
 
-        owner = User("testUser", "user@example.ca", "password123")
-        owner.add_to_database()
-        listing = Listing("4 bed 2 bath", "Amazing and comfortable place",
-                          15.00, owner, "10 King St.")
-        listing.add_to_database()
-        buyer = User("testUser2", "user2@example.ca", "password123")
-        buyer.add_to_database()
+        owner = self.create_account("testUser", "user@example.ca", "Pass123!")
+        listing = self.create_listing_helper("4 bed 2 bath", 
+                                             "Amazing and comfortable place",
+                                             15.00, owner, "10 King St.")
+        buyer = self.create_account("testUser2", "user2@test.ca", "Pass123!")
 
         start = datetime.strptime("2022-12-01", "%Y-%m-%d")
         form = "%Y-%m-%d"
