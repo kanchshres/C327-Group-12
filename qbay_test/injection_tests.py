@@ -166,6 +166,36 @@ class UnitTest(unittest.TestCase):
                                          owner, address)
         return listing
 
+    def booking_id_helper(self, buyer_id, owner_id, listing_id, type):
+        test_id = -1
+        
+        start = datetime.strptime("2022-12-01", "%Y-%m-%d")
+        end = datetime.strptime("2022-12-02", "%Y-%m-%d")
+        with open("./qbay_test/Generic_SQLI.txt") as f:
+            for line in f:
+                try:
+                    test_id = int(line)
+                    if type == "Owner":
+                        owner_id = test_id
+                    elif type == "Buyer":
+                        buyer_id = test_id
+                    elif type == "Listing":
+                        listing_id = test_id
+                    Booking.book_listing(buyer_id=buyer_id,
+                                         owner_id=owner_id,
+                                         listing_id=listing_id,
+                                         book_start=start,
+                                         book_end=end)
+                except ValueError as e:
+                    try:
+                        # Type 1: line cannot be converted to int
+                        assert str(e) == ("invalid literal for int() with " +
+                                          "base 10: " + repr(line))
+                    except AssertionError:
+                        # Type 2: line is an invalid ID
+                        assert str(e) == ("Invalid " + type + " ID: " 
+                                          + str(test_id))
+                                          
     def test_booking_buyer(self):
         with app.app_context():
             db.drop_all()
@@ -175,30 +205,7 @@ class UnitTest(unittest.TestCase):
         listing = self.create_listing_helper("4 bed 2 bath", 
                                              "Amazing and comfortable place",
                                              15.00, owner, "10 King St.")
-        test_id = 0
-        start = datetime.strptime("2022-12-01", "%Y-%m-%d")
-        end = datetime.strptime("2022-12-02", "%Y-%m-%d")
-
-        with open("./qbay_test/Generic_SQLI.txt") as f:
-            for line in f:
-                try:
-                    test_id = int(line)
-                    Booking.book_listing(buyer_id=test_id,
-                                         owner_id=owner.id,
-                                         listing_id=listing.id,
-                                         book_start=start,
-                                         book_end=end
-                                         )
-                    start = start + timedelta(days=1)
-                    end = end + timedelta(days=1)
-                except ValueError as e:
-                    try:
-                        # Type 1: line cannot be converted to int
-                        assert str(e) == ("invalid literal for int() with " +
-                                          "base 10: " + repr(line))
-                    except AssertionError:
-                        # Type 2: line is an invalid ID
-                        assert str(e) == "Invalid Buyer ID: " + str(test_id)
+        self.booking_id_helper(None, owner.id, listing.id, "Buyer")
 
     def test_booking_seller(self):
         with app.app_context():
@@ -211,30 +218,7 @@ class UnitTest(unittest.TestCase):
                                              15.00, owner, "10 King St.")
         buyer = self.create_account("testUser2", "user2@test.ca", "Pass123!")
 
-        test_id = 0
-        start = datetime.strptime("2022-12-01", "%Y-%m-%d")
-        end = datetime.strptime("2022-12-02", "%Y-%m-%d")
-
-        with open("./qbay_test/Generic_SQLI.txt") as f:
-            for line in f:
-                try:
-                    test_id = int(line)
-                    Booking.book_listing(buyer_id=buyer.id,
-                                         owner_id=test_id,
-                                         listing_id=listing.id,
-                                         book_start=start,
-                                         book_end=end
-                                         )
-                    start = start + timedelta(days=1)
-                    end = end + timedelta(days=1)
-                except ValueError as e:
-                    try:
-                        # Type 1: line cannot be converted to int
-                        assert str(e) == ("invalid literal for int() with " +
-                                          "base 10: " + repr(line))
-                    except AssertionError:
-                        # Type 2: line is an invalid ID
-                        assert str(e) == "Invalid Owner ID: " + str(test_id)
+        self.booking_id_helper(buyer.id, None, listing.id, "Owner")
 
     def test_booking_listing(self):
         with app.app_context():
@@ -243,31 +227,30 @@ class UnitTest(unittest.TestCase):
 
         owner = self.create_account("testUser", "user@example.ca", "Pass123!")
         buyer = self.create_account("testUser2", "user2@test.ca", "Pass123!")
+        self.booking_id_helper(buyer.id, owner.id, None, "Listing")
 
-        test_id = 0
+    def booking_date_helper(self, buyer_id, owner_id, listing_id, type):
         start = datetime.strptime("2022-12-01", "%Y-%m-%d")
         end = datetime.strptime("2022-12-02", "%Y-%m-%d")
+        form = "%Y-%m-%d"
 
         with open("./qbay_test/Generic_SQLI.txt") as f:
             for line in f:
                 try:
-                    test_id = int(line)
-                    Booking.book_listing(buyer_id=buyer.id,
-                                         owner_id=owner.id,
-                                         listing_id=test_id,
+                    test = datetime.strptime(line, "%Y-%m-%d")
+                    if type == "Start":
+                        start = test
+                    elif type == "End":
+                        end = test
+                    Booking.book_listing(buyer_id=buyer_id,
+                                         owner_id=owner_id,
+                                         listing_id=listing_id,
                                          book_start=start,
-                                         book_end=end
-                                         )
-                    start = start + timedelta(days=1)
-                    end = end + timedelta(days=1)
+                                         book_end=end)
                 except ValueError as e:
-                    try:
-                        # Type 1: line cannot be converted to int
-                        assert str(e) == ("invalid literal for int() with " +
-                                          "base 10: " + repr(line))
-                    except AssertionError:
-                        # Type 2: line is an invalid ID
-                        assert str(e) == "Invalid Listing ID: " + str(test_id)
+                    # Type 1: line cannot be converted to datetime string
+                    assert str(e) == ("time data " + repr(line) +
+                                      " does not match format " + repr(form))
 
     def test_booking_start_date(self):
         with app.app_context():
@@ -279,25 +262,7 @@ class UnitTest(unittest.TestCase):
                                              "Amazing and comfortable place",
                                              15.00, owner, "10 King St.")
         buyer = self.create_account("testUser2", "user2@test.ca", "Pass123!")
-
-        end = datetime.strptime("2022-12-02", "%Y-%m-%d")
-        form = "%Y-%m-%d"
-
-        with open("./qbay_test/Generic_SQLI.txt") as f:
-            for line in f:
-                try:
-                    start_test = datetime.strptime(line, "%Y-%m-%d")
-                    Booking.book_listing(buyer_id=buyer.id,
-                                         owner_id=owner.id,
-                                         listing_id=listing.id,
-                                         book_start=start_test,
-                                         book_end=end
-                                         )
-                    end = end + timedelta(days=1)
-                except ValueError as e:
-                    # Type 1: line cannot be converted to datetime string
-                    assert str(e) == ("time data " + repr(line) +
-                                      " does not match format " + repr(form))
+        self.booking_date_helper(buyer.id, owner.id, listing.id, "Start")
 
     def test_booking_end_date(self):
         with app.app_context():
@@ -310,21 +275,4 @@ class UnitTest(unittest.TestCase):
                                              15.00, owner, "10 King St.")
         buyer = self.create_account("testUser2", "user2@test.ca", "Pass123!")
 
-        start = datetime.strptime("2022-12-01", "%Y-%m-%d")
-        form = "%Y-%m-%d"
-
-        with open("./qbay_test/Generic_SQLI.txt") as f:
-            for line in f:
-                try:
-                    end_test = datetime.strptime(line, "%Y-%m-%d")
-                    Booking.book_listing(buyer_id=buyer.id,
-                                         owner_id=owner.id,
-                                         listing_id=listing.id,
-                                         book_start=start,
-                                         book_end=end_test
-                                         )
-                    start = start + timedelta(days=1)
-                except ValueError as e:
-                    # Type 1: line cannot be converted to datetime string
-                    assert str(e) == ("time data " + repr(line) +
-                                      " does not match format " + repr(form))
+        self.booking_date_helper(buyer.id, owner.id, listing.id, "End")
