@@ -51,6 +51,13 @@ class FrontEndTests(BaseCase):
         self.type("#price", price)
         self.click('input[type="submit"]')
 
+    def booking_helper(self, start_date, end_date):
+        # Book listing given a start_date and end_date
+        self.click_link("Book")
+        self.type("#start", start_date)
+        self.type("#end", end_date)
+        self.click('input[type="submit"]')
+
     def assert_helper(self, element, text, url):
         # Assert given an element, text, and return to desired url
         self.assert_element(element)
@@ -710,44 +717,47 @@ class FrontEndTests(BaseCase):
             self.assert_text(postal_code, "#postal_code")
 
     def test_booking(self, *_):
-        self.initialize()
-
-        def create_listing(title, description, price, address):
-            self.open(base_url + "/create_listing")
-            self.type("#title", title)
-            self.type("#description", description)
-            self.type("#price", price)
-            self.type("#address", address)
-            self.click('input[type="submit"]')
-
-        base_title = "testing title length 20"
-        base_description = "testing description long long longer than title"
-        base_price = 10
-        base_address = "101 Kingstreet"
-
-        create_listing(base_title, base_description, base_price, base_address)
-
-        self.open(base_url + "/booking/1")
-        self.click('input[type="submit"]')
-
-        self.assert_text_visible("Owner and buyer are the same!")
-
-        self.open(base_url + "/logout")
-
+        # Initialize database
         self.initialize_database()
 
-        # Register & Login with Bob
-        self.open(base_url + '/register')
-        email, username, password = "alice@gmail.com", "alice", "Password123!"
+        # Register & Log-in
+        email, username = "booklisting01@test.com", "Book Listing 01"
+        password = "Onetwo!"
         self.register_helper(email, username, password)
         self.login_helper(email, password)
-        self.assert_text_visible("Welcome alice!")
 
-        self.open(base_url + "/booking/1")
-        assert self.get_current_url() == 'http://127.0.0.1:8081/booking/1'
+        # Create listing
+        t, d, p = "6 Bed 9 Bath", "This is a lovely place", 100
+        a = "101 Palace Place, Suite 330, Boston, MA"
+        self.create_listing_helper(t, d, p, a)
 
-        self.is_text_visible("Start date is same or after end date!")
+        # Book as owner of listing
+        self.booking_helper("2025-01-01", "2025-01-02")
+        element, text = "#message", "Owner and buyer are the same!"
+        self.assert_helper(element, text, None)
 
-        # self.assert_text("Booking")
-        # self.click('input[type="submit"]')
-        # self.get_element('start').value = '2024-01-01'
+        # Register & Log-in with new account
+        self.open(base_url + "/logout")
+        email, username = "booklisting02@test.com", "Book Listing 02"
+        password = "Onetwo!"
+        self.register_helper(email, username, password)
+        self.login_helper(email, password)
+
+        # Book with same dates 
+        self.booking_helper("2025-01-01", "2025-01-01")
+        text = "Start date is same or after end date!"
+        self.assert_helper(element, text, base_url)
+
+        # Book with start date after end date
+        self.booking_helper("2025-01-02", "2025-01-01")
+        self.assert_helper(element, text, base_url)
+
+        # Book with invalid balance
+        self.booking_helper("2024-12-31", "2025-01-02")
+        text = "Buyer's balance is too low for this booking!"
+        self.assert_helper(element, text, base_url)
+
+        # Book with valid dates & balance
+        self.booking_helper("2025-01-01", "2025-01-02")
+        text = "Booking Successful: 2025-01-01 to 2025-01-02"
+        self.assert_helper(element, text, None)
